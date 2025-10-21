@@ -28,10 +28,7 @@ import java.util.Random;
 public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesEntity> {
 
     private final DiagnosesRepository diagnosesRepository;
-    private final PetRepository petRepository;
-    private final DoctorRepository doctorRepository;
     private final AppointmentRepository appointmentRepository;
-    private final AppointmentService appointmentService;
 
     @Autowired
     public DiagnosesService(DiagnosesRepository diagnosesRepository,
@@ -40,10 +37,8 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
                             AppointmentRepository appointmentRepository,
                             AppointmentService appointmentService) {
         this.diagnosesRepository = diagnosesRepository;
-        this.petRepository = petRepository;
-        this.doctorRepository = doctorRepository;
         this.appointmentRepository = appointmentRepository;
-        this.appointmentService = appointmentService;
+
     }
 
     @Transactional
@@ -100,7 +95,7 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
         if(diagnoses.isEmpty()){
             return Page.empty();
         }
-        return diagnoses.map(this::toDTOResponse);
+        return diagnoses.map(this::toDTO);
     }
 
     public Page<DiagnosesDTOResponse> findByPetId(long id, Pageable pageable) {
@@ -139,4 +134,6 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
                 .date(entity.getDate())
                 .build();
     }
+
+
 }
