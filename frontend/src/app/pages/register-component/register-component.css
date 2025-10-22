@@ -1,0 +1,162 @@
+
+.logo-background{
+    background-color:  #45aedd ;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.input-wrapper {
+  position: relative; 
+  width: 300px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.custom-input {
+  width: 100%; 
+  padding: 12px 40px 12px 20px;
+ 
+  
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 999px; 
+  background-color: #fff;
+  
+
+  box-sizing: border-box; 
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+
+.custom-input::placeholder {
+  color: #999;
+  opacity: 1; 
+}
+
+
+.custom-input:focus {
+  outline: none; 
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2); 
+}
+
+
+.clear-btn {
+
+  position: absolute;
+  top: 50%; 
+  transform: translateY(-50%); 
+  right: 15px;
+
+
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 20px;
+  color: #888;
+  padding: 0;
+  
+
+  display: none;
+}
+
+
+.input-wrapper.has-content .clear-btn {
+  display: block;
+}
+
+.register-btn {
+  background-color: #f0b868;
+  color: #4a4a6d;
+  border: none;
+  display: block;
+  width: 100%;
+  padding: 14px 24px;
+  border-radius: 999px;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.register-btn:hover {
+  background-color: #e9ab58;
+}
+
+.register-btn:active {
+  transform: scale(0.99);
+}
+
+.control-wrapper {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.custom-radio-label {
+  display: flex;
+  align-items: flex-start;
+  cursor: pointer;
+  user-select: none;
+}
+
+.custom-radio-input {
+  display: none;
+}
+
+.custom-radio-button {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2px solid #555;
+  border-radius: 50%;
+  margin-right: 12px;
+  position: relative;
+  top: 2px;
+}
+
+.custom-radio-button::after {
+  content: '';
+  display: none;
+  width: 10px;
+  height: 10px;
+  background-color: #000;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.custom-radio-input:checked + .custom-radio-label .custom-radio-button::after {
+  display: block;
+}
+
+.text-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.main-text {
+  color: #333;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.link-text {
+  color: #4a00e0;
+  font-size: 14px;
+  text-decoration: underline;
+}
+
+aside{
+    background-color:  #45aedd;
+    width: 100px;
+
+}
+
+
