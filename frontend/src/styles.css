@@ -1,0 +1,54 @@
+/* You can add global styles to this file, and also import other style files */
+
+/* Variables de color - Paleta oficial */
+:root {
+  /* Colores Primarios */
+  --hospital-blue: #45aedd;
+  --hospital-green: #83b847;
+  
+  /* Colores de Acento */
+  --vibrant-orange: #f3ae51;
+  --orange: #f1ae53;
+  
+  /* Colores Neutros */
+  --light-bg: #f9fbfd;
+  --secondary-text: #7F8C8D;
+  
+  /* Colores Semánticos */
+  --success: #2ECC71;
+  --error: #E74C3C;
+  --warning: #F1C40F;
+  
+  /* RGB equivalents */
+  --hospital-blue-rgb: 69, 174, 221;
+  --hospital-green-rgb: 131, 184, 71;
+  --vibrant-orange-rgb: 243, 174, 81;
+}
+
+/* Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--light-bg);
+  color: #333;
+  line-height: 1.6;
+}
+
+/* Estilos para imágenes */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Contenedor principal */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
