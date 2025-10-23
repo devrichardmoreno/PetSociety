@@ -68,6 +68,10 @@
   justify-content: center;
 }
 
+/* Ocultar controles y elementos móviles por defecto (solo se muestran en mobile) */
+.menu-toggle { display: none; }
+.header .nav .nav-auth { display: none; }
+
 .header .nav .nav-list {
   display: flex;
   list-style: none;
@@ -214,13 +218,42 @@
     gap: 1rem;
   }
 
-  .header .nav {
-    display: none;
+  .menu-toggle {
+    display: inline-flex;
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(255,255,255,0.8);
+    border-radius: 8px;
+    background: transparent;
+    cursor: pointer;
   }
+  .menu-toggle span {
+    display: block;
+    width: 18px;
+    height: 2px;
+    background: #fff;
+    margin: 3px 0;
+    border-radius: 2px;
+  }
+  .menu-toggle:focus { outline: 2px solid rgba(255,255,255,0.8); outline-offset: 2px; }
+
+  .header .nav {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    right: 0;
+    background: #45aedd;
+    display: none;
+    padding: 1rem 1rem 1.25rem 1rem;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.15);
+  }
+  .header .nav.open { display: block; }
 
   .header .auth-buttons {
-    gap: 0.5rem;
-    margin-left: 1rem;
+    display: none;
   }
 
   .header .auth-buttons .btn {
@@ -234,6 +267,21 @@
   
   .header .logo .logo-text {
     font-size: 1.4rem;
+  }
+
+  .header .nav .nav-list {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  .header .nav .nav-link {
+    font-size: 1.05rem;
+    padding: 0.5rem 0.25rem;
+  }
+  .header .nav .nav-link::after { display: none; }
+  .header .nav .nav-auth {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
   }
 }
 

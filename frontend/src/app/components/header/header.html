@@ -9,17 +9,25 @@
       </div>
   
       <!-- Navegación -->
-      <nav class="nav">
+      <button class="menu-toggle" (click)="toggleMenu()" aria-label="Abrir menú">
+        <span></span><span></span><span></span>
+      </button>
+
+      <nav class="nav" [class.open]="isMenuOpen">
         <ul class="nav-list">
-          <li><a href="#inicio" class="nav-link">Inicio</a></li>
-          <li><a href="#servicios" class="nav-link">Servicios</a></li>
-          <li><a href="#profesionales" class="nav-link">Profesionales</a></li>
-          <li><a href="#nosotros" class="nav-link">Sobre Nosotros</a></li>
-          <li><a href="#contacto" class="nav-link">Contacto</a></li>
+          <li><a href="#inicio" class="nav-link" (click)="toggleMenu()">Inicio</a></li>
+          <li><a href="#servicios" class="nav-link" (click)="toggleMenu()">Servicios</a></li>
+          <li><a href="#profesionales" class="nav-link" (click)="toggleMenu()">Profesionales</a></li>
+          <li><a href="#nosotros" class="nav-link" (click)="toggleMenu()">Sobre Nosotros</a></li>
+          <li><a href="#contacto" class="nav-link" (click)="toggleMenu()">Contacto</a></li>
+          <li class="nav-auth">
+            <a class="btn btn-secondary" href="#inicio" (click)="toggleMenu()">Iniciar Sesión</a>
+            <a class="btn btn-primary" href="#inicio" (click)="toggleMenu()">Registrarse</a>
+          </li>
         </ul>
       </nav>
   
-      <!-- Botones de acción -->
+      <!-- Botones de acción (ocultos en móvil) -->
       <div class="auth-buttons">
         <button class="btn btn-secondary">Iniciar Sesión</button>
         <button class="btn btn-primary">Registrarse</button>
