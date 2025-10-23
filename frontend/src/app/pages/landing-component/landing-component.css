@@ -161,6 +161,108 @@
   pointer-events: none;
 }
 
+/* Servicios */
+.services-section {
+  padding: 4rem 0;
+  background: var(--light-bg);
+}
+
+.services-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.services-head {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.services-title {
+  font-size: 2.2rem;
+  color: var(--hospital-blue);
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.services-subtitle {
+  color: var(--secondary-text);
+  margin-top: 0.5rem;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.75rem;
+}
+
+.service-card {
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.05);
+  border-radius: 14px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.service-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(131, 184, 71, 0.5);
+  box-shadow: 0 14px 28px rgba(131, 184, 71, 0.12);
+}
+
+.service-icon {
+  width: 54px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  font-size: 1.6rem;
+  background: rgba(69, 174, 221, 0.12);
+  color: #1b76a3; /* tono más oscuro del azul para contraste */
+  border-radius: 12px;
+  margin-bottom: 1rem;
+}
+
+.service-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--dark-gray);
+  margin-bottom: 0.5rem;
+}
+
+.service-text {
+  color: var(--secondary-text);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.service-link {
+  appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--hospital-blue);
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+}
+
+.service-link::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: var(--hospital-blue);
+  transition: width 0.25s ease;
+}
+
+.service-link:hover::after {
+  width: 100%;
+}
+
 /* Animaciones */
 @keyframes slideInLeft {
   from {
@@ -214,6 +316,10 @@
   .hero-photo {
     height: 400px;
   }
+
+  .services-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -255,6 +361,10 @@
   
   .hero-photo {
     height: 300px;
+  }
+
+  .services-grid {
+    grid-template-columns: 1fr;
   }
 }
 
