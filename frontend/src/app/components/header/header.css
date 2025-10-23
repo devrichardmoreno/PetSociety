@@ -47,6 +47,13 @@
 }
 
 
+.header .logo .logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  text-decoration: none;
+}
+
 .header .logo .logo-text {
   color: white;
   font-weight: 700;
