@@ -1,67 +1,44 @@
-<div id="register-container-all">
-
-<h1>Registrate</h1>
-
-<div class="logo-background">
-    <img src="" alt="">
-</div>
-
-<form action="">
+<section id="register-container-all">
+  <div class="logo-background">
+    <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
     
+  </div>
+
+  <form action="">
+    <h1>Regístrate</h1>
+
     <div class="input-wrapper">
-    <input type="text" class="custom-input" placeholder="Nombre">
-    <button type="button" class="clear-btn">&times;</button>
+      <input type="text" class="custom-input" placeholder="Nombre">
+      
     </div>
 
     <div class="input-wrapper">
-  <input type="text" class="custom-input" placeholder="Apellido">
-  <button type="button" class="clear-btn">&times;</button>
+      <input type="text" class="custom-input" placeholder="Apellido">
     </div>
 
     <div class="input-wrapper">
-  <input type="text" class="custom-input" placeholder="Telefono">
-  <button type="button" class="clear-btn">&times;</button>
-</div>
-
-<div class="input-wrapper">
-  <input type="text" class="custom-input" placeholder="DNI">
-  <button type="button" class="clear-btn">&times;</button>
-</div>
-
-
-<div class="input-wrapper">
-  <input type="text" class="custom-input" placeholder="Nombre de Usuario">
-  <button type="button" class="clear-btn">&times;</button>
-</div>
-
-
-<div class="input-wrapper">
-  <input type="text" class="custom-input" placeholder="Contraseña">
-  <button type="button" class="clear-btn">&times;</button>
-</div>
-
-<div class="control-wrapper">
-  
-  <input 
-    type="radio" 
-    id="terms" 
-    name="terms_group" 
-    class="custom-radio-input"
-    checked> <label for="terms" class="custom-radio-label">
-    <span class="custom-radio-button"></span>
-    
-    <div class="text-container">
-      <span class="main-text">Acepto los terminos y condiciones</span>
-
+      <input type="password" class="custom-input" placeholder="Telefono">
     </div>
-  </label>
-  
-</div>
 
-    
-<button class="register-btn">
-  Regístrate
-</button>
+    <div class="input-wrapper">
+      <input type="password" class="custom-input" placeholder="DNI">
+    </div>
 
-</form>
-</div>
+    <div class="input-wrapper">
+      <input type="email" class="custom-input" placeholder="Email">
+    </div>
+
+    <div class="input-wrapper">
+      <input type="password" class="custom-input" placeholder="Contraseña">
+    </div>
+
+    <button class="register-btn">
+      Crear cuenta
+    </button>
+
+    <p class="login-link">
+      ¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a>
+    </p>
+
+  </form>
+</section>
