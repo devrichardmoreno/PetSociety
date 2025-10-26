@@ -1,44 +1,66 @@
 <section id="register-container-all">
-  <div class="logo-background">
-    <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
-    
-  </div>
-
-  <form action="">
-    <h1>Regístrate</h1>
-
-    <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Nombre">
-      
+    <div class="logo-background">
+        <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
     </div>
 
-    <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Apellido">
-    </div>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <h1>Regístrate</h1>
 
-    <div class="input-wrapper">
-      <input type="password" class="custom-input" placeholder="Telefono">
-    </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" formControlName="username" placeholder="Usuario">
+        </div>
+        @if (registerForm.get('username')?.errors && registerForm.get('username')?.touched) {
+            <div class="error-message">El usuario es requerido.</div>
+        }
 
-    <div class="input-wrapper">
-      <input type="password" class="custom-input" placeholder="DNI">
-    </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" formControlName="name" placeholder="Nombre">
+        </div>
+        @if (registerForm.get('name')?.errors && registerForm.get('name')?.touched) {
+            <div class="error-message">El nombre debe tener entre 2 y 50 caracteres.</div>
+        }
 
-    <div class="input-wrapper">
-      <input type="email" class="custom-input" placeholder="Email">
-    </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" formControlName="surname" placeholder="Apellido">
+        </div>
+        @if (registerForm.get('surname')?.errors && registerForm.get('surname')?.touched) {
+            <div class="error-message">El apellido debe tener entre 2 y 50 caracteres.</div>
+        }
 
-    <div class="input-wrapper">
-      <input type="password" class="custom-input" placeholder="Contraseña">
-    </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" formControlName="phone" placeholder="Teléfono" maxlength="20">
+        </div>
+        @if (registerForm.get('phone')?.errors && registerForm.get('phone')?.touched) {
+            <div class="error-message">Longitud de teléfono incorrecta (Mín. 9, Máx. 20).</div>
+        }
 
-    <button class="register-btn">
-      Crear cuenta
-    </button>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" formControlName="dni" placeholder="DNI" maxlength="8">
+        </div>
+        @if (registerForm.get('dni')?.errors && registerForm.get('dni')?.touched) {
+            <div class="error-message">Longitud de DNI incorrecta (Mín. 7, Máx. 8).</div>
+        }
 
-    <p class="login-link">
-      ¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a>
-    </p>
+        <div class="input-wrapper">
+            <input type="email" class="custom-input" formControlName="email" placeholder="Email">
+        </div>
+        @if (registerForm.get('email')?.errors && registerForm.get('email')?.touched) {
+            <div class="error-message">Email requerido y formato inválido.</div>
+        }
 
-  </form>
+        <div class="input-wrapper">
+            <input type="password" class="custom-input" formControlName="password" placeholder="Contraseña" maxlength="50">
+        </div>
+        @if (registerForm.get('password')?.errors && registerForm.get('password')?.touched) {
+            <div class="error-message">La contraseña debe tener entre 2 y 50 caracteres.</div>
+        }
+
+        <button type="submit" class="register-btn" [disabled]="registerForm.invalid">
+            Crear cuenta
+        </button>
+
+        <p class="login-link">
+            ¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a>
+        </p>
+    </form>
 </section>

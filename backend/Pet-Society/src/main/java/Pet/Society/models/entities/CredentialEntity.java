@@ -20,40 +20,47 @@ public class CredentialEntity implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    
+    @Column(unique = true)
+    private String email; 
+    private String name;
+    private String surname;
+    private String phone;
+    private String dni;
+   
+    
     @OneToOne
     private UserEntity user;
+    
     @Column(unique = true)
     private String username;
     private String password;
-    @Enumerated
+    
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     @Override
     public boolean isAccountNonExpired() {
-        return UserDetails.super.isAccountNonExpired();
+        return true;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return UserDetails.super.isAccountNonLocked();
+        return true;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return UserDetails.super.isCredentialsNonExpired();
+        return true;
     }
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return true;
     }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.toString()));
     }
-
-
-
-
 }

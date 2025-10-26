@@ -10,7 +10,7 @@ import Pet.Society.models.entities.UserEntity;
 import Pet.Society.models.enums.Role;
 import Pet.Society.models.exceptions.UserAttributeException;
 import Pet.Society.models.interfaces.Mapper;
-import com.mysql.cj.xdevapi.Client;
+//import com.mysql.cj.xdevapi.Client;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
