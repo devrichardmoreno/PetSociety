@@ -4,11 +4,11 @@ import Pet.Society.models.dto.login.LoginDTO;
 import Pet.Society.models.dto.login.LoginResponseDTO;
 import Pet.Society.models.dto.register.RegisterDTO;
 import Pet.Society.models.entities.CredentialEntity;
-import Pet.Society.models.entities.UserEntity;
+import Pet.Society.models.entities.UserEntity; // Ya está importado
 import Pet.Society.models.enums.Role;
 import Pet.Society.models.exceptions.UserNotFoundException;
 import Pet.Society.repositories.CredentialRepository;
-import Pet.Society.repositories.UserRepository;
+import Pet.Society.repositories.UserRepository; // ⬅️ DEBES IMPORTAR UserRepository
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
