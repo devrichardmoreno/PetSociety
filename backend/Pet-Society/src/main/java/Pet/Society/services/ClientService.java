@@ -7,7 +7,7 @@ import Pet.Society.models.exceptions.UserExistsException;
 import Pet.Society.models.exceptions.UserNotFoundException;
 import Pet.Society.models.interfaces.Mapper;
 import Pet.Society.repositories.ClientRepository;
-//import com.mysql.cj.xdevapi.Client;
+import com.mysql.cj.xdevapi.Client;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;

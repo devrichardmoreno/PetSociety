@@ -46,7 +46,7 @@ form h1 {
   position: relative;
   width: 100%;
   max-width: 400px;
-  margin-bottom: 0rem;
+  margin-bottom: 1rem;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -139,8 +139,5 @@ form h1 {
   form {
     width: 100%;
     padding: 1.5rem;
-  }
-
-  .error-message{
   }
 }
