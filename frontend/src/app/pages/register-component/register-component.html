@@ -4,35 +4,40 @@
     
   </div>
 
-  <form action="">
+  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
     <h1>Regístrate</h1>
 
     <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Nombre">
-      
+      <input type="text" class="custom-input" placeholder="Nombre" formControlName="name">
+      </div>
+
+    <div class="input-wrapper">
+      <input type="text" class="custom-input" placeholder="Apellido" formControlName="surname">
     </div>
 
     <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Apellido">
+      <input type="text" class="custom-input" placeholder="Telefono" formControlName="phone">
     </div>
 
     <div class="input-wrapper">
-      <input type="password" class="custom-input" placeholder="Telefono">
+      <input type="text" class="custom-input" placeholder="DNI" formControlName="dni">
     </div>
 
     <div class="input-wrapper">
-      <input type="password" class="custom-input" placeholder="DNI">
+      <input type="email" class="custom-input" placeholder="Email" formControlName="email">
     </div>
 
     <div class="input-wrapper">
-      <input type="email" class="custom-input" placeholder="Email">
-    </div>
+      <input type="text" class="custom-input" placeholder="Nombre de Usuario" formControlName="username">
+      </div>
 
     <div class="input-wrapper">
-      <input type="password" class="custom-input" placeholder="Contraseña">
+      <input type="password" class="custom-input" placeholder="Contraseña" formControlName="password">
     </div>
 
-    <button class="register-btn">
+     
+
+    <button class="register-btn" type="submit">
       Crear cuenta
     </button>
 
