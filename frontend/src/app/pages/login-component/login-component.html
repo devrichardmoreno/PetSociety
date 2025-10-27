@@ -1,0 +1,27 @@
+<section id="login-container-all">
+
+    <div id="logo-background">
+        <img src="/assets/images/logo.png" alt="">
+    </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <h1>Iniciar sesión</h1>
+
+        <div class="input-wrapper">
+            <input id="userName" type="text" class="custom-input" placeholder="NombreDeUsuario" formControlName="username">
+        </div>
+
+        <div class="input-wrapper">
+            <input id="password" type="password" class="custom-input" placeholder="Contrasenia" formControlName="password">
+        </div>
+
+        <p class="forgot-password">
+            <a href="">Olvide mi contraseña</a>
+        </p>
+
+        <button class="login-btn">Iniciar sesión</button>
+
+        
+    </form>
+
+</section>
