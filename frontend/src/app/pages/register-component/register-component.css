@@ -5,6 +5,10 @@
   background-color: #f8f9fa;
 }
 
+.error-msg{
+  color:red;
+}
+
 .logo-background {
   background-color: #45aedd;
   flex: 0 0 40%; 
