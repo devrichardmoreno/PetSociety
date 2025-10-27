@@ -1,49 +1,106 @@
 <section id="register-container-all">
-  <div class="logo-background">
-    <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
-    
-  </div>
-
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <h1>Regístrate</h1>
-
-    <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Nombre" formControlName="name">
-      </div>
-
-    <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Apellido" formControlName="surname">
+    <div class="logo-background">
+        <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
     </div>
 
-    <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Telefono" formControlName="phone">
-    </div>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+        <h1>Regístrate</h1>
 
-    <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="DNI" formControlName="dni">
-    </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" placeholder="Nombre" formControlName="name">
+        </div>
+        @if (registerForm.get('name')?.errors && registerForm.get('name')?.touched) {
+            <div class="error-message">
+                @if (registerForm.get('name')?.hasError('required')) {
+                    <p>El nombre es obligatorio.</p>
+                } @else if (registerForm.get('name')?.hasError('minlength') || registerForm.get('name')?.hasError('maxlength')) {
+                    <p>El nombre debe tener entre 2 y 50 caracteres.</p>
+                }
+            </div>
+        }
 
-    <div class="input-wrapper">
-      <input type="email" class="custom-input" placeholder="Email" formControlName="email">
-    </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" placeholder="Apellido" formControlName="surname">
+        </div>
+        @if (registerForm.get('surname')?.errors && registerForm.get('surname')?.touched) {
+            <div class="error-message">
+                @if (registerForm.get('surname')?.hasError('required')) {
+                    <p>El apellido es obligatorio.</p>
+                } @else if (registerForm.get('surname')?.hasError('minlength') || registerForm.get('surname')?.hasError('maxlength')) {
+                    <p>El apellido debe tener entre 2 y 50 caracteres.</p>
+                }
+            </div>
+        }
 
-    <div class="input-wrapper">
-      <input type="text" class="custom-input" placeholder="Nombre de Usuario" formControlName="username">
-      </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" placeholder="Teléfono" formControlName="phone">
+        </div>
+        @if (registerForm.get('phone')?.errors && registerForm.get('phone')?.touched) {
+            <div class="error-message">
+                @if (registerForm.get('phone')?.hasError('required')) {
+                    <p>El teléfono es obligatorio.</p>
+                } @else if (registerForm.get('phone')?.hasError('minlength') || registerForm.get('phone')?.hasError('maxlength')) {
+                    <p>Debe tener entre 9 y 20 dígitos.</p>
+                }
+            </div>
+        }
 
-    <div class="input-wrapper">
-      <input type="password" class="custom-input" placeholder="Contraseña" formControlName="password">
-    </div>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" placeholder="DNI" formControlName="dni">
+        </div>
+        @if (registerForm.get('dni')?.errors && registerForm.get('dni')?.touched) {
+            <div class="error-message">
+                @if (registerForm.get('dni')?.hasError('required')) {
+                    <p>El DNI es obligatorio.</p>
+                } @else if (registerForm.get('dni')?.hasError('minlength') || registerForm.get('dni')?.hasError('maxlength')) {
+                    <p>Debe tener entre 7 y 8 dígitos.</p>
+                }
+            </div>
+        }
 
-     
+        <div class="input-wrapper">
+            <input type="email" class="custom-input" placeholder="Email" formControlName="email">
+        </div>
+        @if (registerForm.get('email')?.errors && registerForm.get('email')?.touched) {
+            <div class="error-message">
+                @if (registerForm.get('email')?.hasError('required')) {
+                    <p>El email es obligatorio.</p>
+                } @else if (registerForm.get('email')?.hasError('email')) {
+                    <p>El formato del email es incorrecto.</p>
+                }
+            </div>
+        }
 
-    <button class="register-btn" type="submit">
-      Crear cuenta
-    </button>
+        <div class="input-wrapper">
+            <input type="text" class="custom-input" placeholder="Nombre de Usuario" formControlName="username">
+        </div>
+        @if (registerForm.get('username')?.errors && registerForm.get('username')?.touched) {
+            <div class="error-message">
+                @if (registerForm.get('username')?.hasError('required')) {
+                    <p>El nombre de usuario es obligatorio.</p>
+                }
+            </div>
+        }
 
-    <p class="login-link">
-      ¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a>
-    </p>
+        <div class="input-wrapper">
+            <input type="password" class="custom-input" placeholder="Contraseña" formControlName="password">
+        </div>
+        @if (registerForm.get('password')?.errors && registerForm.get('password')?.touched) {
+            <div class="error-message">
+                @if (registerForm.get('password')?.hasError('required')) {
+                    <p>La contraseña es obligatoria.</p>
+                } @else if (registerForm.get('password')?.hasError('minlength') || registerForm.get('password')?.hasError('maxlength')) {
+                    <p>Debe tener entre 2 y 50 caracteres.</p>
+                }
+            </div>
+        }
 
-  </form>
+        <button class="register-btn" type="submit" [disabled]="registerForm.invalid">
+            Crear cuenta
+        </button>
+
+        <p class="login-link">
+            ¿Ya tienes una cuenta? <a routerLink="/login">Inicia sesión</a>
+        </p>
+    </form>
 </section>
