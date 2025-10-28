@@ -38,8 +38,44 @@ export class LoginComponent implements OnInit {
 
       this.loginService.login(clientData).subscribe({
         next: (response) => {
+          const token = response.token;
           localStorage.setItem('token', response.token);
-          this.router.navigate(['']);
+
+          try{
+            const payloadBase64 = token.split('.')[1];
+            const payloadJson = atob(payloadBase64);
+            const payload = JSON.parse(payloadJson);
+
+
+            const rolesArray = payload.role;
+
+            console.log("Paylod del token: ", payload);
+            
+            if(rolesArray && Array.isArray(rolesArray) && rolesArray.length > 0){
+
+              const userRole = rolesArray[0].authority;
+
+              console.log("Rol: ", userRole)
+
+              localStorage.setItem('userRole', userRole)
+            }
+
+          } catch(e){
+            console.error("No se puedo decodigicar el token", e)
+          }
+
+          const role = localStorage.getItem('userRole')
+          switch(role){
+            case "ROLE_CLIENT":
+              this.router.navigate(['/home-client'])
+              break;
+            case "ROLE_ADMIN":
+              this.router.navigate(['/home-admin'])
+              break
+            case "ROLE_DOCTOR":
+              this.router.navigate(['/home-doctor'])
+              break
+          }
         },
         error: (e) => {alert(e)}
       })
