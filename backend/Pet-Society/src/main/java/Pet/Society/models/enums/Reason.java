@@ -1,7 +1,7 @@
 package Pet.Society.models.enums;
 
 public enum Reason {
-    CONTROL(15, "CONTROL"), EMERGENCY(15, "EMERGENCY"), VACCINATION(15, "EMERGENCY"), NUTRITION(15, "EMERGENCY");
+    CONTROL(15, "CONTROL"), EMERGENCY(15, "EMERGENCY"), VACCINATION(15, "VACCINATION"), NUTRITION(15, "NUTRITION");
 
     private final int duration;
     private final String reason;

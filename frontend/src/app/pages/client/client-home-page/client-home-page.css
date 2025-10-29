@@ -1,0 +1,314 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.client-home-container {
+  padding-top: 100px; /* Más espacio para el header fijo */
+  flex: 1;
+  padding: 2rem;
+  background-color: var(--light-bg);
+  display: flex;
+  flex-direction: column;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Mensaje de bienvenida */
+.welcome-section {
+  margin-bottom: 2rem;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.welcome-title {
+  color: var(--hospital-blue);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0;
+  display: block;
+}
+
+/* Tabs de navegación */
+.tabs-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.tabs-container {
+  display: flex;
+  gap: 0.5rem;
+  background-color: #e8e8e8;
+  border-radius: 8px;
+  padding: 0.25rem;
+}
+
+.tab-button {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  background-color: transparent;
+  color: var(--secondary-text);
+  font-weight: 600;
+  font-size: 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+  background-color: rgba(69, 174, 221, 0.1);
+}
+
+.tab-button.active {
+  background-color: var(--hospital-green);
+  color: white;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* Contenido principal */
+.content-section {
+  flex: 1;
+}
+
+/* Sección de Mascotas */
+.pets-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.pet-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.pet-info {
+  margin-bottom: 1rem;
+}
+
+.pet-name {
+  color: #333;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.pet-actions {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.appointment-details {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid var(--hospital-green);
+}
+
+.appointment-label {
+  color: var(--hospital-blue);
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+}
+
+.appointment-info {
+  color: #333;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.appointment-doctor {
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.appointment-motivo {
+  color: var(--hospital-blue);
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.appointment-actions {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(69, 174, 221, 0.2);
+}
+
+.note-section {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: rgba(131, 184, 71, 0.1);
+  border-radius: 8px;
+  border-left: 4px solid var(--hospital-green);
+}
+
+.note-text {
+  color: var(--hospital-blue);
+  font-size: 0.9rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.empty-message {
+  text-align: center;
+  color: var(--secondary-text);
+  font-size: 1.1rem;
+  padding: 3rem;
+}
+
+/* Sección de Datos Personales */
+.profile-section {
+  display: flex;
+  justify-content: center;
+}
+
+.profile-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.profile-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e8e8e8;
+}
+
+.profile-field:last-child {
+  border-bottom: none;
+}
+
+.field-label {
+  color: var(--hospital-blue);
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.field-value {
+  color: #333;
+  font-size: 1rem;
+}
+
+/* Botones */
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-action {
+  background: linear-gradient(135deg, var(--hospital-green), #6bb01f);
+  color: white;
+  box-shadow: 0 4px 15px rgba(131, 184, 71, 0.3);
+}
+
+.btn-action:hover {
+  background: linear-gradient(135deg, #6bb01f, var(--hospital-green));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(131, 184, 71, 0.4);
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, var(--hospital-blue), #2a8bc4);
+  color: white;
+  box-shadow: 0 4px 15px rgba(69, 174, 221, 0.3);
+}
+
+.btn-edit:hover {
+  background: linear-gradient(135deg, #2a8bc4, var(--hospital-blue));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(69, 174, 221, 0.4);
+}
+
+.btn-delete {
+  background-color: white;
+  color: var(--hospital-blue);
+  border: 2px solid var(--hospital-blue);
+  box-shadow: 0 2px 8px rgba(69, 174, 221, 0.2);
+}
+
+.btn-delete:hover {
+  background-color: rgba(69, 174, 221, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.3);
+}
+
+.btn-cancel {
+  background-color: white;
+  color: var(--hospital-blue);
+  border: 2px solid var(--hospital-blue);
+  box-shadow: 0 2px 8px rgba(69, 174, 221, 0.2);
+}
+
+.btn-cancel:hover {
+  background-color: rgba(69, 174, 221, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .client-home-container {
+    padding: 1rem;
+  }
+
+  .welcome-title {
+    font-size: 1.5rem;
+  }
+
+  .tabs-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-buttons {
+    width: 100%;
+  }
+
+  .action-buttons .btn {
+    flex: 1;
+  }
+
+  .pet-actions {
+    flex-direction: column;
+  }
+
+  .pet-actions .btn {
+    width: 100%;
+  }
+
+  .profile-field {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
