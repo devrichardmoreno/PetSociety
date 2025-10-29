@@ -1,0 +1,120 @@
+<app-header-client></app-header-client>
+<div class="client-home-container">
+  <!-- Mensaje de bienvenida -->
+  <div class="welcome-section">
+    <h1 class="welcome-title">Bienvenido {{ userName }}</h1>
+  </div>
+
+  <!-- Tabs de navegación -->
+  <div class="tabs-section">
+    <div class="tabs-container">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'mascotas'"
+        (click)="switchTab('mascotas')">
+        Mascotas
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'datos-personales'"
+        (click)="switchTab('datos-personales')">
+        Datos personales
+      </button>
+    </div>
+
+    <!-- Botones de acción según la pestaña activa -->
+    @if (activeTab === 'datos-personales') {
+      <div class="action-buttons">
+        <button class="btn btn-edit" (click)="editUserData()">Editar datos personales</button>
+        <button class="btn btn-delete" (click)="deleteUser()">Darse de baja</button>
+      </div>
+    }
+  </div>
+
+  <!-- Contenido según la pestaña activa -->
+  <div class="content-section">
+    @if (activeTab === 'mascotas') {
+      <!-- Sección de Mascotas -->
+      <div class="pets-section">
+        <!-- Nota informativa -->
+        <div class="note-section">
+          <p class="note-text">Nota: Solo 1 mascota puede tener una cita programada</p>
+        </div>
+
+        @if (pets.length === 0) {
+          <p class="empty-message">No tienes mascotas registradas</p>
+        } @else {
+          @for (pet of pets; track pet.id) {
+            <div class="pet-card">
+              <div class="pet-info">
+                <h3 class="pet-name">- {{ pet.nombre }}, Edad: {{ pet.edad }} años</h3>
+              </div>
+
+              <div class="pet-actions">
+                @if (!hasScheduledAppointment) {
+                  <button class="btn btn-action" (click)="scheduleAppointment(pet.id)">
+                    Agregar cita
+                  </button>
+                }
+                <button class="btn btn-edit" (click)="editPet(pet.id)">
+                  Editar datos mascota
+                </button>
+                <button class="btn btn-delete" (click)="deletePet(pet.id)">
+                  Dar de baja mascota
+                </button>
+              </div>
+
+              @if (pet.citaProgramada) {
+                <div class="appointment-details">
+                  <p class="appointment-label">Próxima cita:</p>
+                  <p class="appointment-info">
+                    {{ pet.citaProgramada.fecha }} {{ pet.citaProgramada.hora }}
+                  </p>
+                  @if (pet.citaProgramada.doctor) {
+                    <p class="appointment-doctor">Dr. {{ pet.citaProgramada.doctor }}</p>
+                  }
+                  @if (pet.citaProgramada.motivo) {
+                    <p class="appointment-motivo">Motivo: {{ pet.citaProgramada.motivo }}</p>
+                  }
+                  <div class="appointment-actions">
+                    <button class="btn btn-cancel" (click)="cancelAppointment(pet.id)">
+                      Cancelar cita
+                    </button>
+                  </div>
+                </div>
+              }
+            </div>
+          }
+        }
+      </div>
+    }
+
+    @if (activeTab === 'datos-personales') {
+      <!-- Sección de Datos Personales -->
+      <div class="profile-section">
+        <div class="profile-card">
+          <div class="profile-field">
+            <span class="field-label">Nombre:</span>
+            <span class="field-value">{{ userData.nombre }}</span>
+          </div>
+          <div class="profile-field">
+            <span class="field-label">Apellido:</span>
+            <span class="field-value">{{ userData.apellido }}</span>
+          </div>
+          <div class="profile-field">
+            <span class="field-label">DNI:</span>
+            <span class="field-value">{{ userData.dni }}</span>
+          </div>
+          <div class="profile-field">
+            <span class="field-label">Teléfono:</span>
+            <span class="field-value">{{ userData.telefono }}</span>
+          </div>
+          <div class="profile-field">
+            <span class="field-label">Email:</span>
+            <span class="field-value">{{ userData.email }}</span>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>
