@@ -4,13 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.time.ZonedDateTime;
 
 @RestControllerAdvice
 public class GlobalControllerException {
@@ -90,6 +89,32 @@ public class GlobalControllerException {
     @ExceptionHandler(AppointmentWithoutPetException.class)
     public ProblemDetail HandlerAppointmentWithoutPetException(AppointmentWithoutPetException ex, HttpServletRequest request) {
         return createProblemDetail(HttpStatus.CONFLICT, "Appointment Without Pet", "You can't make a diagnoses without a pet in the appointment", request);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ProblemDetail handlerDataIntegrityViolationException(DataIntegrityViolationException ex, HttpServletRequest request) {
+        String message = ex.getMessage();
+        String detail = "Duplicate entry detected. ";
+        
+        // Verificar si es por username, email o DNI duplicado
+        if (message != null) {
+            if (message.contains("username") || message.contains("UK_")) {
+                detail += "The username already exists.";
+            } else if (message.contains("email")) {
+                detail += "The email already exists.";
+            } else if (message.contains("dni")) {
+                detail += "The DNI already exists.";
+            } else {
+                detail += "This information is already registered in the system.";
+            }
+        }
+        
+        return createProblemDetail(HttpStatus.CONFLICT, "Data Integrity Violation", detail, request);
+    }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ProblemDetail handlerBadCredentialsException(BadCredentialsException ex, HttpServletRequest request) {
+        return createProblemDetail(HttpStatus.UNAUTHORIZED, "Authentication Failed", "Invalid username or password", request);
     }
 
 

@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../services/login-service';
+import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
@@ -16,6 +17,7 @@ export class LoginComponent implements OnInit {
 
     constructor(
       private loginService : LoginService,
+      private authService : AuthService,
       private router : Router,
       private fb : FormBuilder,
       private activatedRoute : ActivatedRoute
@@ -32,52 +34,48 @@ export class LoginComponent implements OnInit {
 
       if(this.loginForm.invalid){
         alert("Datos faltantes")
+        return;
       }
       
       const clientData = this.loginForm.value;
 
       this.loginService.login(clientData).subscribe({
         next: (response) => {
-          const token = response.token;
-          localStorage.setItem('token', response.token);
+          // Guardar token y userId usando el servicio de autenticación
+          // El servicio también decodifica el token y guarda el rol automáticamente
+          this.authService.saveAuthData(response.token, response.id);
 
-          try{
-            const payloadBase64 = token.split('.')[1];
-            const payloadJson = atob(payloadBase64);
-            const payload = JSON.parse(payloadJson);
+          // Obtener el rol guardado por el servicio
+          const role = this.authService.getUserRole();
 
+          // Verificar si hay una URL de retorno (cuando el guard redirige al login)
+          const returnUrl = this.activatedRoute.snapshot.queryParams['returnUrl'] || null;
 
-            const rolesArray = payload.role;
-
-            console.log("Paylod del token: ", payload);
-            
-            if(rolesArray && Array.isArray(rolesArray) && rolesArray.length > 0){
-
-              const userRole = rolesArray[0].authority;
-
-              console.log("Rol: ", userRole)
-
-              localStorage.setItem('userRole', userRole)
+          // Si hay returnUrl, redirigir ahí; sino, navegar según el rol
+          if (returnUrl) {
+            this.router.navigate([returnUrl]);
+          } else {
+            // Navegar según el rol
+            switch(role){
+              case "ROLE_CLIENT":
+                this.router.navigate(['/client/home']);
+                break;
+              case "ROLE_ADMIN":
+                this.router.navigate(['/admin/home']);
+                break;
+              case "ROLE_DOCTOR":
+                this.router.navigate(['/doctor/home']);
+                break;
+              default:
+                console.error('Rol no reconocido:', role);
+                alert('Error: Rol de usuario no válido');
             }
-
-          } catch(e){
-            console.error("No se puedo decodigicar el token", e)
-          }
-
-          const role = localStorage.getItem('userRole')
-          switch(role){
-            case "ROLE_CLIENT":
-              this.router.navigate(['/home-client'])
-              break;
-            case "ROLE_ADMIN":
-              this.router.navigate(['/home-admin'])
-              break
-            case "ROLE_DOCTOR":
-              this.router.navigate(['/home-doctor'])
-              break
           }
         },
-        error: (e) => {alert(e)}
+        error: (e) => {
+          console.error('Error en el login:', e);
+          alert('Error al iniciar sesión. Verifica tus credenciales.');
+        }
       })
     }
 }

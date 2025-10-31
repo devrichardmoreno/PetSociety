@@ -15,9 +15,4 @@ export class RegisterService {
   registerClient(client : RegisterDTO){
     return this.http.post<String>(this.API, client);
   }
-
-
-
-
-  
 }

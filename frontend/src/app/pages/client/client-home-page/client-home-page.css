@@ -5,7 +5,7 @@
 }
 
 .client-home-container {
-  padding-top: 100px; /* Más espacio para el header fijo */
+  padding-top: 100px; /* Espacio para el header fijo */
   flex: 1;
   padding: 2rem;
   background-color: var(--light-bg);
@@ -14,13 +14,17 @@
   max-width: 1400px;
   margin: 0 auto;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 /* Mensaje de bienvenida */
 .welcome-section {
   margin-bottom: 2rem;
   margin-top: 0;
-  padding-top: 0;
+  padding-top: 2rem;
+  position: relative;
+  z-index: 2;
 }
 
 .welcome-title {
