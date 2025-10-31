@@ -1,5 +1,12 @@
-@if (showHeader()) {
-    <app-header ></app-header>
-}
-<router-outlet></router-outlet>
-<app-footer></app-footer>
+<div class="app-container">
+  @switch (headerType()) {
+      @case ('default') { <app-header /> }
+      @case ('admin') { <app-header-admin /> }
+      <!--@case ('client') { <app-header-client /> }-->
+      <!-- @case ('doctor') { <app-header-doctor /> }-->
+  }
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+  <app-footer></app-footer>
+</div>

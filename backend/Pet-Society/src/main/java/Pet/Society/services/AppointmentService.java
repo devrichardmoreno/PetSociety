@@ -12,6 +12,7 @@ import Pet.Society.models.entities.ClientEntity;
 import Pet.Society.models.entities.DoctorEntity;
 import Pet.Society.models.entities.PetEntity;
 import Pet.Society.models.enums.Reason;
+import Pet.Society.models.dto.appointment.AppointmentDTORequest;
 import Pet.Society.models.enums.Status;
 import Pet.Society.models.exceptions.AppointmentDoesntExistException;
 import Pet.Society.models.exceptions.DuplicatedAppointmentException;
@@ -33,6 +34,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+
 
 @Service
 public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEntity> {
@@ -59,7 +61,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     //Si existe una cita que se solape con otra; Excepción
 
     @Transactional(rollbackOn = DuplicatedAppointmentException.class)
-    public AppointmentDTO save (AppointmentDTO appointmentDTO) {
+    public AppointmentDTO save (AppointmentDTORequest appointmentDTO) {
 
         DoctorEntity findDoctor = this.doctorService.findById1(appointmentDTO.getDoctor());
 
@@ -256,6 +258,45 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .doctorName(appointmentEntity.getDoctor().getName()+  " " + appointmentEntity.getDoctor().getSurname())
                         .build()).collect(Collectors.toList());
     }
+
+    @Transactional
+    public void createMultipleAppointments(Long doctorId, LocalDateTime startDate, LocalDateTime endDate, Reason reason) {
+        if (startDate == null || endDate == null || reason == null) {
+            throw new IllegalArgumentException("Start date, end date and reason must be provided");
+        }
+        if (startDate.isAfter(endDate)) {
+            throw new IllegalArgumentException("Start date must be before end date");
+        }
+
+        DoctorEntity doctorEntity = this.doctorService.findById1(doctorId);
+
+        Duration duration = Duration.between(startDate, endDate);
+        long minutes = duration.toMinutes();
+        long blocksDuration = reason.getDuration();
+
+        if (blocksDuration <= 0) {
+            throw new IllegalArgumentException("Block duration must be positive");
+        }
+
+        for (long i = 0; i + blocksDuration <= minutes; i += blocksDuration) {
+            LocalDateTime blockStart = startDate.plusMinutes(i);
+            LocalDateTime blockEnd = blockStart.plusMinutes(blocksDuration);
+
+            AppointmentEntity appointment = AppointmentEntity.builder()
+                    .startDate(blockStart)
+                    .endDate(blockEnd)
+                    .reason(reason)
+                    .doctor(doctorEntity)
+                    .status(Status.AVAILABLE)
+                    .approved(false)
+                    .build();
+
+            if (!isOverlapping(appointment)) {
+                this.appointmentRepository.save(appointment);
+            }
+        }
+    }
+
     @Transactional
     public void uploadAvailibility(Long id, DoctorAvailabilityDTO availabilityDTO){
 
