@@ -73,7 +73,7 @@ export class LoginComponent implements OnInit {
               this.router.navigate(['/home-admin'])
               break
             case "ROLE_DOCTOR":
-              this.router.navigate(['/home-doctor'])
+              this.router.navigate(['/doctor/home'])
               break
           }
         },
