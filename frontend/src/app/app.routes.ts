@@ -4,18 +4,21 @@ import { LandingComponent } from './pages/landing-component/landing-component';
 import { LoginComponent } from './pages/login-component/login-component';
 import { ClientHomePage } from './pages/client/client-home-page/client-home-page';
 import { authGuard } from './guards/auth.guard';
+import { AdminHome } from './pages/admin/admin-home/admin-home';
+import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
 
 export const routes: Routes = [
+
     // Rutas públicas (sin guard)
-    { path: '', component: LandingComponent, data: { showHeader: true } },
-    { path: 'login', component: LoginComponent, data: { showHeader: false } },
-    { path: 'register', component: RegisterComponent, data: { showHeader: false } },
+    { path: '', component: LandingComponent, data: { headerType: 'default' } },
+    { path: 'login', component: LoginComponent, data: { headerType: 'none' } },
+    { path: 'register', component: RegisterComponent, data: { headerType: 'none' } },
     
     // Rutas del CLIENT (protegidas con AuthGuard)
     { 
       path: 'client/home', 
       component: ClientHomePage, 
-      data: { showHeader: false },
+      data: { headerType: 'client' },
       canActivate: [authGuard]
     },
     // { 
@@ -36,11 +39,18 @@ export const routes: Routes = [
     //   canActivate: [authGuard]
     // },
     
-    // Rutas del ADMIN (cuando las crees)
-    // { 
-    //   path: 'admin/home', 
-    //   component: AdminHomePage,
-    //   canActivate: [authGuard]
-    // },
-  ];
 
+    // Rutas del ADMIN (cuando las crees)
+    {
+      path: 'admin/home', 
+      component:AdminHome, 
+      data: { headerType: 'admin' },
+      canActivate: [authGuard]
+    },
+    {
+      path: 'appointment/create',
+      component:CreateAppointment,
+      data: { headerType: 'none' },
+      canActivate: [authGuard]
+    },
+  ];

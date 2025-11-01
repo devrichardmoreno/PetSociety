@@ -1,5 +1,5 @@
 package Pet.Society.controllers;
-
+import Pet.Society.models.dto.appointment.AppointmentDTORequest;
 import Pet.Society.config.OwnershipValidator;
 import Pet.Society.models.dto.appointment.AppointmentDTO;
 import Pet.Society.models.dto.appointment.AppointmentResponseDTO;
@@ -64,7 +64,7 @@ public class AppointmentController {
 
     @PostMapping("/create")
 
-    public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentDTO appointment) {
+    public ResponseEntity<AppointmentDTO> createAppointment(@RequestBody AppointmentDTORequest appointment) {
         return ResponseEntity.ok(this.appointmentService.save(appointment));
     }
 
@@ -163,6 +163,13 @@ public class AppointmentController {
             this.appointmentService.uploadAvailibility(doctorId,availabilityDTO);
             return ResponseEntity.ok("The hours was uploaded successfully");
     }
+
+    @PostMapping("/create-multiple")
+    public ResponseEntity<String> createMultipleAppointments(@RequestBody Pet.Society.models.dto.appointment.MultipleAppointmentsRequest request) {
+        appointmentService.createMultipleAppointments(request.getDoctorId(), request.getStartDate(), request.getEndDate(), request.getReason());
+        return ResponseEntity.ok("Multiple appointments created successfully.");
+    }
+
 
     @Operation(
             summary = "Get appointments from a specific pet",
