@@ -1,12 +1,38 @@
+<app-header-doctor role="banner"></app-header-doctor>
+
 <section id="home-doctor-container-all">
 
-    <div id="logo-background-doctor">
-        <img src="/assets/images/logo.png" alt="">
-    </div>
+    <main id="main-content">
+        <h1>Bienvenido, Doctor {{doctorName}}</h1>
 
-    <div id="welcome-message-doctor">
-        <h1>Bienvenido, Doctor</h1>
-        <p>Seleccione una opción del menú para comenzar.</p>
-    </div>
+        <div class="tabs">
+            <nav>
+                <a href="">Perfil</a>
+                <a href="">Próximas citas</a>
+            </nav>
+        </div>
+        <div>
+            <!-- @for (item of appointmentArray; track $index) { -->
+            <div class="card">
+                <h3>Cliente :</h3>
+                <p>Mascota :</p>
+                <div class="card-actions">
+                    <button class="btn btn-history">
+                        Ver historia clínica
+                    </button>
+                    <button class="btn btn-create-diagnose">
+                        Crear diagnostico
+                    </button>
+                </div>
+            </div>
+        <!-- } -->
+        </div>
+    </main>
 
+    <aside id="sidebar">
+        <div class="sidebar-title">Últimos diagnósticos</div>
+        <div class="diagnostics-box">
+            <!-- ciclo @for con ultimos diagnosticos -->
+        </div>
+    </aside>
 </section>

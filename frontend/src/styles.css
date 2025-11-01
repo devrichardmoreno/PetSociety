@@ -27,6 +27,9 @@ html {
   --hospital-blue-rgb: 69, 174, 221;
   --hospital-green-rgb: 131, 184, 71;
   --vibrant-orange-rgb: 243, 174, 81;
+
+  /* Tamaño del header */
+  --header-height: 60px;
 }
 
 /* Reset básico */
@@ -41,6 +44,7 @@ body {
   background-color: var(--light-bg);
   color: #333;
   line-height: 1.6;
+  padding-top: var(--header-height);
 }
 
 /* Estilos para imágenes */

@@ -1,9 +1,8 @@
 package Pet.Society.controllers;
 
-import Pet.Society.config.OwnershipValidator;
 import Pet.Society.models.dto.appointment.AppointmentDTO;
 import Pet.Society.models.dto.appointment.AppointmentResponseDTO;
-import Pet.Society.models.dto.appointment.AppointmentUpdateDTO;
+import Pet.Society.models.dto.appointment.AppointmentScheduleDTO;
 import Pet.Society.models.dto.doctor.DoctorAvailabilityDTO;
 import Pet.Society.models.dto.pet.AssingmentPetDTO;
 import Pet.Society.models.entities.AppointmentEntity;
@@ -16,7 +15,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import Pet.Society.config.OwnershipValidator;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -215,8 +213,8 @@ public class AppointmentController {
             }
     )
     @GetMapping("/doctor/{doctorId}")
-    public ResponseEntity<List<AppointmentResponseDTO>> availableAppointmentsDoctor(@PathVariable Long doctorId) {
-        return ResponseEntity.ok(this.appointmentService.getAvailableAppointmentsDoctorForToday(doctorId));
+    public ResponseEntity<List<AppointmentScheduleDTO>> scheduleAppointmentsDoctor(@PathVariable Long doctorId) {
+        return ResponseEntity.ok(this.appointmentService.getScheduleAppointmentsDoctorForToday(doctorId));
     }
 
     @GetMapping("/available")
