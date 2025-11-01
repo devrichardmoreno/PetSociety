@@ -8,6 +8,20 @@ import { AdminHome } from './pages/admin/admin-home/admin-home';
 import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
 
 export const routes: Routes = [
+    // Rutas del ADMIN (cuando las crees)
+    {
+      path: 'admin/home', 
+      component:AdminHome, 
+      data: { headerType: 'admin' },
+      canActivate: [authGuard]
+    },
+    {
+      path: 'appointment/create',
+      component:CreateAppointment,
+      data: { headerType: 'none' },
+      canActivate: [authGuard]
+    },
+
 
     // Rutas públicas (sin guard)
     { path: '', component: LandingComponent, data: { headerType: 'default' } },
@@ -40,17 +54,5 @@ export const routes: Routes = [
     // },
     
 
-    // Rutas del ADMIN (cuando las crees)
-    {
-      path: 'admin/home', 
-      component:AdminHome, 
-      data: { headerType: 'admin' },
-      canActivate: [authGuard]
-    },
-    {
-      path: 'appointment/create',
-      component:CreateAppointment,
-      data: { headerType: 'none' },
-      canActivate: [authGuard]
-    },
+
   ];
