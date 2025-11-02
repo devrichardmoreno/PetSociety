@@ -18,6 +18,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 @Tag(
         name = "User",
@@ -102,7 +105,4 @@ public class UserController {
         List<UserEntity> admins = userService.findByRole();
         return new ResponseEntity<>(admins, HttpStatus.OK);
     }
-
-
-
 }

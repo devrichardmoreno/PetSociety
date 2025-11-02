@@ -1,9 +1,12 @@
-<div class="app-wrapper">
-  @if (showHeader()) {
-    <app-header></app-header>
+<div class="app-container">
+  @switch (headerType()) {
+      @case ('default') { <app-header /> }
+      @case ('admin') { <app-header-admin /> }
+      <!--@case ('client') { <app-header-client /> }-->
+      <!-- @case ('doctor') { <app-header-doctor /> }-->
   }
-  <div class="main-content">
+  <main class="main-content">
     <router-outlet></router-outlet>
-  </div>
+  </main>
   <app-footer></app-footer>
 </div>

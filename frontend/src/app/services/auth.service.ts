@@ -55,6 +55,24 @@ export class AuthService {
   }
 
   /**
+   * Obtiene el username del token JWT
+   */
+  getUsername(): string | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const payload = this.decodeToken(token);
+      return payload?.sub || null;
+    } catch (error) {
+      console.error('Error al extraer username del token:', error);
+      return null;
+    }
+  }
+
+  /**
    * Decodifica el token JWT y extrae el rol, guardándolo en localStorage
    * @param token - El token JWT completo
    */

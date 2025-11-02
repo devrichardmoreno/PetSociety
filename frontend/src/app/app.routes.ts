@@ -4,19 +4,37 @@ import { LandingComponent } from './pages/landing-component/landing-component';
 import { LoginComponent } from './pages/login-component/login-component';
 import { ClientHomePage } from './pages/client/client-home-page/client-home-page';
 import { authGuard } from './guards/auth.guard';
+import { roleGuard } from './guards/role.guard';
+import { AdminHome } from './pages/admin/admin-home/admin-home';
+import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
 
 export const routes: Routes = [
+    // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
+    {
+      path: 'admin/home', 
+      component:AdminHome, 
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'appointment/create',
+      component:CreateAppointment,
+      data: { headerType: 'none' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+
+
     // Rutas públicas (sin guard)
-    { path: '', component: LandingComponent, data: { showHeader: true } },
-    { path: 'login', component: LoginComponent, data: { showHeader: false } },
-    { path: 'register', component: RegisterComponent, data: { showHeader: false } },
+    { path: '', component: LandingComponent, data: { headerType: 'default' } },
+    { path: 'login', component: LoginComponent, data: { headerType: 'none' } },
+    { path: 'register', component: RegisterComponent, data: { headerType: 'none' } },
     
-    // Rutas del CLIENT (protegidas con AuthGuard)
+    // Rutas del CLIENT (protegidas con AuthGuard + RoleGuard)
     { 
       path: 'client/home', 
       component: ClientHomePage, 
-      data: { showHeader: false },
-      canActivate: [authGuard]
+      data: { headerType: 'client' },
+      canActivate: [authGuard, roleGuard(['ROLE_CLIENT'])]
     },
     // { 
     //   path: 'client/citas', 
@@ -36,11 +54,6 @@ export const routes: Routes = [
     //   canActivate: [authGuard]
     // },
     
-    // Rutas del ADMIN (cuando las crees)
-    // { 
-    //   path: 'admin/home', 
-    //   component: AdminHomePage,
-    //   canActivate: [authGuard]
-    // },
-  ];
 
+
+  ];

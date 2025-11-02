@@ -1,0 +1,77 @@
+<section id="appointment-container-all"> 
+  <div class="logo-background">
+      <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
+  </div>
+
+  <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+      <h1>Agendar Nueva Cita</h1>
+
+      <div class="input-wrapper">
+          <select id="doctor" class="custom-input" formControlName="doctor">
+              <option [ngValue]="null" disabled>Elige un Doctor</option>
+              <option *ngFor="let doctor of doctors" [ngValue]="doctor.id">
+                  {{ doctor.name }}
+              </option>
+          </select>
+      </div>
+      @if (appointmentForm.get('doctor')?.errors && appointmentForm.get('doctor')?.touched) {
+          <div class="error-message">
+              @if (appointmentForm.get('doctor')?.hasError('required')) {
+                  <p class="error-msg">El doctor es obligatorio.</p>
+              }
+          </div>
+      }
+
+      <div class="input-wrapper">
+          <select id="reason" class="custom-input" formControlName="reason">
+              <option [ngValue]="null" disabled>Elige una Razón</option>
+              <option *ngFor="let reason of reasonOptions" [ngValue]="reason.value">
+                  {{ reason.label }}
+              </option>
+          </select>
+      </div>
+      @if (appointmentForm.get('reason')?.errors && appointmentForm.get('reason')?.touched) {
+          <div class="error-message">
+              @if (appointmentForm.get('reason')?.hasError('required')) {
+                  <p class="error-msg">La razón es obligatoria.</p>
+              }
+          </div>
+      }
+
+      <div class="input-wrapper">
+          <input type="datetime-local" id="startTime" class="custom-input" formControlName="startTime" placeholder="Hora de Inicio">
+      </div>
+      @if (appointmentForm.get('startTime')?.touched) {
+          <div class="error-message">
+              @if (appointmentForm.get('startTime')?.hasError('required')) {
+                  <p class="error-msg">La hora de inicio es obligatoria.</p>
+              }
+              @if (appointmentForm.get('startTime')?.hasError('pastDate')) {
+                  <p class="error-msg">La fecha u hora ingresada son incorrectas</p>
+              }
+          </div>
+      }
+
+      <div class="input-wrapper">
+          <input type="datetime-local" id="endTime" class="custom-input" formControlName="endTime" placeholder="Hora de Fin">
+      </div>
+      @if (appointmentForm.get('endTime')?.touched) {
+          <div class="error-message">
+              @if (appointmentForm.get('endTime')?.hasError('required')) {
+                  <p class="error-msg">La hora de fin es obligatoria.</p>
+              }
+          </div>
+      }
+
+      @if (appointmentForm.errors?.['endBeforeStart']) {
+          <div class="error-message">
+              <p class="error-msg">La hora de fin debe ser posterior a la hora de inicio.</p>
+          </div>
+      }
+
+      <button class="register-btn" type="submit" [disabled]="appointmentForm.invalid">
+          Agendar Cita
+      </button>
+
+  </form>
+</section>
