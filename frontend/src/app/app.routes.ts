@@ -8,6 +8,7 @@ import { roleGuard } from './guards/role.guard';
 import { AdminHome } from './pages/admin/admin-home/admin-home';
 import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
 import { AppointmentListComponent } from './pages/admin/admin-home/appointment-list/appointment-list';
+import { DoctorHomePage } from './pages/doctor/doctor-home-page/doctor-home-page';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -44,6 +45,15 @@ export const routes: Routes = [
       data: { headerType: 'client' },
       canActivate: [authGuard, roleGuard(['ROLE_CLIENT'])]
     },
+
+    // Rutas del Doctor
+
+    {
+      path: 'doctor/home',
+      component: DoctorHomePage,
+      data: { headerType: 'doctor' },
+      canActivate: [authGuard, roleGuard(['ROLE_DOCTOR'])]
+    }
     // { 
     //   path: 'client/citas', 
     //   component: CitasComponent,

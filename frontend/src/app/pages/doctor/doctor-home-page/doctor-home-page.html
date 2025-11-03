@@ -1,57 +1,65 @@
 <app-header-doctor role="banner"></app-header-doctor>
 
-<section id="home-doctor-container-all">
+<section id="home-doctor-container-all" class="page-doctor">
+  <main id="main-content" aria-labelledby="main-title">
+    <h1 id="main-title">Bienvenido, Doctor {{ doctor?.name }}</h1>
 
-    <main id="main-content">
-        <h1>Bienvenido, Doctor {{doctor?.name}}</h1>
+    <div class="tabs" role="tablist">
+      <nav>
+        <a role="tab" href="">Perfil</a>
+        <a role="tab" href="">Próximas citas</a>
+      </nav>
+    </div>
 
-        <div class="tabs">
-            <nav>
-                <a href="">Perfil</a>
-                <a href="">Próximas citas</a>
-            </nav>
-        </div>
-        <div>
-            @for (appointment of appointmentArray; track $index) {
-            <div class="card">
-                <h3>Cliente : {{appointment.clientName}}</h3>
-                <p>Mascota :{{appointment.petName}}</p>
-                <div class="card-actions">
-                    <button class="btn btn-history">
-                        Ver historia clínica
-                    </button>
-                    <button class="btn btn-create-diagnose">
-                        Crear diagnostico
-                    </button>
-                </div>
-            </div>
+    <section aria-labelledby="appointments-title">
+      <h2 id="appointments-title" class="visually-hidden">Próximas citas</h2>
+
+      <!-- Angular 20 control-flow: @for -->
+      @for (appointment of appointmentArray; track $index) {
+        <article class="card" role="article" aria-label="Cita {{ $index + 1 }}">
+          <div>
+            <h3>Fecha : {{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</h3>
+
+            @if(appointment.clientName === "Sin cliente asignado" && appointment.petName === "Sin mascota asignada") {
+              <p class="no-appointments">Esta cita no tiene cliente ni mascota asignados.</p>
+            } @else {
+              <h3>Cliente : {{ appointment.clientName }}</h3>
+              <p>Mascota : {{ appointment.petName }}</p>
+              <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
+            <button class="btn btn-history" type="button">Ver historia clínica</button>
+            <button class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
+          </div>
             }
-        </div>
-    </main>
+          </div>
 
-    <aside id="sidebar">
-        <div class="sidebar-title">Últimos diagnósticos</div>
-        <div class="diagnostics-box">
-            <ul class="diagnostics-list" role="list" aria-label="Últimos diagnósticos">
-            @for (d of lastestDiagnoses; track $index) { 
-                        <div class="diagnose-row">
-                            <div class="diagnose-main">
-                                <div class="diagnose-pet"><strong>{{ d.petName || '—' }}</strong></div>
-                                <div class="diagnose-summary">{{ d.diagnose || d.reason || 'Sin resumen' }}</div>
-                            </div>
-                            <div class="diagnose-meta">
-                                <div class="diagnose-doctor">{{ d.doctorName || '—' }}</div>
-                                <div class="diagnose-date">{{ d.date | date:'short' }}</div>
-                            </div>
-                        </div>
-            
-                
-            }
-            </ul>
+          
+        </article>
+      }
+    </section>
+  </main>
 
-            <ng-template #noDiagnostics>
-                <div class="diagnostics-empty">No hay diagnósticos recientes.</div>
-            </ng-template>
-        </div>
-    </aside>
+  <aside id="sidebar" role="complementary" aria-labelledby="sidebar-title">
+    <h2 id="sidebar-title" class="sidebar-title">Últimos diagnósticos</h2>
+
+    <div class="diagnostics-box" aria-live="polite">
+      @if (lastestDiagnoses.length > 0) {
+        <ul class="diagnostics-list" role="list">
+          @for (d of lastestDiagnoses; track $index) {
+            <li class="diagnose-item" role="listitem" aria-label="Diagnóstico {{ $index + 1 }}">
+              <div class="diagnose-main">
+                <div class="diagnose-pet">{{ d.petName || '—' }}</div>
+                <div class="diagnose-summary">{{ d.diagnose || d.reason || 'Sin resumen' }}</div>
+              </div>
+              <div class="diagnose-meta">
+                <div class="diagnose-doctor">{{ d.doctorName || '—' }}</div>
+                <div class="diagnose-date">{{ d.date | date:'dd/MM/yyyy HH:mm' }}</div>
+              </div>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="diagnostics-empty">No hay diagnósticos recientes.</div>
+      }
+    </div>
+  </aside>
 </section>

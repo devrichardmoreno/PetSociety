@@ -65,8 +65,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE,"/appointment/delete/**").hasRole("CLIENT")
                         .requestMatchers(HttpMethod.PATCH,"/appointment/**").hasRole("ADMIN")
                         //ACCESS TO DOCTOR
-                        .requestMatchers("/doctor/**").hasRole("ADMIN")
                         .requestMatchers("/doctor/find/**").hasAnyRole("ADMIN", "DOCTOR")
+                        .requestMatchers("/doctor/**").hasRole("ADMIN")
                         // ACCESS TO DIAGNOSES
                         .requestMatchers("/diagnoses/create").hasRole("DOCTOR")
                         .requestMatchers("/diagnoses/getByPetId/**").hasAnyRole("CLIENT","ADMIN")

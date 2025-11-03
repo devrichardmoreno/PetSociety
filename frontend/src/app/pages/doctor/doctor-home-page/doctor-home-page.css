@@ -1,20 +1,21 @@
 :root{
     /* Paleta: Colores primarios / acentos / neutros / semánticos */
-    --primary: #45aedd;        /* Azul Celeste */
-    --green-apple: #83b847;   /* Verde Manzana */
-    --cta-vibrant: #f3ae51;   /* Naranja Vibrante (CTA principal) */
-    --cta: #f1ae53;           /* Naranja (CTA secundario) */
+    --primary: #45aedd;
+    --green-apple: #83b847;
+    --cta-vibrant: #f3ae51;
+    --cta: #f1ae53;
 
-    --bg: #f9fbfd;            /* Fondo Claro */
+    --bg: #f9fbfd;
     --card-bg: #ffffff;
     --border: #e0e0e0;
     --text-muted: #7F8C8D;
+    --muted-bg: rgba(0,0,0,0.03);
 
     --success: #2ECC71;
     --error: #E74C3C;
     --warning: #F1C40F;
 
-    --header-height: 604px; /* ajustar según el header real */
+    --header-height: 70px;
 }
 
 *{
@@ -23,18 +24,20 @@
 
 /* Contenedor principal */
 #home-doctor-container-all{
+    padding-top: var(--header-height); /* Espacio para el header fijo */
     display: flex;
-    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 30px;
     max-width: 1200px;
     margin: 20px auto;
-    padding: 0 20px;
-    gap: 30px;
+    padding-left: 16px;
+    padding-right: 16px;
 }
 
 /* Tabs */
 .tabs {
     width: 100%;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid var(--border);
     margin-bottom: 20px;
 }
 
@@ -47,121 +50,161 @@
 .tabs a {
     text-decoration: none;
     color: var(--text-muted);
-    padding: 10px 20px;
-    margin-right: 10px;
-    font-weight: 500;
-    border-bottom: 3px solid transparent;
-    border-radius: 4px 4px 0 0;
+    padding: 10px 14px;
+    font-weight: 600;
+    border-radius: 6px 6px 0 0;
+    transition: color .12s ease, background-color .12s ease;
 }
 
 .tabs a:hover,
 .tabs a:focus {
     color: var(--primary);
+    background-color: var(--muted-bg);
     outline: none;
 }
 
 .tabs a.active {
     color: var(--primary);
-    border-bottom-color: var(--primary);
+    border-bottom: 3px solid var(--primary);
 }
 
-/* Main / Sidebar flex */
-#main-content {
-    flex: 1 1 60%;
-    min-width: 280px;
+/* Scoped styles para DoctorHomePage: evita pisar variables globales */
+.page-doctor {
+  /* variables locales (no tocan :root global) */
+  --dh-primary: #45aedd;
+  --dh-cta-vibrant: #f3ae51;
+  --dh-border: #e0e0e0;
+  --dh-text-muted: #7F8C8D;
+  --dh-card-bg: #fff;
+  --dh-header-offset: var(--header-height, 60px); /* usa global si existe */
+  display: block;
+  box-sizing: border-box;
 }
 
-#sidebar {
-    flex: 0 0 320px; /* ancho fijo razonable para sidebar */
-    position: relative;
+/* Contenedor principal (scoped) */
+.page-doctor #home-doctor-container-all {
+  padding-top: var(--dh-header-offset);
+  display: flex;
+  gap: 24px;
+  max-width: 1200px;
+  margin: 20px auto;
+  padding-left: 16px;
+  padding-right: 16px;
+  align-items: flex-start;
 }
 
-/* Cards */
-.card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
+/* Tabs (scoped) */
+.page-doctor .tabs {
+  width: 100%;
+  border-bottom: 1px solid var(--dh-border);
+  margin-bottom: 20px;
 }
 
-.card h3 {
-    margin-top: 0;
-    font-size: 1.25rem;
+.page-doctor .tabs nav {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
 }
 
-.card p {
-    margin-top: 0;
-    color: var(--muted);
+.page-doctor .tabs a {
+  text-decoration: none;
+  color: var(--dh-text-muted);
+  padding: 10px 14px;
+  font-weight: 600;
+  border-radius: 6px 6px 0 0;
+  transition: color .12s, background-color .12s;
 }
 
+.page-doctor .tabs a:hover,
+.page-doctor .tabs a:focus {
+  color: var(--dh-primary);
+  background-color: rgba(0,0,0,0.03);
+}
+
+/* Layout main / sidebar (scoped) */
+.page-doctor #main-content {
+  flex: 1 1 60%;
+  min-width: 280px;
+  max-width: calc(100% - 360px);
+}
+
+.page-doctor #sidebar {
+  flex: 0 0 320px;
+  position: sticky;
+  top: var(--dh-header-offset);
+  height: calc(100vh - var(--dh-header-offset) - 40px);
+  align-self: flex-start;
+}
+
+/* Card (scoped) */
+.page-doctor .card {
+  background-color: var(--dh-card-bg);
+  border: 1px solid var(--dh-border);
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.page-doctor .card h3 { margin: 0 0 6px 0; font-size: 1.05rem; }
+.page-doctor .card p { margin: 0; color: var(--dh-text-muted); font-size: .95rem; }
+
+/* Acciones de card */
 .card-actions {
     margin-top: 10px;
     display: flex;
     gap: 10px;
     justify-content: flex-end;
+    align-items: center;
 }
 
-.card .card-actions {
-    position: relative; /* asegurar stacking context */
-    z-index: 1;
-}
-
-/* Botones */
+/* Buttons */
 .btn {
-    padding: 10px 15px;
+    padding: 8px 12px;
     border: none;
-    border-radius: 5px;
-    font-weight: 500;
+    border-radius: 8px;
+    font-weight: 600;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
 }
 
-.btn:focus {
-    outline: 2px solid rgba(51,51,51,0.15);
+.btn:focus-visible {
+    outline: 3px solid rgba(69,174,221,0.18);
     outline-offset: 2px;
 }
 
 .btn-history {
     background-color: transparent;
     color: var(--primary);
-    border: 1px solid rgba(69,174,221,0.18);
+    border: 1px solid rgba(69,174,221,0.12);
 }
 
 .btn-history:hover {
-    background-color: var(--cta) !important;
+    background-color: rgba(69,174,221,0.06);
     transform: translateY(-2px);
 }
 
 .btn-create-diagnose {
-    /* Fuerzo color sólido y sombra para que no parezca transparente */
-    background-color: var(--cta-vibrant);
-    color: var(--primary);
-    border: 1px solid rgba(0,0,0,0.06) !important;
-    box-shadow: 0 8px 24px rgba(243,174,81,0.22) !important;
-    opacity: 1 !important;
-    pointer-events: auto !important;
-    filter: none !important;
-    position: relative;
-    z-index: 2;
+    /* Use the scoped CTA color if available, otherwise fall back to global */
+    background-color: var(--dh-cta-vibrant, var(--cta-vibrant));
+    color: #fff; /* texto blanco para buen contraste */
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 8px 20px rgba(243,174,81,0.15);
     min-width: 140px;
     padding: 10px 16px;
-    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
 }
 
 .btn-create-diagnose:hover {
-    background-color: var(--cta) !important;
+    background-color: var(--dh-cta-vibrant, var(--cta));
     transform: translateY(-2px);
-}
-
-.btn-create-diagnose:focus-visible {
-    outline: 3px solid rgba(241,174,83,0.22);
-    outline-offset: 3px;
 }
 
 .btn-create-diagnose:disabled {
@@ -170,31 +213,53 @@
     box-shadow: none;
 }
 
-/* Sidebar diagnostics */
-.diagnostics-box{
-    background-color: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    min-height: 300px;
-    max-height: 60vh;
-    padding: 20px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.04);
-    margin-top: 20px;
-    overflow: auto;
+/* Sidebar diagnostics (scoped) */
+.page-doctor .diagnostics-box {
+  background-color: var(--dh-card-bg);
+  border: 1px solid var(--dh-border);
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+  overflow: auto;
 }
 
-/* Títulos y textos secundarios */
-.sidebar-title{
-    text-align: center;
-    margin-top: 20px;
-    font-weight: 500;
-    background-color: rgba(69,174,221,0.06); /* leve tono del primary */
-    color: var(--text-muted);
-    padding: 8px;
-    border-radius: 6px;
+.page-doctor .diagnostics-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+
+.page-doctor .diagnose-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.01), transparent);
+  border: 1px solid rgba(0,0,0,0.03);
+}
+
+.page-doctor .diagnose-main { max-width: 68%; }
+.page-doctor .diagnose-pet { font-weight:700; margin-bottom:4px; }
+.page-doctor .diagnose-summary { color: var(--dh-text-muted); font-size: .95rem; margin-bottom:6px; }
+
+.page-doctor .diagnose-meta { text-align:right; min-width:110px; display:flex; flex-direction:column; gap:4px; align-items:flex-end; }
+.page-doctor .diagnose-doctor, .page-doctor .diagnose-date { color: var(--dh-text-muted); font-size:.9rem; }
+
+/* Empty states (scoped) */
+.page-doctor .diagnostics-empty, .page-doctor .no-appointments { padding: 16px; text-align:center; color:var(--dh-text-muted); }
+
+/* Scrollbar styling (Webkit) */
+.diagnostics-box::-webkit-scrollbar {
+    width: 10px;
+}
+.diagnostics-box::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.06);
+    border-radius: 8px;
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+    #main-content { max-width: calc(100% - 300px); }
+    #sidebar { flex: 0 0 300px; }
+}
+
 @media (max-width: 768px) {
     #home-doctor-container-all {
         flex-direction: column;
@@ -202,14 +267,15 @@
     }
     #sidebar {
         order: 2;
-        flex: none;
         width: 100%;
+        height: auto;
+        position: relative;
     }
     #main-content {
         order: 1;
         width: 100%;
+        max-width: 100%;
     }
-    .tabs nav {
-        gap: 6px;
-    }
+    .card { grid-template-columns: 1fr; }
+    .diagnose-meta { align-items: flex-start; text-align: left; }
 }

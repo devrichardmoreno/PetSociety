@@ -227,14 +227,27 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         if(!doctorService.doctorExistById(id)){
             throw new AppointmentDoesntExistException("Doctor does not exist");
         }
-        return this.appointmentRepository.findAllByDoctorId(id).stream() .filter(appointment -> appointment.getStartDate().isAfter(LocalDateTime.now())).
-                map(appointmentEntity -> AppointmentScheduleDTO.builder()
-                        .startTime(appointmentEntity.getStartDate())
-                        .clientName(appointmentEntity.getPet().getClient().getName())
-                        .reason(appointmentEntity.getReason())
-                        .petName(appointmentEntity.getPet().getName())
-                        .doctorName(appointmentEntity.getDoctor().getName()+  " " + appointmentEntity.getDoctor().getSurname())
-                        .build()).collect(Collectors.toList());
+        return this.appointmentRepository.findAllByDoctorIdOrderByStartDateAsc(id).stream()
+                .filter(appointment -> appointment.getStartDate().isAfter(LocalDateTime.now()))
+                .map(appointmentEntity -> {
+                    String clientName = appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null
+                            ? appointmentEntity.getPet().getClient().getName()
+                            : "Sin cliente asignado";
+
+                    String petName = appointmentEntity.getPet() != null
+                            ? appointmentEntity.getPet().getName()
+                            : "Sin mascota asignada";
+
+                    return AppointmentScheduleDTO.builder()
+                            .startTime(appointmentEntity.getStartDate())
+                            .clientName(clientName)
+                            .reason(appointmentEntity.getReason())
+                            .petName(petName)
+                            .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
     }
 
 

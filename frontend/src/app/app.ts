@@ -10,8 +10,7 @@ import { HeaderDoctor } from "./components/header-doctor/header-doctor/header-do
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Header, Footer, CommonModule, HeaderDoctor],
-  imports: [RouterOutlet, Header, HeaderAdmin, Footer, CommonModule,HeaderAdmin],
+  imports: [RouterOutlet, Header, HeaderAdmin, Footer, CommonModule, HeaderDoctor],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })
