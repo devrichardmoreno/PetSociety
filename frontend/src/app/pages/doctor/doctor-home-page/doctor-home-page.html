@@ -14,8 +14,8 @@
         <div>
             @for (appointment of appointmentArray; track $index) {
             <div class="card">
-                <h3>Cliente : {{appointment.}}</h3>
-                <p>Mascota :</p>
+                <h3>Cliente : {{appointment.clientName}}</h3>
+                <p>Mascota :{{appointment.petName}}</p>
                 <div class="card-actions">
                     <button class="btn btn-history">
                         Ver historia clínica
