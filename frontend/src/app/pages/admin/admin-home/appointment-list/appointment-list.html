@@ -1,0 +1,46 @@
+
+<section id="appointment-container-all">
+  <div class="logo-background">
+    <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
+  </div>
+
+  <div class="table-container">
+    <h1>Lista de Citas</h1>
+
+    <div class="loading-msg" [hidden]="!loading">Cargando citas...</div>
+    <div class="error-msg" [hidden]="!error">{{ error }}</div>
+
+    <table class="appointment-table" [hidden]="loading || appointments.length === 0">
+      <thead>
+        <tr>
+          <th>Doctor</th>
+          <th>Mascota</th>
+          <th>Razón</th>
+          <th>Inicio</th>
+          <th>Fin</th>
+          <th>Aprobado</th>
+          <th>Estado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let appt of appointments">
+          <td>{{ appt.doctorName }}</td>
+          <td>{{ appt.petName }}</td>
+          <td>{{ appt.reason }}</td>
+          <td>{{ appt.startTime | date:'short' }}</td>
+          <td>{{ appt.endTime | date:'short' }}</td>
+          <td>
+            <span [ngClass]="appt.aproved ? 'approved' : 'not-approved'">
+              {{ appt.aproved ? 'Sí' : 'No' }}
+            </span>
+          </td>
+          <td>{{ appt.status }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="no-data-msg" [hidden]="loading || appointments.length > 0">
+      No hay citas para mostrar.
+    </div>
+  </div>
+</section>

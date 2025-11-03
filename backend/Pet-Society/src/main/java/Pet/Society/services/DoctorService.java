@@ -119,6 +119,11 @@ public class DoctorService implements Mapper<DoctorDTO, DoctorEntity> {
         return doctors.map(this::toDTO);
     }
 
+    public List<DoctorEntity> getAllDoctorsEntity(){
+        return this.doctorRepository.findAll();
+    }
+
+
     @Override
     public DoctorEntity toEntity(DoctorDTO dto) {
         return DoctorEntity.builder()
