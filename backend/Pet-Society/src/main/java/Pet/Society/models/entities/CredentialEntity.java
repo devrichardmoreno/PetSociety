@@ -45,7 +45,7 @@ public class CredentialEntity implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return UserDetails.super.isEnabled();
+        return user != null && user.getSubscribed() != null && user.getSubscribed();
     }
 
     @Override

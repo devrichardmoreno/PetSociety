@@ -1,0 +1,105 @@
+/* Reutilizamos los estilos principales del componente padre */
+.pets-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.edit-form {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.form-field {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.form-field label {
+  color: var(--hospital-blue);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.form-input:focus {
+  border-color: var(--hospital-blue);
+  box-shadow: 0 0 0 3px rgba(69, 174, 221, 0.1);
+}
+
+.form-input.ng-invalid.ng-touched {
+  border-color: #dc3545;
+}
+
+.error-message {
+  color: #dc3545;
+  font-size: 0.85rem;
+  margin-top: 0.25rem;
+  font-weight: 500;
+}
+
+.form-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e8e8e8;
+}
+
+.form-actions button {
+  min-width: 120px;
+}
+
+.btn {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-cancel {
+  background-color: white;
+  color: var(--hospital-blue);
+  border: 2px solid var(--hospital-blue);
+  box-shadow: 0 2px 8px rgba(69, 174, 221, 0.2);
+}
+
+.btn-cancel:hover {
+  background-color: rgba(69, 174, 221, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.3);
+}
+
+.btn-success {
+  background: linear-gradient(135deg, var(--hospital-green), #6bb01f);
+  color: white;
+  box-shadow: 0 4px 15px rgba(131, 184, 71, 0.3);
+}
+
+.btn-success:hover {
+  background: linear-gradient(135deg, #6bb01f, var(--hospital-green));
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(131, 184, 71, 0.4);
+}
+
+

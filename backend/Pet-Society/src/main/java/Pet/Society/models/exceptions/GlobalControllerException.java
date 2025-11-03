@@ -5,6 +5,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -45,6 +46,11 @@ public class GlobalControllerException {
     @ExceptionHandler(PetNotFoundException.class)
     public ProblemDetail HandlerPetNotFoundException(PetNotFoundException ex, HttpServletRequest request) {
         return createProblemDetail(HttpStatus.NOT_FOUND, "Pet Not Found", "The pet does not exist", request);
+    }
+
+    @ExceptionHandler(TooManyPetsException.class)
+    public ProblemDetail HandlerTooManyPetsException(TooManyPetsException ex, HttpServletRequest request) {
+        return createProblemDetail(HttpStatus.CONFLICT, "Too Many Pets", "Un cliente puede tener un máximo de 5 mascotas registradas", request);
     }
 
     @ExceptionHandler(UserAttributeException.class)
@@ -117,6 +123,10 @@ public class GlobalControllerException {
         return createProblemDetail(HttpStatus.UNAUTHORIZED, "Authentication Failed", "Invalid username or password", request);
     }
 
+    @ExceptionHandler(DisabledException.class)
+    public ProblemDetail handlerDisabledException(DisabledException ex, HttpServletRequest request) {
+        return createProblemDetail(HttpStatus.UNAUTHORIZED, "Authentication Failed", "Invalid username or password", request);
+    }
 
 
 }

@@ -13,6 +13,7 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 
 public class PetDTO {
+    private Long id;
     @NotNull
     private String name;
     @Positive

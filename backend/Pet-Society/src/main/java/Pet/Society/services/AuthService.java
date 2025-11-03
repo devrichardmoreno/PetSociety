@@ -44,7 +44,7 @@ public class AuthService {
 
         String token = jwtService.generateToken(userDetails);
 
-
-        return new LoginResponseDTO(token, credential.getId());
+        // Retornar el ID del usuario (ClientEntity, DoctorEntity, etc.), no el de la credencial
+        return new LoginResponseDTO(token, credential.getUser().getId());
     }
 }

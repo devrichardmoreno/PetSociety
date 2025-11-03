@@ -1,0 +1,49 @@
+<div class="profile-section">
+  <form [formGroup]="editForm" class="edit-form">
+    <div class="form-field">
+      <label for="nombre">Nombre:</label>
+      <input type="text" id="nombre" formControlName="nombre" class="form-input">
+      @if (editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched) {
+        <small class="error-message">El nombre debe tener entre 2 y 50 caracteres</small>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="apellido">Apellido:</label>
+      <input type="text" id="apellido" formControlName="apellido" class="form-input">
+      @if (editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched) {
+        <small class="error-message">El apellido debe tener entre 2 y 50 caracteres</small>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="dni">DNI:</label>
+      <input type="text" id="dni" formControlName="dni" class="form-input" maxlength="8">
+      @if (editForm.get('dni')?.invalid && editForm.get('dni')?.touched) {
+        <small class="error-message">El DNI debe tener 7 u 8 dígitos</small>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="telefono">Teléfono:</label>
+      <input type="text" id="telefono" formControlName="telefono" class="form-input" maxlength="10">
+      @if (editForm.get('telefono')?.invalid && editForm.get('telefono')?.touched) {
+        <small class="error-message">El teléfono debe tener 10 dígitos</small>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="email">Email:</label>
+      <input type="email" id="email" formControlName="email" class="form-input">
+      @if (editForm.get('email')?.invalid && editForm.get('email')?.touched) {
+        <small class="error-message">Ingresa un email válido</small>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-cancel" (click)="cancel.emit()">Cancelar</button>
+      <button type="button" class="btn btn-success" (click)="save.emit()">Aceptar</button>
+    </div>
+  </form>
+</div>
+

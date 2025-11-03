@@ -6,6 +6,7 @@ import Pet.Society.models.entities.ClientEntity;
 import Pet.Society.models.entities.PetEntity;
 import Pet.Society.models.exceptions.NoPetsException;
 import Pet.Society.models.exceptions.PetNotFoundException;
+import Pet.Society.models.exceptions.TooManyPetsException;
 import Pet.Society.models.exceptions.UserNotFoundException;
 import Pet.Society.models.interfaces.Mapper;
 import Pet.Society.repositories.ClientRepository;
@@ -42,9 +43,9 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
         ClientEntity client = clientRepository.findById(dto.getClientId())
                 .orElseThrow(() -> new UserNotFoundException("Cliente with ID " + dto.getClientId() + " not found."));
 
-        List<PetEntity> pets = petRepository.findAllByClient(client);
+        List<PetEntity> pets = petRepository.findAllByClientAndActiveTrue(client);
         if(pets.size()>4){
-            throw new PetNotFoundException("The client can have 5 pets");
+            throw new TooManyPetsException("The client can have a maximum of 5 active pets");
         }
         PetEntity pet = new PetEntity();
         pet.setName(dto.getName());
@@ -53,7 +54,7 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
         pet.setClient(client);
         petRepository.save(pet);
 
-        return dto;
+        return toDTO(pet);
     }
 
 
@@ -126,7 +127,7 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
         ClientEntity client = clientRepository.findById(clientId)
                 .orElseThrow(() -> new UserNotFoundException("Client with id: " + clientId + " was not found."));
 
-        List<PetEntity> pets = petRepository.findAllByClient(client);
+        List<PetEntity> pets = petRepository.findAllByClientAndActiveTrue(client);
 
         if(pets.isEmpty()){
             throw new NoPetsException("The client " + client.getName() + "doesn't have pets");
@@ -148,6 +149,7 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
     @Override
     public PetDTO toDTO(PetEntity entity) {
         return PetDTO.builder()
+                .id(entity.getId())
                 .name(entity.getName())
                 .age(entity.getAge())
                 .active(entity.isActive())

@@ -1,0 +1,53 @@
+<div class="pets-section">
+  <!-- Nota informativa -->
+  <div class="note-section">
+    <p class="note-text">Nota: Solo 1 mascota puede tener una cita programada</p>
+  </div>
+
+  @if (pets.length === 0) {
+    <p class="empty-message">No tienes mascotas registradas</p>
+  } @else {
+    @for (pet of pets; track pet.id) {
+      <div class="pet-card">
+        <div class="pet-info">
+          <h3 class="pet-name">- {{ pet.nombre }}, Edad: {{ pet.edad }} años</h3>
+        </div>
+
+        <div class="pet-actions">
+          @if (!hasScheduledAppointment) {
+            <button class="btn btn-action" (click)="scheduleAppointment.emit(pet.id)">
+              Agregar cita
+            </button>
+          }
+          <button class="btn btn-edit" (click)="editPet.emit(pet.id)">
+            Editar datos mascota
+          </button>
+          <button class="btn btn-delete" (click)="deletePet.emit(pet.id)">
+            Dar de baja mascota
+          </button>
+        </div>
+
+        @if (pet.citaProgramada) {
+          <div class="appointment-details">
+            <p class="appointment-label">Próxima cita:</p>
+            <p class="appointment-info">
+              {{ pet.citaProgramada.fecha }} {{ pet.citaProgramada.hora }}
+            </p>
+            @if (pet.citaProgramada.doctor) {
+              <p class="appointment-doctor">Dr. {{ pet.citaProgramada.doctor }}</p>
+            }
+            @if (pet.citaProgramada.motivo) {
+              <p class="appointment-motivo">Motivo: {{ pet.citaProgramada.motivo }}</p>
+            }
+            <div class="appointment-actions">
+              <button class="btn btn-cancel" (click)="cancelAppointment.emit(pet.id)">
+                Cancelar cita
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+

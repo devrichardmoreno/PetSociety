@@ -57,7 +57,7 @@ public class PetController {
             }
     )
     @PostMapping("/create")
-    @PreAuthorize("@ownershipValidator.canAccessPet(#dto.clientId)")
+    @PreAuthorize("@ownershipValidator.canAccessClient(#dto.clientId)")
     public ResponseEntity<PetDTO> createPet(@Valid @RequestBody PetDTO dto) {
         return ResponseEntity.ok(petService.createPet(dto));
     }
@@ -111,7 +111,7 @@ public class PetController {
             }
     )
     @DeleteMapping("/deleteActive/{id}")
-    //NOT WORKS
+    @PreAuthorize("@ownershipValidator.canAccessPet(#id)")
     public ResponseEntity<String> deleteActive(@PathVariable Long id) {
         this.petService.deletePet(id);
         return ResponseEntity.ok("Pet unsubscribed successfully");
@@ -160,7 +160,7 @@ public class PetController {
             }
     )
     @GetMapping("/findAllByClientId/{id}")
-    @PreAuthorize("@ownershipValidator.canAccessPet(#id)")
+    @PreAuthorize("@ownershipValidator.canAccessClient(#id)")
     public ResponseEntity<List<PetDTO>> getAllPetsByClientId(@PathVariable("id") Long id) {
         return new ResponseEntity<>(this.petService.getAllPetsByClientId(id), HttpStatus.OK);
     }

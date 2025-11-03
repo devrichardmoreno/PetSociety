@@ -15,4 +15,6 @@ public interface PetRepository extends JpaRepository<PetEntity, Long> {
     List<PetEntity> findAllByClient(ClientEntity client);
 
     List<PetEntity> findAllByClient_Dni(String clientDni);
+
+    List<PetEntity> findAllByClientAndActiveTrue(ClientEntity client);
 }
