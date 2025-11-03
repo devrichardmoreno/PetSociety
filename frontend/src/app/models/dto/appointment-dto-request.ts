@@ -8,7 +8,8 @@ export interface AppointmentDTORequest {
 }
 
 export const reasonOptions = [
-  { value: Reason.CHECKUP, label: 'Chequeo' },
-  { value: Reason.VACCINATION, label: 'Vacunacion' },
-  { value: Reason.SURGERY, label: 'Cirugia' }
+{ value: Reason.CONTROL, label: 'Chequeo' },
+  { value: Reason.VACCINATION, label: 'Vacunación' },
+  { value: Reason.EMERGENCY, label: 'Emergencia' },
+  { value: Reason.NUTRITION, label: 'Nutrición' }
 ];

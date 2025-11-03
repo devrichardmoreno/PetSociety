@@ -7,6 +7,7 @@ import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import { AdminHome } from './pages/admin/admin-home/admin-home';
 import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
+import { AppointmentListComponent } from './pages/admin/admin-home/appointment-list/appointment-list';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -19,6 +20,13 @@ export const routes: Routes = [
     {
       path: 'appointment/create',
       component:CreateAppointment,
+      data: { headerType: 'none' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+
+    {
+      path: 'appointment/list',
+      component:AppointmentListComponent,
       data: { headerType: 'none' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
