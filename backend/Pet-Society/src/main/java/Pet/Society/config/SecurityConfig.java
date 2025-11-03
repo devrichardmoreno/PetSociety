@@ -3,6 +3,7 @@ package Pet.Society.config;
 import Pet.Society.models.exceptions.security.CustomAccessDeniedHandler;
 import Pet.Society.models.exceptions.security.CustomAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Admin;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -59,7 +60,7 @@ public class SecurityConfig {
                         .requestMatchers("/client/**").hasAnyRole("ADMIN","CLIENT")
                         //ACCESS TO APPOINTMENTS
                         .requestMatchers(HttpMethod.POST,"/appointment/uploadAvailability/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST,"/appointment/create").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST,"/appointment/create").hasAnyRole("ADMIN")
                         .requestMatchers(HttpMethod.PATCH,"/appointment/assign/**").hasRole("CLIENT")
                         .requestMatchers(HttpMethod.DELETE,"/appointment/delete/**").hasRole("CLIENT")
                         .requestMatchers(HttpMethod.PATCH,"/appointment/**").hasRole("ADMIN")
