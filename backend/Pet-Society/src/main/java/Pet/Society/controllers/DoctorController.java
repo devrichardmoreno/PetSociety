@@ -64,6 +64,11 @@ public class DoctorController {
     return new ResponseEntity<>(doctors, HttpStatus.OK);
    }
 
+   @GetMapping("/list-id")
+   public ResponseEntity<List<DoctorEntity>> getAllDoctorsEntity(){
+        return new ResponseEntity<>(doctorService.getAllDoctorsEntity(), HttpStatus.OK);
+   }
+
     @PatchMapping("/update/{id}")
     public ResponseEntity<DoctorDTO> updateDoctor(@Valid @RequestBody DoctorDTO doctor, @PathVariable Long id) {
         return new ResponseEntity<>(doctorService.update(doctor, id), HttpStatus.OK);

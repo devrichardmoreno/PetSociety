@@ -44,7 +44,7 @@ export class CreateAppointment implements OnInit {
     }, { validators: this.endAfterStartValidator });
 
     // Cargar todos los doctores
-    this.doctorService.getAllDoctors().subscribe({
+    this.doctorService.getAllDoctorsEntity().subscribe({
       next: (doctors) => this.doctors = doctors,
       error: (err) => console.error('Error al cargar doctores:', err)
     });
@@ -87,7 +87,7 @@ export class CreateAppointment implements OnInit {
       next: (response) => {
         console.log('Cita creada con éxito:', response);
         alert('Cita agendada correctamente.');
-        this.router.navigate(['/appointments/list']);
+        this.router.navigate(['/admin/home']);
       },
       error: (e) => {
         console.error('Error al crear la cita:', e);

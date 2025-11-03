@@ -18,4 +18,8 @@ export class DoctorService {
   getAllDoctors(): Observable<Doctor[]> {
     return this.http.get<Doctor[]>(`${this.url}/list`);
   }
+
+  getAllDoctorsEntity(): Observable<Doctor[]> {
+    return this.http.get<Doctor[]>(`${this.url}/list-id`);
+  }
 }

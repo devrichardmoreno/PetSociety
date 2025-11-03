@@ -60,6 +60,6 @@ export class AppointmentService {
   }
 
   getAllAppointments(): Observable<AppointmentResponseDTO[]> {
-    return this.http.get<AppointmentResponseDTO[]>(`${this.url}/all`, { headers: this.getAuthHeaders() });
+    return this.http.get<AppointmentResponseDTO[]>(`${this.url}/available`, { headers: this.getAuthHeaders() });
   }
 }
