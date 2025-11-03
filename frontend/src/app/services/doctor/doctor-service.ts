@@ -4,7 +4,6 @@ import { AppointmentDto } from '../../models/dto/appointment-dto/appointment-dto
 import { Page } from '../../models/paging/page';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { mapAppointmentDateToDate } from '../../models/dto/appointment-dto/appointment-dto';
 import { Doctor } from '../../models/doctor/doctor';
 
 @Injectable({

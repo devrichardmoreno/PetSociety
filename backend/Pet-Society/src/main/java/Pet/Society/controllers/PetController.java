@@ -57,7 +57,7 @@ public class PetController {
             }
     )
     @PostMapping("/create")
-    @PreAuthorize("@ownershipValidator.canAccessPet(#dto.clientId)")
+
     public ResponseEntity<PetDTO> createPet(@Valid @RequestBody PetDTO dto) {
         return ResponseEntity.ok(petService.createPet(dto));
     }

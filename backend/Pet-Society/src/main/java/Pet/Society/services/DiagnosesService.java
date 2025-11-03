@@ -4,8 +4,6 @@ import Pet.Society.models.dto.diagnoses.DiagnosesDTO;
 import Pet.Society.models.dto.diagnoses.DiagnosesDTOResponse;
 import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.models.entities.DiagnosesEntity;
-import Pet.Society.models.entities.DoctorEntity;
-import Pet.Society.models.entities.PetEntity;
 import Pet.Society.models.enums.Status;
 import Pet.Society.models.exceptions.*;
 import Pet.Society.models.interfaces.Mapper;
@@ -17,12 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Random;
 
 @Service
 public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesEntity> {
@@ -41,18 +35,14 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
 
     }
 
-    @Transactional
-    public DiagnosesDTO save(DiagnosesDTO dto) {
+
+    public DiagnosesDTOResponse save(DiagnosesDTO dto) {
 
         AppointmentEntity appointment = appointmentRepository.findById(dto.getAppointmentId())
                 .orElseThrow(() -> new AppointmentNotFoundException("Appointment not found"));
 
         if(appointment.getPet()==null){
             throw new AppointmentWithoutPetException("There is not pets in this appointment");
-        }
-
-        if (LocalDateTime.now().isBefore(appointment.getStartDate())) {
-            throw new BeforeAppointmentException(" The appointment is after the current date");
         }
 
 
@@ -62,17 +52,16 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
                 .doctor(appointment.getDoctor())
                 .pet(appointment.getPet())
                 .appointment(appointment)
-                .date(dto.getDate())
+                .date(LocalDateTime.now())
                 .build();
 
-        if(dto.getDate().isAfter(appointment.getStartDate())) {
-            throw new BeforeAppointmentException("The date of the diagnoses is after the Appointment start date");
-        }
+
 
         appointment.setStatus(Status.SUCCESSFULLY);
         appointment.setDiagnoses(diagnosis);
         this.diagnosesRepository.save(diagnosis);
-        return dto;
+
+        return toDTO(diagnosis);
     }
 
     public DiagnosesDTOResponse findById(Long id) {

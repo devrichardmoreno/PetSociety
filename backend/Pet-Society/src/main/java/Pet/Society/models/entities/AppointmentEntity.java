@@ -28,7 +28,7 @@ public class AppointmentEntity {
     private Status status;
     @ManyToOne
     private DoctorEntity doctor;
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private DiagnosesEntity diagnoses;
     @ManyToOne
     private PetEntity pet;

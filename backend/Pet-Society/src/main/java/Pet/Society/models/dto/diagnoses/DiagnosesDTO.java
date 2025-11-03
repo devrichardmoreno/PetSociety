@@ -28,9 +28,7 @@ public class DiagnosesDTO {
     @NotNull
     private Long appointmentId;
 
-    @NotNull
-    @PastOrPresent
-    private LocalDateTime date;
+
 
 
 }

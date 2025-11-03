@@ -124,7 +124,7 @@ public class AppointmentController {
 
     @PreAuthorize("@ownershipValidator.canAccessAppointment(#id)")
     @GetMapping("/findAppointment/{id}")
-    public ResponseEntity<AppointmentResponseDTO> getAllAppointments(@PathVariable Long id) {
+    public ResponseEntity<AppointmentResponseDTO> getAppointmentById(@PathVariable Long id) {
         return ResponseEntity.ok(this.appointmentService.getAppointment(id));
     }
 

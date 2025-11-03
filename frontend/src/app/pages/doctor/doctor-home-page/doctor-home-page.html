@@ -3,7 +3,7 @@
 <section id="home-doctor-container-all">
 
     <main id="main-content">
-        <h1>Bienvenido, Doctor {{doctorName}}</h1>
+        <h1>Bienvenido, Doctor {{doctor?.name}}</h1>
 
         <div class="tabs">
             <nav>
@@ -12,9 +12,9 @@
             </nav>
         </div>
         <div>
-            <!-- @for (item of appointmentArray; track $index) { -->
+            @for (appointment of appointmentArray; track $index) {
             <div class="card">
-                <h3>Cliente :</h3>
+                <h3>Cliente : {{appointment.}}</h3>
                 <p>Mascota :</p>
                 <div class="card-actions">
                     <button class="btn btn-history">
@@ -25,14 +25,33 @@
                     </button>
                 </div>
             </div>
-        <!-- } -->
+            }
         </div>
     </main>
 
     <aside id="sidebar">
         <div class="sidebar-title">Últimos diagnósticos</div>
         <div class="diagnostics-box">
-            <!-- ciclo @for con ultimos diagnosticos -->
+            <ul class="diagnostics-list" role="list" aria-label="Últimos diagnósticos">
+            @for (d of lastestDiagnoses; track $index) { 
+                        <div class="diagnose-row">
+                            <div class="diagnose-main">
+                                <div class="diagnose-pet"><strong>{{ d.petName || '—' }}</strong></div>
+                                <div class="diagnose-summary">{{ d.diagnose || d.reason || 'Sin resumen' }}</div>
+                            </div>
+                            <div class="diagnose-meta">
+                                <div class="diagnose-doctor">{{ d.doctorName || '—' }}</div>
+                                <div class="diagnose-date">{{ d.date | date:'short' }}</div>
+                            </div>
+                        </div>
+            
+                
+            }
+            </ul>
+
+            <ng-template #noDiagnostics>
+                <div class="diagnostics-empty">No hay diagnósticos recientes.</div>
+            </ng-template>
         </div>
     </aside>
 </section>

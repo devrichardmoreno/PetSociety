@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Page } from '../../models/paging/page';
-import { AppointmentDto, mapAppointmentDateToDate } from '../../models/dto/appointment-dto/appointment-dto';
+import { DiagnoseDto, mapDiagnoseDateToDate } from '../../models/dto/diagnose-dto/diagnose-dto';
 
 @Injectable({
   providedIn: 'root'
@@ -13,12 +13,12 @@ export class DiagnosesService {
   constructor(private http: HttpClient) { }
 
 
-  getLatestDiagnostics(
+  getLatestDiagnoses(
     doctorId: number,
     page = 0,
     size = 5,
     sort?: string
-  ): Observable<Page<AppointmentDto & { date: Date }>> {
+  ): Observable<Page<DiagnoseDto & { date: Date }>> {
 
     let params = new HttpParams()
       .set('page', page.toString())
@@ -28,13 +28,13 @@ export class DiagnosesService {
       params = params.set('sort', sort);
     }
 
-    return this.http.get<Page<AppointmentDto>>(
+    return this.http.get<Page<DiagnoseDto>>(
       `${this.url}/getByDoctorId/${doctorId}`,
       { params }
     ).pipe(
       map(pageResp => ({
         ...pageResp,
-        content: (pageResp.content || []).map(mapAppointmentDateToDate)
+        content: (pageResp.content || []).map(mapDiagnoseDateToDate)
       }))
     );
   }
