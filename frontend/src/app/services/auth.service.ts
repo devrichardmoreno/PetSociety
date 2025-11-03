@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -40,9 +39,7 @@ export class AuthService {
    */
   getUserId(): number | null {
     const userId = localStorage.getItem(this.USER_ID_KEY);
-    if (userId === null) return null;               // no existe
-    const parsed = parseInt(userId, 10);
-    return Number.isNaN(parsed) ? null : parsed;   // null si no es un número válido
+    return userId ? parseInt(userId, 10) : null;
   }
 
   /**
@@ -55,6 +52,24 @@ export class AuthService {
       return false;
     }
     return !this.isTokenExpired();
+  }
+
+  /**
+   * Obtiene el username del token JWT
+   */
+  getUsername(): string | null {
+    const token = this.getToken();
+    if (!token) {
+      return null;
+    }
+
+    try {
+      const payload = this.decodeToken(token);
+      return payload?.sub || null;
+    } catch (error) {
+      console.error('Error al extraer username del token:', error);
+      return null;
+    }
   }
 
   /**
@@ -136,3 +151,4 @@ export class AuthService {
     localStorage.removeItem(this.USER_ID_KEY);
   }
 }
+

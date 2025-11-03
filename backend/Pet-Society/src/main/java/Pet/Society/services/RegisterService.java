@@ -3,16 +3,13 @@ package Pet.Society.services;
 import Pet.Society.models.dto.client.ClientDTO;
 import Pet.Society.models.dto.register.RegisterDTO;
 import Pet.Society.models.dto.register.RegisterDoctorDTO;
-import Pet.Society.models.entities.ClientEntity;
 import Pet.Society.models.entities.CredentialEntity;
 import Pet.Society.models.entities.DoctorEntity;
 import Pet.Society.models.entities.UserEntity;
 import Pet.Society.models.enums.Role;
 import Pet.Society.models.exceptions.UserAttributeException;
-import Pet.Society.models.interfaces.Mapper;
-import com.mysql.cj.xdevapi.Client;
+import Pet.Society.models.exceptions.UserExistsException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +26,6 @@ public class RegisterService  {
 
     private final DoctorService doctorService;
 
-    @Autowired
     public RegisterService(ClientService clientService, CredentialService credentialService, UserService userService, PasswordEncoder passwordEncoder, DoctorService doctorService) {
         this.clientService = clientService;
         this.credentialService = credentialService;
@@ -40,6 +36,11 @@ public class RegisterService  {
 
     @Transactional
     public ClientDTO registerNewClient(RegisterDTO registerDTO) {
+        // Validar si el username ya existe
+        if (credentialService.findByUsername(registerDTO.getUsername()).isPresent()) {
+            throw new UserExistsException("Username already exists");
+        }
+
         ClientDTO clientDTO = ClientDTO.builder()
                 .name(registerDTO.getName())
                 .surname(registerDTO.getSurname())
@@ -62,6 +63,10 @@ public class RegisterService  {
 
     @Transactional
     public void registerNewAdmin(RegisterDTO registerDTO) {
+        // Validar si el username ya existe
+        if (credentialService.findByUsername(registerDTO.getUsername()).isPresent()) {
+            throw new UserExistsException("Username already exists");
+        }
 
         UserEntity userEntity = new UserEntity();
         userEntity.setName(registerDTO.getName());
@@ -81,6 +86,11 @@ public class RegisterService  {
 
     @Transactional(rollbackOn = UserAttributeException.class)
     public void registerNewDoctor(RegisterDoctorDTO registerDTO) {
+        // Validar si el username ya existe
+        if (credentialService.findByUsername(registerDTO.getUsername()).isPresent()) {
+            throw new UserExistsException("Username already exists");
+        }
+        
         if (doctorService.doctorExistByDni(registerDTO.getDni())) {
             throw new UserAttributeException("Doctor with this DNI already exists");
         }

@@ -1,9 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { LoginService } from '../../services/login-service';
+import { AuthService } from '../../services/auth.service';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { AuthService } from '../../services/auth.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login-component',
@@ -28,7 +29,34 @@ export class LoginComponent implements OnInit {
       this.loginForm = this.fb.group({
         username: ['', Validators.required],
         password: ['', Validators.required]
-      })
+      });
+
+      // Verificar si hay una sesión activa
+      if (this.authService.isAuthenticated()) {
+        const username = this.authService.getUsername();
+        this.showActiveSessionModal(username);
+      }
+    }
+
+    showActiveSessionModal(username: string | null): void {
+      Swal.fire({
+        title: 'Confirmar',
+        html: `<p>Actualmente ha iniciado sesión como <strong>${username}</strong>, necesita salir antes de volver a entrar con un usuario diferente.</p>`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Cerrar sesión',
+        cancelButtonText: 'Cancelar',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#45AEDD',
+        cancelButtonColor: '#d33',
+        iconColor: '#45AEDD'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.authService.logout();
+          // El usuario ya está en la página de login, no necesitamos navegar
+        }
+      });
     }
 
     onSubmit(): void {

@@ -5,7 +5,6 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 
-
 /**
  * Interceptor que agrega automáticamente el token JWT a todas las peticiones HTTP
  * y maneja errores de autenticación (401, token expirado, etc.)

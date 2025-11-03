@@ -1,0 +1,5 @@
+export enum Reason {
+  CHECKUP = 'CHECKUP',
+  VACCINATION = 'VACCINATION',
+  SURGERY = 'SURGERY'
+}

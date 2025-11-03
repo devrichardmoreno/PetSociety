@@ -1,0 +1,79 @@
+<app-header-client></app-header-client>
+<div class="client-home-container">
+  <!-- Mensaje de bienvenida -->
+  <div class="welcome-section">
+    <h1 class="welcome-title">Bienvenido {{ userName }}</h1>
+  </div>
+
+  <!-- Tabs de navegación -->
+  <div class="tabs-section">
+    <div class="tabs-container">
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'mascotas'"
+        (click)="switchTab('mascotas')">
+        Mascotas
+      </button>
+      <button 
+        class="tab-button" 
+        [class.active]="activeTab === 'datos-personales'"
+        (click)="switchTab('datos-personales')">
+        Datos personales
+      </button>
+    </div>
+
+    <!-- Botones de acción según la pestaña activa -->
+    @if (activeTab === 'datos-personales' && !isEditing) {
+      <div class="action-buttons">
+        <button class="btn btn-edit" (click)="onEditUserData()">Editar datos personales</button>
+        <button class="btn btn-delete" (click)="onDeleteUser()">Darse de baja</button>
+      </div>
+    }
+    @if (activeTab === 'mascotas' && !isAddingPet && !isEditingPet) {
+      <div class="action-buttons">
+        <button class="btn btn-action" (click)="showAddPetForm()">Agregar mascota</button>
+      </div>
+    }
+  </div>
+
+  <!-- Contenido según la pestaña activa -->
+  <div class="content-section">
+    @if (activeTab === 'mascotas') {
+      @if (!isAddingPet && !isEditingPet) {
+        <app-client-pets-list
+          [pets]="pets"
+          (scheduleAppointment)="onScheduleAppointment($event)"
+          (editPet)="onEditPet($event)"
+          (deletePet)="onDeletePet($event)"
+          (cancelAppointment)="onCancelAppointment($event)">
+        </app-client-pets-list>
+      } @else if (isAddingPet) {
+        <app-client-pet-add-form
+          [addPetForm]="addPetForm"
+          (cancel)="cancelAddPet()"
+          (save)="savePet()">
+        </app-client-pet-add-form>
+      } @else if (isEditingPet) {
+        <app-client-pet-edit-form
+          [editPetForm]="editPetForm"
+          (cancelEdit)="cancelEditPet()"
+          (saveEdit)="savePetEdit()">
+        </app-client-pet-edit-form>
+      }
+    }
+
+    @if (activeTab === 'datos-personales') {
+      @if (!isEditing) {
+        <app-client-profile-section
+          [userData]="userData">
+        </app-client-profile-section>
+      } @else {
+        <app-client-profile-edit
+          [editForm]="editForm"
+          (cancel)="cancelEdit()"
+          (save)="saveUserData()">
+        </app-client-profile-edit>
+      }
+    }
+  </div>
+</div>

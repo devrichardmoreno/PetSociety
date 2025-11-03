@@ -1,9 +1,9 @@
 <div class="app-container">
   @switch (headerType()) {
       @case ('default') { <app-header /> }
-      
+      @case ('admin') { <app-header-admin /> }
       <!--@case ('client') { <app-header-client /> }-->
-      @case ('doctor') { <app-header-doctor/> }
+      <!-- @case ('doctor') { <app-header-doctor /> }-->
   }
   <main class="main-content">
     <router-outlet></router-outlet>

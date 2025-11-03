@@ -1,0 +1,25 @@
+<div class="pets-section">
+  <form [formGroup]="editPetForm" class="edit-form">
+    <div class="form-field">
+      <label for="pet-edit-nombre">Nombre:</label>
+      <input type="text" id="pet-edit-nombre" formControlName="nombre" class="form-input">
+      @if (editPetForm.get('nombre')?.invalid && editPetForm.get('nombre')?.touched) {
+        <small class="error-message">El nombre debe tener entre 2 y 50 caracteres</small>
+      }
+    </div>
+
+    <div class="form-field">
+      <label for="pet-edit-edad">Edad:</label>
+      <input type="number" id="pet-edit-edad" formControlName="edad" class="form-input" min="1" max="30">
+      @if (editPetForm.get('edad')?.invalid && editPetForm.get('edad')?.touched) {
+        <small class="error-message">La edad debe estar entre 1 y 30 años</small>
+      }
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn btn-cancel" (click)="cancelEdit.emit()">Cancelar</button>
+      <button type="button" class="btn btn-success" (click)="saveEdit.emit()">Aceptar</button>
+    </div>
+  </form>
+</div>
+
