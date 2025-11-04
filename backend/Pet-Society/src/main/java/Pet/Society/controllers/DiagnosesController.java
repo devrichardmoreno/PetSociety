@@ -56,7 +56,7 @@ public class DiagnosesController {
             }
     )
     @PostMapping("/create")
-    public ResponseEntity<DiagnosesDTO> createDiagnosis(@RequestBody DiagnosesDTO dto) {
+    public ResponseEntity<DiagnosesDTOResponse> createDiagnosis(@RequestBody DiagnosesDTO dto) {
         return new ResponseEntity<>(this.diagnosesService.save(dto), HttpStatus.CREATED);
     }
 

@@ -8,9 +8,10 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-login-component',
+  standalone: true,
   imports: [ReactiveFormsModule, CommonModule, RouterModule],
   templateUrl: './login-component.html',
-  styleUrl: './login-component.css'
+  styleUrls: ['./login-component.css']
 })
 export class LoginComponent implements OnInit {
 

@@ -5,11 +5,12 @@ import { HeaderAdmin } from './components/header-admin/header-admin';
 import { Footer } from './components/footer/footer';
 import { filter, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
+import { HeaderDoctor } from "./components/header-doctor/header-doctor/header-doctor";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, Header, HeaderAdmin, Footer, CommonModule,HeaderAdmin],
+  imports: [RouterOutlet, Header, HeaderAdmin, Footer, CommonModule, HeaderDoctor],
   templateUrl: './app.html',
   styleUrl: './app.css'
 })

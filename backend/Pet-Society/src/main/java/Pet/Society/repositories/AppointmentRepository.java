@@ -15,11 +15,11 @@ import java.util.Optional;
 public interface AppointmentRepository extends JpaRepository<AppointmentEntity, Long> {
 
     List<AppointmentEntity> findAppointmentByStartDateAndEndDate(LocalDateTime startDate, LocalDateTime endDate);
-    /*List<AppointmentEntity> x(DoctorEntity doctor);*/
     AppointmentEntity findByPetAndId(PetEntity pet, long id);
     AppointmentEntity findByIdAndPetId(long id, long petId);
     List<AppointmentEntity> findAllByPetClientId(Long clientId);
     List<AppointmentEntity> findAllByPetId(Long petId);
     List<AppointmentEntity> findAllByDoctorId(Long doctorId);
+    List<AppointmentEntity> findAllByDoctorIdOrderByStartDateAsc(Long doctorId);
     List<AppointmentEntity> findAppointmentByDoctor(DoctorEntity doctor);
 }

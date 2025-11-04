@@ -2,6 +2,7 @@ package Pet.Society.services;
 
 import Pet.Society.models.dto.appointment.AppointmentDTO;
 import Pet.Society.models.dto.appointment.AppointmentResponseDTO;
+import Pet.Society.models.dto.appointment.AppointmentScheduleDTO;
 import Pet.Society.models.dto.appointment.AppointmentUpdateDTO;
 import Pet.Society.models.dto.client.ClientDTO;
 import Pet.Society.models.dto.doctor.DoctorAvailabilityDTO;
@@ -222,20 +223,34 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .build()).collect(Collectors.toList());
     }
 
-    public List<AppointmentResponseDTO> getAvailableAppointmentsDoctorForToday(long id) {
+    public List<AppointmentScheduleDTO> getScheduleAppointmentsDoctorForToday(long id) {
         if(!doctorService.doctorExistById(id)){
             throw new AppointmentDoesntExistException("Doctor does not exist");
         }
-        return this.appointmentRepository.findAllByDoctorId(id).stream() .filter(appointment -> appointment.getStartDate().isAfter(LocalDateTime.now())).
-                map(appointmentEntity -> AppointmentResponseDTO.builder()
-                        .startTime(appointmentEntity.getStartDate())
-                        .endTime(appointmentEntity.getEndDate())
-                        .reason(appointmentEntity.getReason())
-                        .aproved(appointmentEntity.isApproved())
-                        .petName(appointmentEntity.getPet().getName())
-                        .doctorName(appointmentEntity.getDoctor().getName()+  " " + appointmentEntity.getDoctor().getSurname())
-                        .build()).collect(Collectors.toList());
+        return this.appointmentRepository.findAllByDoctorIdOrderByStartDateAsc(id).stream()
+                .filter(appointment -> appointment.getStartDate().isAfter(LocalDateTime.now()))
+                .map(appointmentEntity -> {
+                    String clientName = appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null
+                            ? appointmentEntity.getPet().getClient().getName()
+                            : "Sin cliente asignado";
+
+                    String petName = appointmentEntity.getPet() != null
+                            ? appointmentEntity.getPet().getName()
+                            : "Sin mascota asignada";
+
+                    return AppointmentScheduleDTO.builder()
+                            .startTime(appointmentEntity.getStartDate())
+                            .clientName(clientName)
+                            .reason(appointmentEntity.getReason())
+                            .petName(petName)
+                            .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
+                            .build();
+                })
+                .collect(Collectors.toList());
+
     }
+
+
 
     public boolean petHasAppointment(long id) {
         List<AppointmentEntity> appointments = this.appointmentRepository.findAllByPetId(id);
