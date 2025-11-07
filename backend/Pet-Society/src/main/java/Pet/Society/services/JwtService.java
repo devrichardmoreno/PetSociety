@@ -1,5 +1,4 @@
 package Pet.Society.services;
-
 import Pet.Society.models.entities.CredentialEntity;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
