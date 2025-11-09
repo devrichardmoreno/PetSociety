@@ -4,7 +4,9 @@ import Pet.Society.config.OwnershipValidator;
 import Pet.Society.models.dto.appointment.AppointmentDTO;
 import Pet.Society.models.dto.appointment.AppointmentResponseDTO;
 import Pet.Society.models.dto.appointment.AppointmentScheduleDTO;
+import Pet.Society.models.dto.appointment.AvailableAppointmentDTO;
 import Pet.Society.models.dto.doctor.DoctorAvailabilityDTO;
+import Pet.Society.models.enums.Reason;
 import Pet.Society.models.dto.pet.AssingmentPetDTO;
 import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.services.AppointmentService;
@@ -18,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Tag(
@@ -193,9 +196,52 @@ public class AppointmentController {
             }
     )
     @GetMapping("/pet/{petId}")
-    @PreAuthorize("@ownershipValidator.canAccessPet(#id)")
+    @PreAuthorize("@ownershipValidator.canAccessPet(#petId)")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByPetId(@PathVariable Long petId) {
         return ResponseEntity.ok(this.appointmentService.getAllAppointmentsByPetId(petId));
+    }
+
+    @Operation(
+            summary = "Get all appointments from a specific pet including scheduled ones",
+            description = "Endpoint to retrieve all appointments from a specific pet including TO_BEGIN status",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Appointments for the specified pet retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AppointmentEntity.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/pet/{petId}/all")
+    @PreAuthorize("@ownershipValidator.canAccessPet(#petId)")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointmentsByPetIdIncludingScheduled(@PathVariable Long petId) {
+        return ResponseEntity.ok(this.appointmentService.getAllAppointmentsByPetIdIncludingScheduled(petId));
+    }
+
+    @Operation(
+            summary = "Get scheduled appointment ID by pet ID",
+            description = "Endpoint to retrieve the ID of the scheduled appointment (TO_BEGIN) for a specific pet",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Appointment ID retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
+    @GetMapping("/pet/{petId}/scheduled-id")
+    @PreAuthorize("@ownershipValidator.canAccessPet(#petId)")
+    public ResponseEntity<Long> getScheduledAppointmentIdByPetId(@PathVariable Long petId) {
+        Long appointmentId = this.appointmentService.getScheduledAppointmentIdByPetId(petId);
+        if (appointmentId == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(appointmentId);
     }
 
     @Operation(
@@ -230,5 +276,63 @@ public class AppointmentController {
         return ResponseEntity.ok(this.appointmentService.getAvailableAppointments());
     }
 
+    @Operation(
+            summary = "Get available appointments by reason",
+            description = "Endpoint to retrieve all available appointments for a specific reason (for calendar view)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Available appointments retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AvailableAppointmentDTO.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/available/reason/{reason}")
+    public ResponseEntity<List<AvailableAppointmentDTO>> getAvailableAppointmentsByReason(@PathVariable Reason reason) {
+        return ResponseEntity.ok(this.appointmentService.getAvailableAppointmentsByReason(reason));
+    }
+
+    @Operation(
+            summary = "Get available appointments by reason and date",
+            description = "Endpoint to retrieve available appointments for a specific reason and date (for time slots view)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Available appointments for the date retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AvailableAppointmentDTO.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/available/reason/{reason}/date")
+    public ResponseEntity<List<AvailableAppointmentDTO>> getAvailableAppointmentsByReasonAndDate(
+            @PathVariable Reason reason,
+            @RequestParam String date) {
+        LocalDate localDate = LocalDate.parse(date);
+        return ResponseEntity.ok(this.appointmentService.getAvailableAppointmentsByReasonAndDate(reason, localDate));
+    }
+
+    @Operation(
+            summary = "Get available days by reason",
+            description = "Endpoint to retrieve unique days that have available appointments for a specific reason (for calendar highlighting)",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Available days retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
+    @GetMapping("/available/reason/{reason}/days")
+    public ResponseEntity<List<LocalDate>> getAvailableDaysByReason(@PathVariable Reason reason) {
+        return ResponseEntity.ok(this.appointmentService.getAvailableDaysByReason(reason));
+    }
 
 }

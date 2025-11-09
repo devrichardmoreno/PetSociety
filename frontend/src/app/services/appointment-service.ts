@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppointmentDTORequest } from '../models/dto/appointment-dto-request';
 import { AppointmentResponseDTO } from '../models/dto/appointment-response-dto';
 import { DoctorAvailabilityDTO } from '../models/dto/doctor-availability-dto';
+import { AvailableAppointmentDTO } from '../models/dto/available-appointment-dto';
+import { Reason } from '../models/dto/reason.enum';
 import { AuthService } from './auth.service';
 
 @Injectable({
@@ -32,7 +34,10 @@ export class AppointmentService {
   }
 
   cancelAppointment(appointmentId: number): Observable<string> {
-    return this.http.delete<string>(`${this.url}/cancel/${appointmentId}`, { headers: this.getAuthHeaders() });
+    return this.http.delete(`${this.url}/cancel/${appointmentId}`, { 
+      headers: this.getAuthHeaders(),
+      responseType: 'text'
+    }) as Observable<string>;
   }
 
   getAppointmentById(appointmentId: number): Observable<AppointmentResponseDTO> {
@@ -51,6 +56,10 @@ export class AppointmentService {
     return this.http.get<AppointmentResponseDTO[]>(`${this.url}/pet/${petId}`, { headers: this.getAuthHeaders() });
   }
 
+  getAllAppointmentsByPetIncludingScheduled(petId: number): Observable<AppointmentResponseDTO[]> {
+    return this.http.get<AppointmentResponseDTO[]>(`${this.url}/pet/${petId}/all`, { headers: this.getAuthHeaders() });
+  }
+
   getAvailableAppointmentsDoctor(doctorId: number): Observable<AppointmentResponseDTO[]> {
     return this.http.get<AppointmentResponseDTO[]>(`${this.url}/doctor/${doctorId}`, { headers: this.getAuthHeaders() });
   }
@@ -61,5 +70,31 @@ export class AppointmentService {
 
   getAllAppointments(): Observable<AppointmentResponseDTO[]> {
     return this.http.get<AppointmentResponseDTO[]>(`${this.url}/available`, { headers: this.getAuthHeaders() });
+  }
+
+  getAvailableAppointmentsByReason(reason: Reason): Observable<AvailableAppointmentDTO[]> {
+    return this.http.get<AvailableAppointmentDTO[]>(`${this.url}/available/reason/${reason}`, { headers: this.getAuthHeaders() });
+  }
+
+  getAvailableAppointmentsByReasonAndDate(reason: Reason, date: string): Observable<AvailableAppointmentDTO[]> {
+    const params = new HttpParams().set('date', date);
+    return this.http.get<AvailableAppointmentDTO[]>(`${this.url}/available/reason/${reason}/date`, { 
+      headers: this.getAuthHeaders(),
+      params: params
+    });
+  }
+
+  getAvailableDaysByReason(reason: Reason): Observable<string[]> {
+    return this.http.get<string[]>(`${this.url}/available/reason/${reason}/days`, { headers: this.getAuthHeaders() });
+  }
+
+  assignAppointment(appointmentId: number, petId: number): Observable<AppointmentResponseDTO> {
+    return this.http.patch<AppointmentResponseDTO>(`${this.url}/assign/${appointmentId}`, 
+      { petId: petId }, 
+      { headers: this.getAuthHeaders() });
+  }
+
+  getScheduledAppointmentIdByPetId(petId: number): Observable<number> {
+    return this.http.get<number>(`${this.url}/pet/${petId}/scheduled-id`, { headers: this.getAuthHeaders() });
   }
 }

@@ -1,0 +1,420 @@
+.schedule-appointment-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.wizard-header {
+  margin-bottom: 2rem;
+}
+
+.wizard-header h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+}
+
+.progress-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+.progress-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+}
+
+.step-number {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #e0e0e0;
+  color: #666;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+
+.progress-step.active .step-number {
+  background: #45AEDD;
+  color: #fff;
+}
+
+.progress-step.completed .step-number {
+  background: #7AC143;
+  color: #fff;
+}
+
+.step-label {
+  font-size: 0.85rem;
+  color: #666;
+  text-align: center;
+}
+
+.progress-step.active .step-label {
+  color: #45AEDD;
+  font-weight: 600;
+}
+
+.progress-line {
+  width: 60px;
+  height: 2px;
+  background: #e0e0e0;
+  margin: 0 0.5rem;
+  transition: all 0.3s ease;
+}
+
+.progress-line.completed {
+  background: #7AC143;
+}
+
+.wizard-content {
+  min-height: 400px;
+  margin-bottom: 2rem;
+}
+
+.step-content h3 {
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  text-align: center;
+}
+
+/* Paso 1: Motivos */
+.reason-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.reason-card {
+  padding: 2rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.reason-card:hover {
+  border-color: #45AEDD;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(69, 174, 221, 0.2);
+}
+
+.reason-card.selected {
+  border-color: #45AEDD;
+  background: #e8f4f8;
+}
+
+.reason-icon {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #45AEDD;
+}
+
+.reason-label {
+  font-size: 1rem;
+  color: #333;
+  font-weight: 500;
+}
+
+/* Paso 2: Calendario */
+.calendar-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+}
+
+.calendar-header h4 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+
+.nav-button {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: #45AEDD;
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.nav-button:hover {
+  background: #3598c7;
+  transform: scale(1.1);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.calendar-day-header {
+  text-align: center;
+  font-weight: 600;
+  color: #666;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-day:hover:not(:disabled) {
+  border-color: #45AEDD;
+  transform: scale(1.05);
+}
+
+.calendar-day.available {
+  background: #e8f4f8;
+  border-color: #45AEDD;
+  color: #333;
+}
+
+.calendar-day.selected {
+  background: #45AEDD;
+  color: #fff;
+  border-color: #45AEDD;
+  font-weight: bold;
+}
+
+.calendar-day.past {
+  background: #f5f5f5;
+  color: #ccc;
+  cursor: not-allowed;
+}
+
+.calendar-day:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.calendar-day.empty {
+  border: none;
+  background: transparent;
+  cursor: default;
+}
+
+.calendar-legend {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  border: 2px solid;
+}
+
+.legend-color.available {
+  background: #e8f4f8;
+  border-color: #45AEDD;
+}
+
+.legend-color.selected {
+  background: #45AEDD;
+  border-color: #45AEDD;
+}
+
+.selected-date-info {
+  text-align: center;
+  color: #666;
+  margin-bottom: 1.5rem;
+  font-size: 1rem;
+}
+
+/* Paso 3: Horarios */
+.appointments-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.appointment-card {
+  padding: 1.5rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.appointment-card:hover {
+  border-color: #45AEDD;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(69, 174, 221, 0.2);
+}
+
+.appointment-card.selected {
+  border-color: #45AEDD;
+  background: #e8f4f8;
+}
+
+.appointment-time {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #45AEDD;
+  margin-bottom: 0.5rem;
+}
+
+.appointment-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.doctor-name {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.doctor-speciality {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.no-appointments {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+}
+
+/* Paso 4: Confirmación */
+.confirmation-card {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  background: #f9f9f9;
+}
+
+.confirmation-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.confirmation-item:last-child {
+  border-bottom: none;
+}
+
+.confirmation-label {
+  font-weight: 600;
+  color: #666;
+}
+
+.confirmation-value {
+  color: #333;
+  text-align: right;
+}
+
+/* Botones */
+.wizard-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn {
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #e0e0e0;
+  color: #666;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #d0d0d0;
+}
+
+.btn-primary {
+  background: #45AEDD;
+  color: #fff;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #3598c7;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(69, 174, 221, 0.3);
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+

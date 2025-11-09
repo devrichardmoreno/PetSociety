@@ -39,7 +39,13 @@
   <!-- Contenido según la pestaña activa -->
   <div class="content-section">
     @if (activeTab === 'mascotas') {
-      @if (!isAddingPet && !isEditingPet) {
+      @if (isSchedulingAppointment && schedulingPetId) {
+        <app-schedule-appointment
+          [petId]="schedulingPetId"
+          (appointmentScheduled)="onAppointmentScheduled()"
+          (cancel)="onCancelSchedule()">
+        </app-schedule-appointment>
+      } @else if (!isAddingPet && !isEditingPet) {
         <app-client-pets-list
           [pets]="pets"
           (scheduleAppointment)="onScheduleAppointment($event)"
