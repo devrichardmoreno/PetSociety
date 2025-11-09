@@ -1,15 +1,37 @@
 <header>
-    <div >
-        <img id="logo-background" src="/assets/images/logo.png" alt="">
-    </div>
-    <nav>
-        <ul class="buttons">
-            <li><a routerLink="/admin/home">Inicio</a></li>
-            <li><a routerLink="/appointment/create">Crear citas programadas</a></li>
-            <li><a routerLink="/appointment/list">Citas disponibles</a></li>
-            <li><a routerLink="">Staff medico</a></li>
-            <li><a routerLink="">Configuracion</a></li>
-            <li><a routerLink="">Salir</a></li>
+  <div>
+    <img id="logo-background" src="/assets/images/logo.png" alt="Logo">
+  </div>
+
+  <nav>
+    <ul class="buttons">
+      <li><a routerLink="/admin/home">Inicio</a></li>
+
+      <!-- Dropdown Citas -->
+      <li class="dropdown-container">
+        <a>Citas ▾</a>
+        <ul class="dropdown">
+          <li><a routerLink="/appointment/create">Crear cita programada</a></li><li><a routerLink="/appointment/list">Citas disponibles</a></li>
         </ul>
-    </nav>
+      </li>
+
+      <!-- Dropdown Doctores -->
+      <li class="dropdown-container">
+        <a>Doctores ▾</a>
+        <ul class="dropdown">
+          <li><a routerLink="/doctor/list">Listar doctores</a></li><li><a routerLink="/doctor/add">Agregar doctor</a></li>
+        </ul>
+      </li>
+
+      <!-- Dropdown Configuración -->
+      <li class="dropdown-container">
+        <a>Configuración ▾</a>
+        <ul class="dropdown">
+          <li><a routerLink="/admin/add">Agregar administrador</a></li><li><a routerLink="/doctor/add">Agregar doctor</a></li>
+        </ul>
+      </li>
+
+      <li><a routerLink="/logout">Salir</a></li>
+    </ul>
+  </nav>
 </header>

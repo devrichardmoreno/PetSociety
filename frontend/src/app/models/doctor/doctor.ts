@@ -4,5 +4,5 @@ export interface Doctor {
     dni: string;
     phone: string;
     email: string;
-    specialty: string;
+    speciality: string;
 }
