@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { DiagnosisFormModal } from './diagnosis-form-modal';
 
+import { DiagnosesHistoryModal } from './diagnoses-history-modal';
 
-describe('DiagnosisFormModal', () => {
-  let component: DiagnosisFormModal;
-  let fixture: ComponentFixture<DiagnosisFormModal>;
+describe('DiagnosesHistoryModal', () => {
+  let component: DiagnosesHistoryModal;
+  let fixture: ComponentFixture<DiagnosesHistoryModal>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [DiagnosisFormModal]
+      imports: [DiagnosesHistoryModal]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(DiagnosisFormModal);
+    fixture = TestBed.createComponent(DiagnosesHistoryModal);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

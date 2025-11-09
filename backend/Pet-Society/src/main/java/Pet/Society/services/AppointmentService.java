@@ -238,12 +238,17 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                             ? appointmentEntity.getPet().getName()
                             : "Sin mascota asignada";
 
+                    Long petId = appointmentEntity.getPet() != null
+                            ? appointmentEntity.getPet().getId()
+                            : 0;
+
                     return AppointmentScheduleDTO.builder()
                             .id(appointmentEntity.getId())
                             .startTime(appointmentEntity.getStartDate())
                             .endTime(appointmentEntity.getEndDate())
                             .clientName(clientName)
                             .reason(appointmentEntity.getReason())
+                            .petId(petId)
                             .petName(petName)
                             .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
                             .build();

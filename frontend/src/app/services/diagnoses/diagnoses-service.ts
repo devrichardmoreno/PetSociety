@@ -14,7 +14,7 @@ export class DiagnosesService {
   constructor(private http: HttpClient) { }
 
 
-  getLatestDiagnoses(
+  getLatestDiagnosesByDoctor(
     doctorId: number,
     page = 0,
     size = 5,
@@ -31,6 +31,31 @@ export class DiagnosesService {
 
     return this.http.get<Page<DiagnoseDto>>(
       `${this.url}/getByDoctorId/${doctorId}`,
+      { params }
+    ).pipe(
+      map(pageResp => ({
+        ...pageResp,
+        content: (pageResp.content || []).map(mapDiagnoseDateToDate)
+      }))
+    );
+  }
+
+  getLastestDiagnosesByPet(
+    petId: number,
+    page = 0,
+    size = 5,
+    sort?: string
+  ): Observable<Page<DiagnoseDto & { date: Date }>>{
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    if (sort) {
+      params = params.set('sort', sort);
+    }
+
+    return this.http.get<Page<DiagnoseDto>>(
+      `${this.url}/getByPetId/${petId}`,
       { params }
     ).pipe(
       map(pageResp => ({

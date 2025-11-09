@@ -69,7 +69,7 @@ public class SecurityConfig {
                         .requestMatchers("/doctor/**").hasRole("ADMIN")
                         // ACCESS TO DIAGNOSES
                         .requestMatchers("/diagnoses/create").hasRole("DOCTOR")
-                        .requestMatchers("/diagnoses/getByPetId/**").hasAnyRole("CLIENT","ADMIN")
+                        .requestMatchers("/diagnoses/getByPetId/**").hasAnyRole("CLIENT","ADMIN", "DOCTOR")
                         .requestMatchers("/diagnoses/findById/**",
                                     "/diagnoses/getLastDiagnoses/**",
                                     "/diagnoses/getAll",

@@ -10,6 +10,7 @@ export interface AppointmentDto {
     treatment: string;
     doctorName: string;
     clientName: string;
+    petId: number;
     petName: string;
     reason: string;
 }

@@ -19,6 +19,7 @@ public class AppointmentScheduleDTO {
     private LocalDateTime endTime;
     private String doctorName;
     private String clientName;
+    private Long petId;
     private String petName;
     private Reason reason;
 }

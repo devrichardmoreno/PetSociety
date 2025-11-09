@@ -30,7 +30,7 @@
               @if (appointment.startDate && appointment.startDate <= currentDate) {
                 
                 <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
-                <button class="btn btn-history" type="button">Ver historia clínica</button>
+                <button class="btn btn-history" type="button" (click)="openDiagnosesHistoryModal(appointment.petId)" >Ver historia clínica</button>
                 <button mat-flat-button (click)="openDiagnosisModal(appointment.id)" class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
                 </div>
               } @else {

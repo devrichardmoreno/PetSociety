@@ -130,7 +130,6 @@ public class DiagnosesController {
             }
     )
     @GetMapping("getByPetId/{id}")
-    @PreAuthorize("@ownershipValidator.canAccessPet(#id)")
     public ResponseEntity<Page<DiagnosesDTOResponse>> getByPetId(@PageableDefault(size = 10, page = 0) Pageable pageable, @PathVariable long id) {
         return ResponseEntity.ok(diagnosesService.findByPetId(id, pageable));
     }

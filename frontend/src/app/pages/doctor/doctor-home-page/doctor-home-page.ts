@@ -13,6 +13,7 @@ import { AppointmentService } from '../../../services/appointment/appointment-se
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { DiagnosisFormModal } from '../../diagnosis-form-modal/diagnosis-form-modal';
+import { DiagnosesHistoryModal } from '../../diagnoses-history-modal/diagnoses-history-modal';
 
 @Component({
   selector: 'app-doctor-home-page',
@@ -80,7 +81,7 @@ export class DoctorHomePage implements OnInit, OnDestroy {
     this.loadingDiagnoses = true;
     this.diagnosesError = null;
 
-    const s = this.diagnosesService.getLatestDiagnoses(doctorId, page, size).subscribe({
+    const s = this.diagnosesService.getLatestDiagnosesByDoctor(doctorId, page, size).subscribe({
       next: pageResp => {
         const items = pageResp?.content ?? [];
         this.lastestDiagnoses = append ? [...this.lastestDiagnoses, ...items] : items;
@@ -131,5 +132,13 @@ export class DoctorHomePage implements OnInit, OnDestroy {
         // Aquí puedes llamar a un servicio para guardar el diagnóstico
       }
   });
+  }
+
+  openDiagnosesHistoryModal(petId : number) {
+    const dialogRef = this.dialog.open(DiagnosesHistoryModal, {
+      width: '600px',
+      data: { petId },
+      panelClass: 'diagnose-history-dialog-panel' 
+    })
   }
 }
