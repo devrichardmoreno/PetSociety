@@ -1,0 +1,22 @@
+<h2>Crear diagnóstico</h2>
+
+<form [formGroup]="diagnosisForm" (ngSubmit)="onSubmit()" class="diagnose-form">
+    <mat-form-field appearance="outline" class="diagnose-field">
+        <mat-label>Diagnóstico</mat-label>
+        <textarea matInput formControlName="diagnose" placeholder="Ej: Otitis canina"></textarea>
+        @if (diagnosisForm.get('diagnose')?.hasError('required') && diagnosisForm.get('diagnose')?.touched) {
+            <mat-error>El diagnóstico es obligatorio.</mat-error>
+        }
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="treatment-diagnose">
+        <mat-label >Tratamiento</mat-label>
+        <textarea matInput formControlName="treatment" placeholder="Ej: Gotas óticas por 7 días"></textarea>
+    </mat-form-field>
+    @if (diagnosisForm.get('treatment')?.hasError('required') && diagnosisForm.get('treatment')?.touched) {
+        <mat-error class="error-text">El tratamiento es obligatorio.</mat-error>
+    }
+    <div class="buttons">
+        <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+        <button mat-flat-button color="primary" type="submit" [disabled]="diagnosisForm.invalid">Guardar</button>
+    </div>
+</form>

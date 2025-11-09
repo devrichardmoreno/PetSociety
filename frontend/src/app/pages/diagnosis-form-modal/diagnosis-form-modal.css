@@ -1,0 +1,140 @@
+/* Estilos del modal de diagnóstico — usa variables globales definidas en styles.css */
+
+/* Contenedor del form */
+.diagnose-form {
+  width: 400px;                      /* ancho fijo solicitado */
+  max-width: calc(100vw - 32px);     /* seguro en pantallas pequeñas */
+  margin: 0 auto;
+  padding: 18px;
+  background: var(--light-bg);
+  border-radius: 12px;
+  box-shadow: 0 12px 30px rgba(var(--hospital-blue-rgb), 0.08);
+  border: 1px solid rgba(0,0,0,0.04);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-family: inherit;
+}
+
+/* Título */
+.diagnose-form + * , /* por si hay elementos después */
+.diagnose-form h2,
+h2 {
+  font-size: 1.25rem;
+  margin: 0 0 6px 10px;
+  font-weight: 700;
+}
+
+/* Mat form fields full width */
+.diagnose-field,
+.treatment-diagnose,
+.diagnose-form .mat-form-field {
+  width: 100%;
+}
+
+/* Textareas / inputs */
+.mat-input-element,
+textarea.mat-input-element {
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  color: #111;
+  min-height: 44px;
+  resize: vertical;
+  border-radius: 6px;
+}
+
+/* Outline focus y estado enfocado */
+.mat-form-field-appearance-outline .mat-form-field-outline {
+  border-color: rgba(0,0,0,0.06);
+}
+
+.mat-form-field.mat-focused .mat-form-field-outline {
+  box-shadow: 0 6px 18px rgba(var(--hospital-blue-rgb), 0.08);
+  border-color: var(--hospital-blue);
+}
+
+/* mat-error / mensajes de validación */
+mat-error,
+.error-text,
+.form-error {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 6px;
+  display: block;
+}
+
+/* Contenedor de botones */
+.buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+/* Botones: secundario (cancel) */
+.buttons button.mat-button,
+.buttons button.btn-secondary {
+  background: transparent;
+  color: var(--hospital-blue);
+  border: 1px solid rgba(var(--hospital-blue-rgb), 0.12);
+  padding: 8px 12px;
+  border-radius: 8px;
+  min-height: 40px;
+}
+
+/* Botón primario: submit */
+.buttons button.mat-flat-button,
+.buttons button[type="submit"],
+.buttons .btn-primary {
+  background: linear-gradient(180deg, var(--vibrant-orange), var(--orange));
+  color: #fff;
+  padding: 9px 14px;
+  border-radius: 8px;
+  border: none;
+  box-shadow: 0 10px 26px rgba(var(--vibrant-orange-rgb), 0.12);
+  font-weight: 600;
+  min-height: 40px;
+}
+
+/* Hover / focus states */
+.buttons button.mat-button:hover,
+.buttons button.btn-secondary:hover {
+  background: rgba(var(--hospital-blue-rgb), 0.05);
+  transform: translateY(-1px);
+}
+
+.buttons button.mat-flat-button:hover,
+.buttons .btn-primary:hover {
+  filter: brightness(0.98);
+  transform: translateY(-1px);
+}
+
+/* Disabled state */
+.buttons button[disabled],
+.buttons .mat-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+  transform: none;
+}
+
+/* Helper text / success */
+.success-text { color: var(--success); font-size: 0.9rem; margin-top: 6px; }
+
+/* Small accessibility improvements */
+.mat-form-field .mat-input-element:focus,
+button:focus {
+  outline: 3px solid rgba(var(--hospital-blue-rgb), 0.12);
+  outline-offset: 2px;
+}
+
+/* Small screen adjustments */
+@media (max-width: 480px) {
+  .diagnose-form {
+    width: calc(100vw - 24px);
+    padding: 14px;
+  }
+  .buttons { flex-direction: column-reverse; }
+  .buttons button { width: 100%; }
+}

@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Page } from '../../models/paging/page';
 import { DiagnoseDto, mapDiagnoseDateToDate } from '../../models/dto/diagnose-dto/diagnose-dto';
+import { DiagnoseRequest } from '../../models/dto/diagnose-dto/diagnose-request';
 
 @Injectable({
   providedIn: 'root'
@@ -37,5 +38,9 @@ export class DiagnosesService {
         content: (pageResp.content || []).map(mapDiagnoseDateToDate)
       }))
     );
+  }
+
+  createDiagnose(diagnose :DiagnoseRequest): Observable<DiagnoseRequest> {
+    return this.http.post<DiagnoseRequest>(`${this.url}/create`, diagnose);
   }
 }

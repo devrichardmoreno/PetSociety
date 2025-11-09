@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { HeaderDoctor } from "../../../components/header-doctor/header-doctor/header-doctor";
-import { AppointmentDto } from '../../../models/dto/appointment-dto/appointment-dto';
+import { AppointmentDto, mapAppointmentDateToDate } from '../../../models/dto/appointment-dto/appointment-dto';
 import { DoctorService } from '../../../services/doctor/doctor-service';
 import { DiagnosesService } from '../../../services/diagnoses/diagnoses-service';
 import { Doctor } from '../../../models/doctor/doctor';
@@ -10,20 +10,24 @@ import { Subscription } from 'rxjs';
 import { DiagnoseDto } from '../../../models/dto/diagnose-dto/diagnose-dto';
 import { CommonModule } from '@angular/common';
 import { AppointmentService } from '../../../services/appointment/appointment-service';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
+import { DiagnosisFormModal } from '../../diagnosis-form-modal/diagnosis-form-modal';
 
 @Component({
   selector: 'app-doctor-home-page',
-  imports: [HeaderDoctor, CommonModule],
+  imports: [HeaderDoctor, CommonModule, MatDialogModule, MatButtonModule],
   templateUrl: './doctor-home-page.html',
   styleUrl: './doctor-home-page.css'
 })
 export class DoctorHomePage implements OnInit, OnDestroy {
-  appointmentArray: AppointmentDto[] = [];
+  appointmentArray: (AppointmentDto & { startDate?: Date | null; endDate?: Date | null })[] = [];
   doctor?: Doctor;
   lastestDiagnoses: DiagnoseDto[] = [];
   loadingDiagnoses = false;
   diagnosesError: string | null = null;
   diagnosesPage = { page: 0, size: 5, totalPages: 0, totalElements: 0 };
+  currentDate: Date = new Date();
 
   private subs = new Subscription();
 
@@ -32,10 +36,12 @@ export class DoctorHomePage implements OnInit, OnDestroy {
     private diagnosesService: DiagnosesService,
     private appointmentService: AppointmentService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) { }
 
   ngOnInit(): void {
+    this.currentDate = new Date();
     const userId = this.authService.getUserId();
 
     // 1) Si no hay userId: acción segura 
@@ -58,7 +64,10 @@ export class DoctorHomePage implements OnInit, OnDestroy {
 
     this.appointmentService.getScheduledAppointments(userId).subscribe({
       next: (appointments) => {
-        this.appointmentArray = appointments
+         const mapped = appointments.map(a => mapAppointmentDateToDate(a));
+    console.log('Raw appointments from backend:', appointments);
+    console.log('Mapped appointments (startDate/endDate):', mapped);
+    this.appointmentArray = mapped;
       },
       error: (err) => {
         console.error('Error cargando citas: ', err);
@@ -108,5 +117,19 @@ export class DoctorHomePage implements OnInit, OnDestroy {
     const userId = this.authService.getUserId();
     if (userId === null) return;
     this.loadLatestDiagnostics(userId, this.diagnosesPage.page - 1, this.diagnosesPage.size, false);
+  }
+  openDiagnosisModal(appointmentId: number) {
+    const dialogRef = this.dialog.open(DiagnosisFormModal, {
+      width: '600px',
+      data: { appointmentId },
+      panelClass: 'diagnose-dialog-panel' 
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) { 
+        console.log('Diagnóstico enviado:', result);
+        // Aquí puedes llamar a un servicio para guardar el diagnóstico
+      }
+  });
   }
 }

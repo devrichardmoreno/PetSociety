@@ -14,26 +14,34 @@
     <section aria-labelledby="appointments-title">
       <h2 id="appointments-title" class="visually-hidden">Próximas citas</h2>
 
-      <!-- Angular 20 control-flow: @for -->
       @for (appointment of appointmentArray; track $index) {
         <article class="card" role="article" aria-label="Cita {{ $index + 1 }}">
           <div>
-            <h3>Fecha : {{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</h3>
+            <h3>Fecha inicio: {{ appointment.startDate | date:'dd/MM/yyyy HH:mm' }}</h3>
+            <h3>Fecha cierre: {{ appointment.endTime | date:'dd/MM/yyyy HH:mm' }}</h3>
+            <h3>Cliente : {{ appointment.clientName }}</h3>
+            <p>Mascota : {{ appointment.petName }}</p>
+            <p>Razón : {{appointment.reason}}</p>
+            
 
-            @if(appointment.clientName === "Sin cliente asignado" && appointment.petName === "Sin mascota asignada") {
+            @if (appointment.clientName === "Sin cliente asignado" && appointment.petName === "Sin mascota asignada") {
               <p class="no-appointments">Esta cita no tiene cliente ni mascota asignados.</p>
             } @else {
-              <h3>Cliente : {{ appointment.clientName }}</h3>
-              <p>Mascota : {{ appointment.petName }}</p>
-              <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
-            <button class="btn btn-history" type="button">Ver historia clínica</button>
-            <button class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
-          </div>
+              @if (appointment.startDate && appointment.startDate <= currentDate) {
+                
+                <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
+                <button class="btn btn-history" type="button">Ver historia clínica</button>
+                <button mat-flat-button (click)="openDiagnosisModal(appointment.id)" class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
+                </div>
+              } @else {
+              <p class="no-appointments">Cita futura</p>
+            }
             }
           </div>
-
-          
         </article>
+      }
+      @empty {
+        <p class="no-appointments">No hay citas para mostrar.</p>
       }
     </section>
   </main>

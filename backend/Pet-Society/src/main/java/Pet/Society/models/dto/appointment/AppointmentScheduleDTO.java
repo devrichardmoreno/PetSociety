@@ -14,7 +14,9 @@ import java.time.LocalDateTime;
 @Data
 @SuperBuilder
 public class AppointmentScheduleDTO {
+    private Long id;
     private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private String doctorName;
     private String clientName;
     private String petName;

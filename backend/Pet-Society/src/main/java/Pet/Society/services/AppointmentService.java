@@ -228,7 +228,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
             throw new AppointmentDoesntExistException("Doctor does not exist");
         }
         return this.appointmentRepository.findAllByDoctorIdOrderByStartDateAsc(id).stream()
-                .filter(appointment -> appointment.getStartDate().isAfter(LocalDateTime.now()))
+                .filter(appointment -> appointment.getEndDate().isAfter(LocalDateTime.now()))
                 .map(appointmentEntity -> {
                     String clientName = appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null
                             ? appointmentEntity.getPet().getClient().getName()
@@ -239,7 +239,9 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                             : "Sin mascota asignada";
 
                     return AppointmentScheduleDTO.builder()
+                            .id(appointmentEntity.getId())
                             .startTime(appointmentEntity.getStartDate())
+                            .endTime(appointmentEntity.getEndDate())
                             .clientName(clientName)
                             .reason(appointmentEntity.getReason())
                             .petName(petName)
