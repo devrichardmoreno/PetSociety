@@ -1,9 +1,4 @@
 <div class="pets-section">
-  <!-- Nota informativa -->
-  <div class="note-section">
-    <p class="note-text">Nota: Solo 1 mascota puede tener una cita programada</p>
-  </div>
-
   @if (pets.length === 0) {
     <p class="empty-message">No tienes mascotas registradas</p>
   } @else {
@@ -14,7 +9,7 @@
         </div>
 
         <div class="pet-actions">
-          @if (!hasScheduledAppointment) {
+          @if (!pet.citaProgramada) {
             <button class="btn btn-action" (click)="scheduleAppointment.emit(pet.id)">
               Agregar cita
             </button>
@@ -34,14 +29,14 @@
               {{ pet.citaProgramada.fecha }} {{ pet.citaProgramada.hora }}
             </p>
             @if (pet.citaProgramada.doctor) {
-              <p class="appointment-doctor">Dr. {{ pet.citaProgramada.doctor }}</p>
+              <p class="appointment-doctor">{{ pet.citaProgramada.doctor }}</p>
             }
             @if (pet.citaProgramada.motivo) {
               <p class="appointment-motivo">Motivo: {{ pet.citaProgramada.motivo }}</p>
             }
             <div class="appointment-actions">
               <button class="btn btn-cancel" (click)="cancelAppointment.emit(pet.id)">
-                Cancelar cita
+                CANCELAR CITA
               </button>
             </div>
           </div>

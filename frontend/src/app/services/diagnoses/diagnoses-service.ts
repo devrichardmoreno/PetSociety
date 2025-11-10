@@ -1,9 +1,11 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { Page } from '../../models/paging/page';
 import { DiagnoseDto, mapDiagnoseDateToDate } from '../../models/dto/diagnose-dto/diagnose-dto';
 import { DiagnoseRequest } from '../../models/dto/diagnose-dto/diagnose-request';
+import { DiagnosesDTOResponse } from '../../models/dto/diagnoses-response-dto';
+import { AuthService } from '../auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +13,18 @@ import { DiagnoseRequest } from '../../models/dto/diagnose-dto/diagnose-request'
 export class DiagnosesService {
   private url = 'http://localhost:8080/diagnoses';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = this.authService.getToken();
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
 
   getLatestDiagnosesByDoctor(
     doctorId: number,
@@ -66,6 +78,28 @@ export class DiagnosesService {
   }
 
   createDiagnose(diagnose :DiagnoseRequest): Observable<DiagnoseRequest> {
-    return this.http.post<DiagnoseRequest>(`${this.url}/create`, diagnose);
+    return this.http.post<DiagnoseRequest>(
+      `${this.url}/create`, 
+      diagnose,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  getDiagnosesByClientId(
+    clientId: number,
+    page = 0,
+    size = 10
+  ): Observable<Page<DiagnosesDTOResponse>> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+
+    return this.http.get<Page<DiagnosesDTOResponse>>(
+      `${this.url}/lastDiagnoses/${clientId}`,
+      {
+        headers: this.getAuthHeaders(),
+        params: params
+      }
+    );
   }
 }

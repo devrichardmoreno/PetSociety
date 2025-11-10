@@ -1,0 +1,183 @@
+<div class="schedule-appointment-container">
+  <!-- Header con progreso -->
+  <div class="wizard-header">
+    <h2>Agendar Cita</h2>
+    <div class="progress-bar">
+      <div class="progress-step" [class.active]="currentStep >= 1" [class.completed]="currentStep > 1">
+        <span class="step-number">1</span>
+        <span class="step-label">Motivo</span>
+      </div>
+      <div class="progress-line" [class.completed]="currentStep > 1"></div>
+      <div class="progress-step" [class.active]="currentStep >= 2" [class.completed]="currentStep > 2">
+        <span class="step-number">2</span>
+        <span class="step-label">Fecha</span>
+      </div>
+      <div class="progress-line" [class.completed]="currentStep > 2"></div>
+      <div class="progress-step" [class.active]="currentStep >= 3" [class.completed]="currentStep > 3">
+        <span class="step-number">3</span>
+        <span class="step-label">Horario</span>
+      </div>
+      <div class="progress-line" [class.completed]="currentStep > 3"></div>
+      <div class="progress-step" [class.active]="currentStep >= 4">
+        <span class="step-number">4</span>
+        <span class="step-label">Confirmar</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contenido del wizard -->
+  <div class="wizard-content">
+    <!-- Paso 1: Seleccionar motivo -->
+    @if (currentStep === 1) {
+      <div class="step-content">
+        <h3>Selecciona el motivo de la cita</h3>
+        <div class="reason-options">
+          @for (option of reasonOptions; track option.value) {
+            <button 
+              class="reason-card"
+              [class.selected]="selectedReason === option.value"
+              (click)="selectReason(option.value)">
+              <span class="reason-icon">{{ option.label.charAt(0) }}</span>
+              <span class="reason-label">{{ option.label }}</span>
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- Paso 2: Calendario -->
+    @if (currentStep === 2) {
+      <div class="step-content">
+        <h3>Selecciona una fecha disponible</h3>
+        @if (isLoading) {
+          <div class="loading">Cargando días disponibles...</div>
+        } @else {
+          <div class="calendar-container">
+            <div class="calendar-header">
+              <button class="nav-button" (click)="previousMonth()">‹</button>
+              <h4>{{ getMonthName() }} {{ currentYear }}</h4>
+              <button class="nav-button" (click)="nextMonth()">›</button>
+            </div>
+            <div class="calendar-grid">
+              <div class="calendar-day-header">Dom</div>
+              <div class="calendar-day-header">Lun</div>
+              <div class="calendar-day-header">Mar</div>
+              <div class="calendar-day-header">Mié</div>
+              <div class="calendar-day-header">Jue</div>
+              <div class="calendar-day-header">Vie</div>
+              <div class="calendar-day-header">Sáb</div>
+              
+              @for (empty of [].constructor(getFirstDayOfMonth()); track $index) {
+                <div class="calendar-day empty"></div>
+              }
+              
+              @for (day of getDaysInMonth(); track day) {
+                <button
+                  class="calendar-day"
+                  [class.available]="isDateAvailable(day)"
+                  [class.selected]="isDateSelected(day)"
+                  [class.past]="isDatePast(day)"
+                  [disabled]="!isDateAvailable(day) || isDatePast(day)"
+                  (click)="selectDay(day)">
+                  {{ day }}
+                </button>
+              }
+            </div>
+            <div class="calendar-legend">
+              <div class="legend-item">
+                <span class="legend-color available"></span>
+                <span>Disponible</span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color selected"></span>
+                <span>Seleccionado</span>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Paso 3: Seleccionar horario -->
+    @if (currentStep === 3) {
+      <div class="step-content">
+        <h3>Selecciona un horario disponible</h3>
+        <p class="selected-date-info">{{ selectedDate ? formatDateForDisplay(selectedDate) : '' }}</p>
+        @if (isLoading) {
+          <div class="loading">Cargando horarios...</div>
+        } @else if (availableAppointments.length === 0) {
+          <div class="no-appointments">
+            <p>No hay horarios disponibles para este día</p>
+          </div>
+        } @else {
+          <div class="appointments-list">
+            @for (appointment of availableAppointments; track appointment.appointmentId) {
+              <button
+                class="appointment-card"
+                [class.selected]="selectedAppointment?.appointmentId === appointment.appointmentId"
+                (click)="selectAppointment(appointment)">
+                <div class="appointment-time">{{ formatTime(appointment.startTime) }}</div>
+                <div class="appointment-info">
+                  <div class="doctor-name">{{ appointment.doctorName }}</div>
+                  <div class="doctor-speciality">{{ getSpecialityLabel(appointment.doctorSpeciality) }}</div>
+                </div>
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- Paso 4: Confirmación -->
+    @if (currentStep === 4 && selectedAppointment) {
+      <div class="step-content">
+        <h3>Confirma los detalles de tu cita</h3>
+        <div class="confirmation-card">
+          <div class="confirmation-item">
+            <span class="confirmation-label">Motivo:</span>
+            <span class="confirmation-value">{{ getReasonLabel(selectedAppointment.reason) }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">Fecha:</span>
+            <span class="confirmation-value">{{ selectedDate ? formatDateForDisplay(selectedDate) : '' }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">Hora:</span>
+            <span class="confirmation-value">{{ formatTime(selectedAppointment.startTime) }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">Doctor:</span>
+            <span class="confirmation-value">{{ selectedAppointment.doctorName }}</span>
+          </div>
+          <div class="confirmation-item">
+            <span class="confirmation-label">Especialidad:</span>
+            <span class="confirmation-value">{{ getSpecialityLabel(selectedAppointment.doctorSpeciality) }}</span>
+          </div>
+        </div>
+        @if (isLoading) {
+          <div class="loading">Procesando...</div>
+        }
+      </div>
+    }
+  </div>
+
+  <!-- Botones de navegación -->
+  <div class="wizard-actions">
+    @if (currentStep > 1) {
+      <button class="btn btn-secondary" (click)="previousStep()" [disabled]="isLoading">
+        Anterior
+      </button>
+    } @else {
+      <button class="btn btn-secondary" (click)="cancelSchedule()" [disabled]="isLoading">
+        Cancelar
+      </button>
+    }
+    
+    @if (currentStep === 4) {
+      <button class="btn btn-primary" (click)="confirmAppointment()" [disabled]="isLoading || !selectedAppointment">
+        Confirmar Cita
+      </button>
+    }
+  </div>
+</div>
+

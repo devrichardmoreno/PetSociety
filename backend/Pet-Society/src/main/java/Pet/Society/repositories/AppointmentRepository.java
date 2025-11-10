@@ -3,10 +3,13 @@ package Pet.Society.repositories;
 import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.models.entities.DoctorEntity;
 import Pet.Society.models.entities.PetEntity;
+import Pet.Society.models.enums.Reason;
+import Pet.Society.models.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -22,4 +25,11 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     List<AppointmentEntity> findAllByDoctorId(Long doctorId);
     List<AppointmentEntity> findAllByDoctorIdOrderByStartDateAsc(Long doctorId);
     List<AppointmentEntity> findAppointmentByDoctor(DoctorEntity doctor);
+    
+    // Métodos para obtener citas disponibles filtradas
+    List<AppointmentEntity> findAllByReasonAndStatusAndPetIsNullAndStartDateAfter(
+        Reason reason, Status status, LocalDateTime startDate);
+    
+    List<AppointmentEntity> findAllByReasonAndStatusAndPetIsNullAndStartDateBetween(
+        Reason reason, Status status, LocalDateTime startDate, LocalDateTime endDate);
 }

@@ -1,0 +1,440 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.diagnoses-container {
+  padding-top: 100px; /* Espacio para el header fijo */
+  flex: 1;
+  padding: 2rem;
+  background-color: var(--light-bg);
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.page-title {
+  color: var(--hospital-blue);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
+}
+
+/* Filtros */
+.filters-section {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  background-color: white;
+  padding: 1.5rem;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 150px;
+}
+
+.filter-group label {
+  font-weight: 600;
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+}
+
+.filter-select {
+  padding: 0.75rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  background-color: white;
+  color: var(--primary-text);
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.filter-select:hover {
+  border-color: var(--hospital-blue);
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: var(--hospital-blue);
+}
+
+/* Grid de diagnósticos */
+.diagnoses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.diagnosis-card {
+  background-color: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.diagnosis-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.diagnosis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.pet-name-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pet-icon {
+  font-size: 1.2rem;
+}
+
+.pet-name {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--primary-text);
+}
+
+.diagnosis-date {
+  font-size: 0.9rem;
+  color: var(--secondary-text);
+  font-weight: 600;
+}
+
+.diagnosis-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.diagnosis-info-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.info-label {
+  font-weight: 600;
+  color: var(--secondary-text);
+  min-width: 140px;
+  font-size: 0.9rem;
+}
+
+.info-value {
+  color: var(--primary-text);
+  flex: 1;
+  font-size: 0.9rem;
+}
+
+.diagnosis-preview,
+.treatment-preview {
+  margin-top: 0.5rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.diagnosis-text,
+.treatment-text {
+  margin: 0.5rem 0 0 0;
+  color: var(--primary-text);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.diagnosis-footer {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.btn-details {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--hospital-blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-details:hover {
+  background-color: #3a9bc4;
+}
+
+/* Mensaje vacío y loading */
+.empty-message,
+.loading-message {
+  text-align: center;
+  padding: 3rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.empty-message p,
+.loading-message p {
+  color: var(--secondary-text);
+  font-size: 1.1rem;
+}
+
+/* Paginación */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 2rem 0;
+  flex-wrap: wrap;
+}
+
+.btn-pagination {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--hospital-green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-pagination:hover:not(:disabled) {
+  background-color: #6ba832;
+}
+
+.btn-pagination:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.btn-page-number {
+  padding: 0.75rem 1rem;
+  background-color: white;
+  color: var(--hospital-blue);
+  border: 2px solid var(--hospital-blue);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 40px;
+}
+
+.btn-page-number:hover {
+  background-color: rgba(69, 174, 221, 0.1);
+}
+
+.btn-page-number.active {
+  background-color: var(--hospital-blue);
+  color: white;
+}
+
+.pagination-info {
+  text-align: center;
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--hospital-blue);
+  font-size: 1.5rem;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--secondary-text);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.btn-close:hover {
+  color: var(--primary-text);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.diagnosis-details-section,
+.diagnosis-content-section {
+  margin-bottom: 2rem;
+}
+
+.diagnosis-details-section h3,
+.diagnosis-content-section h3 {
+  color: var(--hospital-blue);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.detail-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-start;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--secondary-text);
+  min-width: 150px;
+}
+
+.detail-value {
+  color: var(--primary-text);
+  flex: 1;
+}
+
+.diagnosis-full-content,
+.treatment-full-content {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.diagnosis-full-content p,
+.treatment-full-content p {
+  margin: 0;
+  color: var(--primary-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-close-modal {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--hospital-blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-close-modal:hover {
+  background-color: #3a9bc4;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .diagnoses-container {
+    padding: 1rem;
+    padding-top: 100px;
+  }
+
+  .filters-section {
+    flex-direction: column;
+  }
+
+  .filter-group {
+    min-width: 100%;
+  }
+
+  .diagnoses-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal-content {
+    margin: 1rem;
+    max-height: 95vh;
+  }
+
+  .pagination-container {
+    gap: 0.25rem;
+  }
+
+  .btn-page-number {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.9rem;
+    min-width: 35px;
+  }
+}
+

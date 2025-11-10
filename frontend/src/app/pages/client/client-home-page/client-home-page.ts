@@ -4,16 +4,19 @@ import { CommonModule } from '@angular/common';
 import { ClientService } from '../../../services/client.service';
 import { AuthService } from '../../../services/auth.service';
 import { PetService } from '../../../services/pet.service';
+import { AppointmentService } from '../../../services/appointment-service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
 import { Pet } from '../../../models/Pet';
 import { UserData } from '../../../models/UserData';
+import { Status } from '../../../models/dto/status.enum';
 import { ClientProfileSection } from '../components/client-profile-section/client-profile-section';
 import { ClientProfileEdit } from '../components/client-profile-edit/client-profile-edit';
 import { ClientPetsList } from '../components/client-pets-list/client-pets-list';
 import { ClientPetAddForm } from '../components/client-pet-add-form/client-pet-add-form';
 import { ClientPetEditForm } from '../components/client-pet-edit-form/client-pet-edit-form';
+import { ScheduleAppointmentComponent } from '../components/schedule-appointment/schedule-appointment';
 
 @Component({
   selector: 'app-client-home-page',
@@ -25,7 +28,8 @@ import { ClientPetEditForm } from '../components/client-pet-edit-form/client-pet
     ClientProfileEdit,
     ClientPetsList,
     ClientPetAddForm,
-    ClientPetEditForm
+    ClientPetEditForm,
+    ScheduleAppointmentComponent
   ],
   templateUrl: './client-home-page.html',
   styleUrl: './client-home-page.css'
@@ -55,6 +59,10 @@ export class ClientHomePage implements OnInit {
   editPetForm!: FormGroup;
   editingPetId: number | null = null;
 
+  // Estado para controlar si está agendando cita
+  isSchedulingAppointment = false;
+  schedulingPetId: number | null = null;
+
   // Lista de mascotas del cliente
   pets: Pet[] = [];
 
@@ -62,6 +70,7 @@ export class ClientHomePage implements OnInit {
     private clientService: ClientService,
     private authService: AuthService,
     private petService: PetService,
+    private appointmentService: AppointmentService,
     private fb: FormBuilder,
     private router: Router
   ) {}
@@ -122,12 +131,17 @@ export class ClientHomePage implements OnInit {
     if (userId) {
       this.petService.getAllPetsByClientId(userId).subscribe({
         next: (petsDTO) => {
-          // Mapear PetDTO[] a Pet[]
+          // Mapear PetDTO[] a Pet[] y cargar citas para cada mascota
           this.pets = petsDTO.map(petDTO => ({
             id: petDTO.id!,
             nombre: petDTO.name,
             edad: petDTO.age
           }));
+          
+          // Cargar citas para cada mascota
+          this.pets.forEach(pet => {
+            this.loadPetAppointment(pet.id);
+          });
         },
         error: (error) => {
           // Si el cliente no tiene mascotas, el backend lanza NoPetsException
@@ -137,6 +151,61 @@ export class ClientHomePage implements OnInit {
         }
       });
     }
+  }
+
+  loadPetAppointment(petId: number): void {
+    this.appointmentService.getAllAppointmentsByPetIncludingScheduled(petId).subscribe({
+      next: (appointments) => {
+        // Buscar la primera cita programada (status TO_BEGIN - futura)
+        const now = new Date();
+        const upcomingAppointment = appointments
+          .filter(apt => {
+            const aptDate = new Date(apt.startTime);
+            return aptDate > now && apt.status === Status.TO_BEGIN;
+          })
+          .sort((a, b) => new Date(a.startTime).getTime() - new Date(b.startTime).getTime())[0];
+        
+        if (upcomingAppointment) {
+          const pet = this.pets.find(p => p.id === petId);
+          if (pet) {
+            const startDate = new Date(upcomingAppointment.startTime);
+            pet.citaProgramada = {
+              fecha: this.formatDateForDisplay(startDate),
+              hora: this.formatTimeForDisplay(startDate),
+              doctor: upcomingAppointment.doctorName,
+              motivo: this.getReasonLabel(upcomingAppointment.reason)
+            };
+          }
+        }
+      },
+      error: (error) => {
+        // Si no hay citas, simplemente no hacemos nada
+        console.log(`No se encontraron citas para la mascota ${petId}:`, error);
+      }
+    });
+  }
+
+  formatDateForDisplay(date: Date): string {
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  formatTimeForDisplay(date: Date): string {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}hs`;
+  }
+
+  getReasonLabel(reason: string): string {
+    const reasonLabels: { [key: string]: string } = {
+      'CONTROL': 'Control general y vacunación anual',
+      'EMERGENCY': 'Emergencia',
+      'VACCINATION': 'Vacunación',
+      'NUTRITION': 'Nutrición'
+    };
+    return reasonLabels[reason] || reason;
   }
 
   get userName(): string {
@@ -426,13 +495,113 @@ export class ClientHomePage implements OnInit {
   }
 
   onScheduleAppointment(petId: number): void {
-    console.log('Agendar cita para mascota:', petId);
-    // TODO: Implementar cuando tengamos la funcionalidad
+    this.schedulingPetId = petId;
+    this.isSchedulingAppointment = true;
+  }
+
+  onAppointmentScheduled(): void {
+    this.isSchedulingAppointment = false;
+    this.schedulingPetId = null;
+    // Recargar datos si es necesario
+    this.loadPetsData();
+  }
+
+  onCancelSchedule(): void {
+    this.isSchedulingAppointment = false;
+    this.schedulingPetId = null;
   }
 
   onCancelAppointment(petId: number): void {
-    console.log('Cancelar cita para mascota:', petId);
-    // TODO: Implementar cuando tengamos la funcionalidad
+    // Buscar la mascota para obtener su información
+    const pet = this.pets.find(p => p.id === petId);
+    const petName = pet ? pet.nombre : 'la mascota';
+    const appointmentInfo = pet?.citaProgramada 
+      ? `${pet.citaProgramada.fecha} ${pet.citaProgramada.hora}` 
+      : 'la cita';
+
+    // Primera confirmación
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: `¿Deseas cancelar la cita de ${petName} programada para el ${appointmentInfo}?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cancelar cita',
+      cancelButtonText: 'No, mantener la cita',
+      background: '#fff',
+      color: '#333',
+      confirmButtonColor: '#dc3545',
+      cancelButtonColor: '#45AEDD',
+      iconColor: '#dc3545'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Segunda confirmación con botones invertidos
+        Swal.fire({
+          title: '¿REALMENTE estás seguro?',
+          html: `<p style="font-size: 1.1rem;">Esta acción <strong>NO se puede deshacer</strong>.<br>Si estás seguro, presiona el botón <strong>rojo</strong> para cancelar la cita de <strong>${petName}</strong>.</p>`,
+          icon: 'error',
+          showCancelButton: true,
+          confirmButtonText: 'Sí, cancelar cita',
+          cancelButtonText: 'No, mantener la cita',
+          background: '#fff',
+          color: '#333',
+          confirmButtonColor: '#dc3545',
+          cancelButtonColor: '#45AEDD',
+          iconColor: '#dc3545',
+          reverseButtons: true
+        }).then((secondResult) => {
+          if (secondResult.isConfirmed) {
+            this.executeCancelAppointment(petId, petName);
+          }
+        });
+      }
+    });
+  }
+
+  executeCancelAppointment(petId: number, petName: string): void {
+    // Primero obtener el ID de la cita programada
+    this.appointmentService.getScheduledAppointmentIdByPetId(petId).subscribe({
+      next: (appointmentId) => {
+        // Cancelar la cita
+        this.appointmentService.cancelAppointment(appointmentId).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Cita cancelada!',
+              html: `La cita de <strong>${petName}</strong> fue exitosamente cancelada.`,
+              background: '#fff',
+              color: '#333',
+              confirmButtonColor: '#45AEDD',
+              iconColor: '#7AC143'
+            }).then(() => {
+              // Recargar los datos para actualizar la vista
+              this.loadPetsData();
+            });
+          },
+          error: (error) => {
+            console.error('Error al cancelar cita:', error);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al cancelar',
+              text: 'No se pudo cancelar la cita. Por favor, intenta nuevamente.',
+              background: '#fff',
+              color: '#333',
+              confirmButtonColor: '#45AEDD'
+            });
+          }
+        });
+      },
+      error: (error) => {
+        console.error('Error al obtener ID de cita:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo encontrar la cita programada. Por favor, intenta nuevamente.',
+          background: '#fff',
+          color: '#333',
+          confirmButtonColor: '#45AEDD'
+        });
+      }
+    });
   }
 
   // ========== MÉTODOS PARA DATOS PERSONALES ==========

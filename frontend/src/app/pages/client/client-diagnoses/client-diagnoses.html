@@ -1,0 +1,182 @@
+<app-header-client></app-header-client>
+
+<div class="diagnoses-container">
+  <h1 class="page-title">Mis Diagnósticos</h1>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label for="pet-filter">Mascota:</label>
+      <select id="pet-filter" [(ngModel)]="selectedPetName" (change)="onPetFilterChange(selectedPetName)" class="filter-select">
+        <option value="ALL">Todas</option>
+        @for (pet of uniquePets; track pet) {
+          <option [value]="pet">{{ pet }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="doctor-filter">Doctor:</label>
+      <select id="doctor-filter" [(ngModel)]="selectedDoctorName" (change)="onDoctorFilterChange(selectedDoctorName)" class="filter-select">
+        <option value="ALL">Todos</option>
+        @for (doctor of uniqueDoctors; track doctor) {
+          <option [value]="doctor">{{ doctor }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="reason-filter">Motivo:</label>
+      <select id="reason-filter" [(ngModel)]="selectedReason" (change)="onReasonFilterChange(selectedReason)" class="filter-select">
+        <option value="ALL">Todos</option>
+        <option [value]="Reason.CONTROL">Control</option>
+        <option [value]="Reason.EMERGENCY">Emergencia</option>
+        <option [value]="Reason.VACCINATION">Vacunación</option>
+        <option [value]="Reason.NUTRITION">Nutrición</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Listado de diagnósticos -->
+  @if (loading) {
+    <div class="loading-message">
+      <p>Cargando diagnósticos...</p>
+    </div>
+  } @else if (displayedDiagnoses.length === 0) {
+    <div class="empty-message">
+      <p>No se encontraron diagnósticos con los filtros seleccionados</p>
+    </div>
+  } @else {
+    <div class="diagnoses-grid">
+      @for (diagnosis of displayedDiagnoses; track diagnosis.date + diagnosis.petName) {
+        <div class="diagnosis-card">
+          <div class="diagnosis-header">
+            <div class="pet-name-badge">
+              <span class="pet-icon">🐾</span>
+              <span class="pet-name">{{ diagnosis.petName }}</span>
+            </div>
+            <span class="diagnosis-date">{{ formatDate(diagnosis.date) }}</span>
+          </div>
+
+          <div class="diagnosis-body">
+            <div class="diagnosis-info-row">
+              <span class="info-label">👨‍⚕️ Doctor:</span>
+              <span class="info-value">{{ diagnosis.doctorName }}</span>
+            </div>
+
+            <div class="diagnosis-info-row">
+              <span class="info-label">📋 Motivo:</span>
+              <span class="info-value">{{ getReasonLabel(diagnosis.appointmentReason) }}</span>
+            </div>
+
+            <div class="diagnosis-info-row">
+              <span class="info-label">🕐 Fecha diagnóstico:</span>
+              <span class="info-value">{{ formatDate(diagnosis.date) }} {{ formatTime(diagnosis.date) }}</span>
+            </div>
+
+            <div class="diagnosis-preview">
+              <span class="info-label">🔬 Diagnóstico:</span>
+              <p class="diagnosis-text">{{ getDiagnosisPreview(diagnosis.diagnose) }}</p>
+            </div>
+
+            <div class="treatment-preview">
+              <span class="info-label">💊 Tratamiento:</span>
+              <p class="treatment-text">{{ getDiagnosisPreview(diagnosis.treatment) }}</p>
+            </div>
+          </div>
+
+          <div class="diagnosis-footer">
+            <button class="btn-details" (click)="openDetailsModal(diagnosis)">
+              Ver detalles completos
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Paginación -->
+    @if (totalPages > 1) {
+      <div class="pagination-container">
+        <button 
+          class="btn-pagination" 
+          [disabled]="currentPage === 0"
+          (click)="goToPage(currentPage - 1)">
+          Anterior
+        </button>
+
+        <div class="page-numbers">
+          @for (pageNum of getPageNumbers(); track pageNum) {
+            <button 
+              class="btn-page-number"
+              [class.active]="pageNum === currentPage"
+              (click)="goToPage(pageNum)">
+              {{ pageNum + 1 }}
+            </button>
+          }
+        </div>
+
+        <button 
+          class="btn-pagination" 
+          [disabled]="currentPage >= totalPages - 1"
+          (click)="goToPage(currentPage + 1)">
+          Siguiente
+        </button>
+      </div>
+
+      <div class="pagination-info">
+        <p>Página {{ currentPage + 1 }} de {{ totalPages }} ({{ totalElements }} diagnósticos)</p>
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal de detalles -->
+@if (showDetailsModal && selectedDiagnosis) {
+  <div class="modal-overlay" (click)="closeDetailsModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Detalles del Diagnóstico</h2>
+        <button class="btn-close" (click)="closeDetailsModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="diagnosis-details-section">
+          <h3>Información General</h3>
+          <div class="detail-row">
+            <span class="detail-label">Mascota:</span>
+            <span class="detail-value">{{ selectedDiagnosis.petName }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Doctor:</span>
+            <span class="detail-value">{{ selectedDiagnosis.doctorName }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Motivo de la cita:</span>
+            <span class="detail-value">{{ getReasonLabel(selectedDiagnosis.appointmentReason) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fecha del diagnóstico:</span>
+            <span class="detail-value">{{ formatDate(selectedDiagnosis.date) }} {{ formatTime(selectedDiagnosis.date) }}</span>
+          </div>
+        </div>
+
+        <div class="diagnosis-content-section">
+          <h3>Diagnóstico</h3>
+          <div class="diagnosis-full-content">
+            <p>{{ selectedDiagnosis.diagnose }}</p>
+          </div>
+
+          <h3>Tratamiento</h3>
+          <div class="treatment-full-content">
+            <p>{{ selectedDiagnosis.treatment }}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-close-modal" (click)="closeDetailsModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}
+

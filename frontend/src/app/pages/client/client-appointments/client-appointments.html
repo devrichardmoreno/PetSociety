@@ -1,0 +1,172 @@
+<app-header-client></app-header-client>
+
+<div class="appointments-container">
+  <h1 class="page-title">Mis Citas</h1>
+
+  <!-- Filtros -->
+  <div class="filters-section">
+    <div class="filter-group">
+      <label for="status-filter">Estado:</label>
+      <select id="status-filter" [(ngModel)]="selectedStatus" (change)="onStatusFilterChange(selectedStatus)" class="filter-select">
+        <option value="ALL">Todos</option>
+        <option [value]="Status.SUCCESSFULLY">Completadas</option>
+        <option [value]="Status.CANCELED">Canceladas</option>
+        <option [value]="Status.TO_BEGIN">Programadas</option>
+        <option [value]="Status.RESCHEDULED">Reprogramadas</option>
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="pet-filter">Mascota:</label>
+      <select id="pet-filter" [(ngModel)]="selectedPetId" (change)="onPetFilterChange(selectedPetId)" class="filter-select">
+        <option value="ALL">Todas</option>
+        @for (pet of uniquePets; track pet.id) {
+          <option [value]="pet.id">{{ pet.name }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-group">
+      <label for="reason-filter">Motivo:</label>
+      <select id="reason-filter" [(ngModel)]="selectedReason" (change)="onReasonFilterChange(selectedReason)" class="filter-select">
+        <option value="ALL">Todos</option>
+        <option [value]="Reason.CONTROL">Control</option>
+        <option [value]="Reason.EMERGENCY">Emergencia</option>
+        <option [value]="Reason.VACCINATION">Vacunación</option>
+        <option [value]="Reason.NUTRITION">Nutrición</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Listado de citas -->
+  @if (displayedAppointments.length === 0) {
+    <div class="empty-message">
+      <p>No se encontraron citas con los filtros seleccionados</p>
+    </div>
+  } @else {
+    <div class="appointments-grid">
+      @for (appointment of displayedAppointments; track appointment.appointmentId) {
+        <div class="appointment-card">
+          <div class="appointment-header">
+            <div class="pet-name-badge">
+              <span class="pet-icon">🐾</span>
+              <span class="pet-name">{{ appointment.petName }}</span>
+            </div>
+            <span class="status-badge" [style.background-color]="getStatusColor(appointment.status)">
+              {{ getStatusLabel(appointment.status) }}
+            </span>
+          </div>
+
+          <div class="appointment-body">
+            <div class="appointment-info-row">
+              <span class="info-label">📅 Fecha:</span>
+              <span class="info-value">{{ formatDate(appointment.startTime) }}</span>
+            </div>
+
+            <div class="appointment-info-row">
+              <span class="info-label">🕐 Horario:</span>
+              <span class="info-value">{{ formatTime(appointment.startTime) }} - {{ formatTime(appointment.endTime) }}</span>
+            </div>
+
+            <div class="appointment-info-row">
+              <span class="info-label">👨‍⚕️ Doctor:</span>
+              <span class="info-value">{{ appointment.doctorName }}</span>
+            </div>
+
+            <div class="appointment-info-row">
+              <span class="info-label">🏥 Especialidad:</span>
+              <span class="info-value">{{ getSpecialityLabel(appointment.doctorSpeciality) }}</span>
+            </div>
+
+            <div class="appointment-info-row">
+              <span class="info-label">📋 Motivo:</span>
+              <span class="info-value">{{ getReasonLabel(appointment.reason) }}</span>
+            </div>
+          </div>
+
+          @if (appointment.hasDiagnosis) {
+            <div class="appointment-footer">
+              <button class="btn-diagnosis" (click)="openDiagnosisModal(appointment)">
+                🔬 Ver diagnóstico
+              </button>
+            </div>
+          }
+        </div>
+      }
+    </div>
+
+    <!-- Botón Ver más -->
+    @if (hasMoreItems) {
+      <div class="load-more-container">
+        <button class="btn-load-more" (click)="loadMore()">
+          Ver más
+        </button>
+      </div>
+    }
+  }
+</div>
+
+<!-- Modal de diagnóstico -->
+@if (showDiagnosisModal && selectedAppointment) {
+  <div class="modal-overlay" (click)="closeDiagnosisModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Detalles de la Cita</h2>
+        <button class="btn-close" (click)="closeDiagnosisModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="appointment-details-section">
+          <h3>Información de la Cita</h3>
+          <div class="detail-row">
+            <span class="detail-label">Mascota:</span>
+            <span class="detail-value">{{ selectedAppointment.petName }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fecha:</span>
+            <span class="detail-value">{{ formatDate(selectedAppointment.startTime) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Horario:</span>
+            <span class="detail-value">{{ formatTime(selectedAppointment.startTime) }} - {{ formatTime(selectedAppointment.endTime) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Doctor:</span>
+            <span class="detail-value">{{ selectedAppointment.doctorName }} - {{ getSpecialityLabel(selectedAppointment.doctorSpeciality) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Motivo:</span>
+            <span class="detail-value">{{ getReasonLabel(selectedAppointment.reason) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Estado:</span>
+            <span class="detail-value status-badge" [style.background-color]="getStatusColor(selectedAppointment.status)">
+              {{ getStatusLabel(selectedAppointment.status) }}
+            </span>
+          </div>
+        </div>
+
+        @if (loadingDiagnosis) {
+          <div class="loading-message">Cargando diagnóstico...</div>
+        } @else if (diagnosisData) {
+          <div class="diagnosis-section">
+            <h3>Diagnóstico</h3>
+            <div class="diagnosis-content">
+              <p>{{ diagnosisData.diagnose }}</p>
+            </div>
+
+            <h3>Tratamiento</h3>
+            <div class="treatment-content">
+              <p>{{ diagnosisData.treatment }}</p>
+            </div>
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-close-modal" (click)="closeDiagnosisModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}
+
