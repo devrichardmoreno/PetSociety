@@ -22,20 +22,20 @@ export const routes: Routes = [
     {
       path: 'appointment/create',
       component:CreateAppointment,
-      data: { headerType: 'none' },
+      data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
 
     {
       path: 'appointment/list',
       component:AppointmentListComponent,
-      data: { headerType: 'none' },
+      data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
 
     {path: 'doctor/list',
       component:DoctorListComponent,
-      data: { headerType: 'none' },
+      data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
 

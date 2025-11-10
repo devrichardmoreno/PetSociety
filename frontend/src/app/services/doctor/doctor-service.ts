@@ -2,6 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Doctor } from '../../models/doctor/doctor';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -15,11 +16,14 @@ export class DoctorService {
     return this.http.get<Doctor>(`${this.url}/find/${doctorId}`);
   }
 
-  getAllDoctors(page: number = 0, size: number = 10): Observable<Doctor[]> {
-    const params = new HttpParams()
-      .set('page', page.toString())
-      .set('size', size.toString());
+getAllDoctors(page: number = 0, size: number = 10): Observable<Doctor[]> {
+  const params = new HttpParams()
+    .set('page', page.toString())
+    .set('size', size.toString());
 
-    return this.http.get<Doctor[]>(`${this.url}/list`, { params });
-  }
+  return this.http.get<any>(`${this.url}/list`, { params })
+    .pipe(
+      map(response => response.content) 
+    );
+}
 }

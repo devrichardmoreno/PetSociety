@@ -1,88 +1,69 @@
 #appointment-container-all {
   display: flex;
+  align-items: center;
+  justify-content: center;
   min-height: 100vh;
   width: 100%;
   background-color: #f8f9fa;
 }
 
-.logo-background {
-  background-color: #45aedd;
-  flex: 0 0 40%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 2rem;
-  color: white;
-}
-
-.logo-background img {
-  max-width: 400px;
-  margin-bottom: 1rem;
-}
-
-.logo-background h1 {
-  font-size: 2rem;
-  font-weight: bold;
-}
-
 form {
-  flex: 1;
+  background-color: #fff;
+  padding: 2.5rem 3rem;
+  border-radius: 20px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 500px;
   display: flex;
-  padding: 2rem;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
 }
 
 form h1 {
-  margin-bottom: 1.5rem;
-  font-size: 1.75rem;
+  margin-bottom: 2rem;
+  font-size: 1.9rem;
   color: #333;
+  text-align: center;
+  font-weight: 700;
 }
 
 .input-wrapper {
-  position: relative;
   width: 100%;
-  max-width: 400px;
   margin-bottom: 1.2rem;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.input-label {
+  display: block;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 0.3rem;
+  font-size: 0.95rem;
 }
 
 .custom-input {
   width: 100%;
   padding: 12px 20px;
   font-size: 16px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  color: rgba(0, 0, 0, 0.3);
+  color: rgba(0, 0, 0, 0.6);
   border: 1px solid #ccc;
   border-radius: 999px;
   background-color: #fff;
-  box-sizing: border-box;
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-
-.custom-input::placeholder {
-  color: rgba(0,0,0,0.3);
-  opacity: 1;
 }
 
 .custom-input:focus {
   outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+  border-color: #45aedd;
+  box-shadow: 0 0 0 3px rgba(69, 174, 221, 0.2);
 }
 
 .custom-input option {
-  color: rgba(0,0,0,0.8);
+  color: rgba(0, 0, 0, 0.8);
 }
 
 .error-message {
-  position: relative;
   width: 100%;
-  max-width: 400px;
-  margin-top: -0.6rem;
+  margin-top: -0.5rem;
   margin-bottom: 0.8rem;
 }
 
@@ -96,17 +77,12 @@ form h1 {
   background-color: #f0b868;
   color: #4a4a6d;
   border: none;
-  display: block;
   width: 100%;
-  max-width: 400px;
   padding: 14px 24px;
   border-radius: 999px;
-  box-sizing: border-box;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   font-size: 16px;
   font-weight: 600;
   text-align: center;
-  text-decoration: none;
   cursor: pointer;
   transition: background-color 0.2s ease, transform 0.1s ease;
   margin-top: 1rem;
@@ -120,44 +96,13 @@ form h1 {
   transform: scale(0.99);
 }
 
-.login-link {
-  margin-top: 1rem;
-  text-align: center;
-  color: #555;
-}
-
-.login-link a {
-  color: #007bff;
-  text-decoration: none;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
-}
-
 @media (max-width: 768px) {
-  #appointment-container-all {
-    flex-direction: column;
-  }
-
-  .logo-background {
-    flex: 0 0 auto;
-    width: 100%;
-    min-height: 150px;
-    padding: 1rem;
-  }
-
-  .logo-background h1 {
-    display: none;
-  }
-
-  .logo-background img {
-    max-width: 100px;
-    margin-bottom: 0;
-  }
-
   form {
-    width: 100%;
-    padding: 1.5rem;
+    padding: 1.8rem;
+    margin: 1rem;
+  }
+
+  form h1 {
+    font-size: 1.5rem;
   }
 }

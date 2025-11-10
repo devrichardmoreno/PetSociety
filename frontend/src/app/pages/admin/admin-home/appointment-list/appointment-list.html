@@ -1,15 +1,14 @@
-
 <section id="appointment-container-all">
-  <div class="logo-background">
-    <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
-  </div>
-
   <div class="table-container">
     <h1>Lista de Citas</h1>
 
+  
     <div class="loading-msg" [hidden]="!loading">Cargando citas...</div>
+
+    
     <div class="error-msg" [hidden]="!error">{{ error }}</div>
 
+   
     <table class="appointment-table" [hidden]="loading || appointments.length === 0">
       <thead>
         <tr>

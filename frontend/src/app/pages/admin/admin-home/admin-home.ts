@@ -31,7 +31,7 @@ export class AdminHome implements OnInit {
       this.appointmentService.getAllAppointments().subscribe({
         next: (data) => {
           this.totalAppointments = data;
-          this.canceledAppointments = data.filter(appointment => appointment.status === Status.CANCELLED).length;
+          this.canceledAppointments = data.filter(appointment => appointment.status === Status.CANCELED).length;
         },
         error: () => {}
       })

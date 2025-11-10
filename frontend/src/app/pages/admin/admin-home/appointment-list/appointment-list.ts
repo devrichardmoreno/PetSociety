@@ -11,12 +11,11 @@ import { AppointmentResponseDTO } from '../../../../models/dto/appointment-respo
   imports: [CommonModule]
 })
 export class AppointmentListComponent implements OnInit {
-
   appointments: AppointmentResponseDTO[] = [];
   loading: boolean = false;
   error: string | null = null;
 
-  constructor(private appointmentService: AppointmentService) { }
+  constructor(private appointmentService: AppointmentService) {}
 
   ngOnInit(): void {
     this.loadAppointments();

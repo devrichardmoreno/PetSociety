@@ -7,6 +7,7 @@ import { DoctorService } from '../../../services/doctor-service';
 import { AppointmentDTORequest } from '../../../models/dto/appointment-dto-request';
 import { Reason } from '../../../models/dto/reason.enum';
 import { Doctor } from '../../../models/doctor';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-create-appointment',
@@ -22,8 +23,8 @@ export class CreateAppointment implements OnInit {
   reasonOptions = [
     { value: Reason.CONTROL, label: 'Control' },
     { value: Reason.EMERGENCY, label: 'Emergencia' },
-    { value: Reason.VACCINATION, label: 'Vacunacion' },
-    { value: Reason.NUTRITION, label: 'Nutricion' }
+    { value: Reason.VACCINATION, label: 'Vacunación' },
+    { value: Reason.NUTRITION, label: 'Nutrición' }
   ];
 
   doctors: Doctor[] = [];
@@ -43,7 +44,6 @@ export class CreateAppointment implements OnInit {
       reason: [null, Validators.required]
     }, { validators: this.endAfterStartValidator });
 
-    // Cargar todos los doctores
     this.doctorService.getAllDoctorsEntity().subscribe({
       next: (doctors) => this.doctors = doctors,
       error: (err) => console.error('Error al cargar doctores:', err)
@@ -69,29 +69,69 @@ export class CreateAppointment implements OnInit {
   }
 
   onSubmit(): void {
+
+    console.log(this.appointmentForm.value);
     if (this.appointmentForm.invalid) {
-      this.appointmentForm.markAllAsTouched();
-      console.warn('Formulario inválido. Por favor, revisa los campos.');
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor, completá todos los campos requeridos.',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#F47B20',
+        iconColor: '#000000'
+      });
       return;
     }
 
-    const formValue = this.appointmentForm.value;
+    Swal.fire({
+      title: '¿Confirmar cita?',
+      text: '¿Deseás agendar esta cita con los datos ingresados?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, agendar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#F47B20',
+      cancelButtonColor: '#6c757d',
+      background: '#fff',
+      color: '#333'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const formValue = this.appointmentForm.value;
+        const appointmentData: AppointmentDTORequest = {
+          ...formValue,
+          doctor: formValue.doctor.id
+        };
 
-    const appointmentData: AppointmentDTORequest = {
-      ...formValue,
-      doctor: formValue.doctor.id  // Tomamos solo el ID del doctor
-    };
-
-    // Aquí NO necesitamos pasar token, el interceptor lo hace automáticamente
-    this.appointmentService.createAppointment(appointmentData).subscribe({
-      next: (response) => {
-        console.log('Cita creada con éxito:', response);
-        alert('Cita agendada correctamente.');
-        this.router.navigate(['/admin/home']);
-      },
-      error: (e) => {
-        console.error('Error al crear la cita:', e);
-        alert('Hubo un error al agendar la cita. Inténtalo de nuevo.');
+        this.appointmentService.createAppointment(appointmentData).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Cita agendada!',
+              text: 'La cita fue creada exitosamente 💙🐾',
+              background: '#fff',
+              color: '#333',
+              confirmButtonText: 'Volver al inicio',
+              confirmButtonColor: '#F47B20',
+              iconColor: '#7AC143',
+              customClass: { popup: 'animate__animated animate__fadeInDown' }
+            }).then(() => {
+              this.router.navigate(['/admin/home']);
+            });
+          },
+          error: (e) => {
+            console.error( e);
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al agendar',
+              text: `Ocurrió un problema: ${e.message|| 'Error desconocido'}`,
+              background: '#fff',
+              color: '#333',
+              confirmButtonColor: '#F47B20',
+              iconColor: '#000000'
+            });
+          }
+        });
       }
     });
   }

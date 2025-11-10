@@ -1,16 +1,15 @@
 <section id="appointment-container-all">
-  <div class="logo-background">
-    <img src="/assets/images/logo.png" alt="Pet Society Logo" id="img-logo">
-  </div>
-
   <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
     <h1>Agendar Nueva Cita</h1>
 
     <div class="input-wrapper">
+      <label for="doctor" class="input-label">Doctor</label>
       <select id="doctor" class="custom-input" formControlName="doctor">
         <option [ngValue]="null" disabled>Elige un Doctor</option>
         @for (doctor of doctors; track doctor) {
-          <option [ngValue]="doctor">{{ doctor.name }}</option>
+          <option [ngValue]="doctor" [title]="doctor.name + ' ' + doctor.surname">
+            {{ doctor.name }} {{ doctor.surname }}
+          </option>
         }
       </select>
     </div>
@@ -23,6 +22,7 @@
     }
 
     <div class="input-wrapper">
+      <label for="reason" class="input-label">Razón</label>
       <select id="reason" class="custom-input" formControlName="reason">
         <option [ngValue]="null" disabled>Elige una Razón</option>
         @for (reason of reasonOptions; track reason) {
@@ -39,7 +39,8 @@
     }
 
     <div class="input-wrapper">
-      <input type="datetime-local" class="custom-input" placeholder="Hora de Inicio" formControlName="startTime">
+      <label for="startTime" class="input-label">Hora de inicio</label>
+      <input id="startTime" type="datetime-local" class="custom-input" formControlName="startTime">
     </div>
     @if (appointmentForm.get('startTime')?.touched) {
       <div class="error-message">
@@ -47,13 +48,14 @@
           <p class="error-msg">La hora de inicio es obligatoria.</p>
         }
         @if (appointmentForm.get('startTime')?.hasError('pastDate')) {
-          <p class="error-msg">La fecha u hora ingresada son incorrectas</p>
+          <p class="error-msg">La fecha u hora ingresada son incorrectas.</p>
         }
       </div>
     }
 
     <div class="input-wrapper">
-      <input type="datetime-local" class="custom-input" placeholder="Hora de Fin" formControlName="endTime">
+      <label for="endTime" class="input-label">Hora de fin</label>
+      <input id="endTime" type="datetime-local" class="custom-input" formControlName="endTime">
     </div>
     @if (appointmentForm.get('endTime')?.touched) {
       <div class="error-message">
