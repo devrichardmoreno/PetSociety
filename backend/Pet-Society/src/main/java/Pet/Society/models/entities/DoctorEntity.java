@@ -19,5 +19,4 @@ public class DoctorEntity extends UserEntity{
     private Speciality speciality;
 
 
-
 }

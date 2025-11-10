@@ -80,6 +80,11 @@ public class GlobalControllerException {
         return createProblemDetail(HttpStatus.CONFLICT, "Unavailable Appointment", ex.getMessage(), request);
     }
 
+    @ExceptionHandler(InvalidAppointmentTimeException.class)
+    public ProblemDetail handlerInvalidAppointmentTimeException(InvalidAppointmentTimeException ex, HttpServletRequest request){
+        return createProblemDetail(HttpStatus.CONFLICT, "" ,ex.getMessage(), request);
+    }
+
 
     @ExceptionHandler(Exception.class)
     public ProblemDetail HandlerException(Exception ex, HttpServletRequest request) {

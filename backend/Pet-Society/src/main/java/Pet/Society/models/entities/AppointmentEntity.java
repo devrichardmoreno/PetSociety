@@ -20,7 +20,6 @@ public class AppointmentEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
-    @Future
     private LocalDateTime startDate;
     @Future
     private LocalDateTime endDate;

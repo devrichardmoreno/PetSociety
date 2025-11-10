@@ -25,6 +25,7 @@ import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cglib.core.Local;
+import org.springframework.context.ApplicationContextException;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
@@ -65,6 +66,10 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     public AppointmentDTO save (AppointmentDTORequest appointmentDTO) {
 
         DoctorEntity findDoctor = this.doctorService.findById1(appointmentDTO.getDoctor());
+
+        if(appointmentDTO.getStartTime().isBefore(LocalDateTime.now())){
+            throw new IllegalArgumentException("The appointment must be in the future");
+        }
 
         AppointmentEntity appointment = AppointmentEntity.builder()
                                         .startDate(appointmentDTO.getStartTime())
