@@ -1,0 +1,30 @@
+:root{
+    /* Paleta: Colores primarios / acentos / neutros / semánticos */
+    --primary: #45aedd;
+    --green-apple: #83b847;
+    --cta-vibrant: #f3ae51;
+    --cta: #f1ae53;
+
+    --bg: #f9fbfd;
+    --card-bg: #ffffff;
+    --border: #e0e0e0;
+    --text-muted: #7F8C8D;
+    --muted-bg: rgba(0,0,0,0.03);
+
+    --success: #2ECC71;
+    --error: #E74C3C;
+    --warning: #F1C40F;
+
+    --header-height: 70px;
+}
+
+#appointment-doctor-history-container-all{
+    padding-top: var(--header-height); /* Espacio para el header fijo */
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    max-width: 1200px;
+    margin: 20px auto;
+    padding-left: 16px;
+    padding-right: 16px;
+}

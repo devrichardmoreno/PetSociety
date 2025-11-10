@@ -9,6 +9,7 @@ import { AdminHome } from './pages/admin/admin-home/admin-home';
 import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
 import { AppointmentListComponent } from './pages/admin/admin-home/appointment-list/appointment-list';
 import { DoctorHomePage } from './pages/doctor/doctor-home-page/doctor-home-page';
+import { AppointmentDoctorHistory } from './pages/appointment-doctor-history/appointment-doctor-history/appointment-doctor-history';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -51,6 +52,13 @@ export const routes: Routes = [
     {
       path: 'doctor/home',
       component: DoctorHomePage,
+      data: { headerType: 'doctor' },
+      canActivate: [authGuard, roleGuard(['ROLE_DOCTOR'])]
+    },
+
+    {
+      path: 'doctor/historial-citas',
+      component: AppointmentDoctorHistory,
       data: { headerType: 'doctor' },
       canActivate: [authGuard, roleGuard(['ROLE_DOCTOR'])]
     }
