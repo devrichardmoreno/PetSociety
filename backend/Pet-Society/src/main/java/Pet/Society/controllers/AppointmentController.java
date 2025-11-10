@@ -230,5 +230,10 @@ public class AppointmentController {
         return ResponseEntity.ok(this.appointmentService.getAvailableAppointments());
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAll(){
+        return ResponseEntity.ok(this.appointmentService.getAllAppointmets());
+    }
+
 
 }

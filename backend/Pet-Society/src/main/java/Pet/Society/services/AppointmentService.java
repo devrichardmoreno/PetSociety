@@ -81,6 +81,8 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         return toDTO(appointment);
     }
 
+
+
     @Transactional
     public AppointmentResponseDTO bookAppointment(Long idAppointment, AssingmentPetDTO dto) {
         AppointmentEntity findAppointment = this.appointmentRepository.
@@ -148,7 +150,17 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         return toDTO(appointmentToUpdate);
     }
 
-
+    public List<AppointmentResponseDTO>getAllAppointmets(){
+        return this.appointmentRepository.findAll().stream().map(appointmentEntity -> AppointmentResponseDTO.builder()
+                        .startTime(appointmentEntity.getStartDate())
+                        .endTime(appointmentEntity.getEndDate())
+                        .reason(appointmentEntity.getReason())
+                        .aproved(appointmentEntity.isApproved())
+                        .status(appointmentEntity.getStatus())
+                        .petName("No hay mascota asignada")
+                        .doctorName(appointmentEntity.getDoctor().getName()+  " " + appointmentEntity.getDoctor().getSurname())
+                        .build()).collect(Collectors.toList());
+    }
 
     public void cancelAppointment(long id) {
         Optional<AppointmentEntity> existingAppointment = this.appointmentRepository.findById(id);
@@ -157,14 +169,10 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
             throw new AppointmentDoesntExistException("Appointment does not exist");
         }
 
-        if(Duration.between(LocalDateTime.now(), existingAppointment.get().getEndDate()).toMinutes() > 12) {
-            existingAppointment.get().setStatus(Status.AVAILABLE);
-            existingAppointment.get().setPet(null);
-            updateAppointment(toDTO(existingAppointment.get()), existingAppointment.get().getId());
-        }else{
-            existingAppointment.get().setStatus(Status.CANCELED);
-            updateAppointment(toDTO(existingAppointment.get()), existingAppointment.get().getId());
-        }
+      
+        existingAppointment.get().setStatus(Status.CANCELED);
+        updateAppointment(toDTO(existingAppointment.get()), existingAppointment.get().getId());
+        
     }
 
     public AppointmentEntity getEntity(Long id) {
@@ -273,6 +281,8 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .doctorName(appointmentEntity.getDoctor().getName()+  " " + appointmentEntity.getDoctor().getSurname())
                         .build()).collect(Collectors.toList());
     }
+
+
 
     @Transactional
     public void createMultipleAppointments(Long doctorId, LocalDateTime startDate, LocalDateTime endDate, Reason reason) {

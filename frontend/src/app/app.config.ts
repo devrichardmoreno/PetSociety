@@ -6,6 +6,7 @@ import { provideToastr } from 'ngx-toastr';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
+import { AppointmentService } from './services/appointment-service';
 
 
 export const appConfig: ApplicationConfig = {
@@ -22,6 +23,7 @@ export const appConfig: ApplicationConfig = {
         positionClass: 'toast-top-right', 
         preventDuplicates: true,
     }),
+    AppointmentService
     
   ]
 };

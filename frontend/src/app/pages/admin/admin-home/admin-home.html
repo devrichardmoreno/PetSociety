@@ -2,17 +2,17 @@
 
 <div id="numbers-container">
     <div id="card-information-1">
-           <h1>0</h1>
+           <h1>{{this.canceledAppointments}}</h1>
     <h3>Cancelaciones de citas</h3>
     </div>
 
     <div id="card-information-2">
-        <h1>0</h1>
+        <h1>{{this.appointmentsForToday}}</h1>
         <h3>Citas programadas para hoy</h3>
     </div>
 
     <div id="card-information-3">
-           <h1>0</h1>
+           <h1>{{this.petsTreated}}</h1>
         <h3>Mascotas atendidas</h3>
     </div>
     <div id="card-information-4">
@@ -22,8 +22,8 @@
     
     <div id="card-information-5">
         <h3>Próxima cita</h3>
-        <p>Doctor: <span>[Nombre del doctor]</span></p>
-        <p>Hora: <span>[Hora]</span></p>
-        <p>Mascota: <span>[Mascota]</span></p>
+        <p>Doctor: <span>{{nextAppointment?.doctorName}}</span></p>
+        <p>Hora: <span>{{nextAppointment?.startTime}}</span></p>
+        <p>Mascota: <span>{{nextAppointment?.petName}}</span></p>
     </div>
 </div>
