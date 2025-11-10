@@ -16,8 +16,8 @@ export interface AppointmentDto {
 }
 
 export function mapAppointmentDateToDate(dto: AppointmentDto) {
-  const start = dto.startTime ? dayjs.utc(dto.startTime).local() : null;
-  const end = dto.endTime ? dayjs.utc(dto.endTime).local() : null;
+  const start = dto.startTime ? dayjs(dto.startTime).local() : null;
+  const end = dto.endTime ? dayjs(dto.endTime).local() : null;
 
   return {
     ...dto,
