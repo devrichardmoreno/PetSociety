@@ -1,6 +1,7 @@
 package Pet.Society.services;
 
 import Pet.Society.models.dto.appointment.AppointmentDTO;
+import Pet.Society.models.dto.appointment.AppointmentHistoryDTO;
 import Pet.Society.models.dto.appointment.AppointmentResponseDTO;
 import Pet.Society.models.dto.appointment.AppointmentScheduleDTO;
 import Pet.Society.models.dto.appointment.AppointmentUpdateDTO;
@@ -32,6 +33,8 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -48,6 +51,17 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     private final PetService petService;
     private final ClientService clientService;
     private final HttpMessageConverters messageConverters;
+    
+    // Zona horaria de Argentina
+    private static final ZoneId ARGENTINA_ZONE = ZoneId.of("America/Argentina/Buenos_Aires");
+    
+    /**
+     * Obtiene la fecha y hora actual en la zona horaria de Argentina
+     * @return LocalDateTime con la hora actual de Argentina
+     */
+    private LocalDateTime getCurrentDateTimeArgentina() {
+        return ZonedDateTime.now(ARGENTINA_ZONE).toLocalDateTime();
+    }
 
 
     @Autowired
@@ -102,7 +116,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         List<AppointmentEntity> existingAppointments = this.appointmentRepository.findAllByPetId(dto.getPetId());
         boolean hasScheduledAppointment = existingAppointments.stream()
                 .anyMatch(apt -> apt.getStatus().equals(Status.TO_BEGIN) && 
-                               apt.getStartDate().isAfter(LocalDateTime.now()));
+                               apt.getStartDate().isAfter(getCurrentDateTimeArgentina()));
         
         if (hasScheduledAppointment) {
             throw new UnavailableAppointmentException("Esta mascota ya tiene una cita programada");
@@ -185,16 +199,16 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         }
 
         AppointmentEntity appointment = existingAppointment.get();
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = getCurrentDateTimeArgentina();
         long hoursUntilAppointment = Duration.between(now, appointment.getStartDate()).toHours();
 
-        // Marcar la cita como cancelada
+        // Marcar la cita como cancelada pero mantener la referencia a la mascota para el historial
         appointment.setStatus(Status.CANCELED);
-        appointment.setPet(null);
+        // NO borrar el pet - mantenerlo para que aparezca en el historial
         this.appointmentRepository.save(appointment);
 
         // Si se cancela con más de 24 horas de anticipación, crear una nueva cita disponible
-        if (hoursUntilAppointment > 24) {
+        if (hoursUntilAppointment >= 24) {
             AppointmentEntity newAvailableAppointment = AppointmentEntity.builder()
                     .startDate(appointment.getStartDate())
                     .endDate(appointment.getEndDate())
@@ -202,7 +216,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                     .doctor(appointment.getDoctor())
                     .status(Status.AVAILABLE)
                     .approved(appointment.isApproved())
-                    .pet(null)
+                    .pet(null) // La nueva cita disponible no tiene mascota asignada
                     .build();
 
             // Verificar que no se solape con otra cita existente (excluyendo la que acabamos de cancelar)
@@ -218,7 +232,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
      */
     public Long getScheduledAppointmentIdByPetId(long petId) {
         List<AppointmentEntity> appointments = this.appointmentRepository.findAllByPetId(petId);
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = getCurrentDateTimeArgentina();
         
         Optional<AppointmentEntity> scheduledAppointment = appointments.stream()
                 .filter(apt -> apt.getStatus().equals(Status.TO_BEGIN) && 
@@ -265,6 +279,32 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .petName(appointmentEntity.getPet().getName())
                         .doctorName(appointmentEntity.getDoctor().getName() +" " + appointmentEntity.getDoctor().getSurname())
                         .build()).collect(Collectors.toList());
+    }
+
+    public List<AppointmentHistoryDTO> getAllAppointmentsHistoryByClientId(long clientId) {
+        Optional<ClientDTO> client = Optional.ofNullable(this.clientService.findById(clientId));
+        if (client.isEmpty()) {
+            throw new AppointmentDoesntExistException("Client does not exist");
+        }
+        
+        return this.appointmentRepository.findAllByPetClientId(clientId).stream()
+                .filter(appointment -> appointment.getPet() != null) // Solo citas asignadas a mascotas
+                .sorted((a1, a2) -> a2.getStartDate().compareTo(a1.getStartDate())) // Ordenar por fecha descendente (más recientes primero)
+                .map(appointmentEntity -> AppointmentHistoryDTO.builder()
+                        .appointmentId(appointmentEntity.getId())
+                        .startTime(appointmentEntity.getStartDate())
+                        .endTime(appointmentEntity.getEndDate())
+                        .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
+                        .doctorId(appointmentEntity.getDoctor().getId())
+                        .doctorSpeciality(appointmentEntity.getDoctor().getSpeciality())
+                        .petName(appointmentEntity.getPet().getName())
+                        .petId(appointmentEntity.getPet().getId())
+                        .reason(appointmentEntity.getReason())
+                        .status(appointmentEntity.getStatus())
+                        .hasDiagnosis(appointmentEntity.getDiagnoses() != null)
+                        .diagnosisId(appointmentEntity.getDiagnoses() != null ? appointmentEntity.getDiagnoses().getId() : null)
+                        .build())
+                .collect(Collectors.toList());
     }
 
     public List<AppointmentResponseDTO> getAllAppointmentsByPetId(long id) {
@@ -314,7 +354,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
             throw new AppointmentDoesntExistException("Doctor does not exist");
         }
         return this.appointmentRepository.findAllByDoctorIdOrderByStartDateAsc(id).stream()
-                .filter(appointment -> appointment.getStartDate().isAfter(LocalDateTime.now()))
+                .filter(appointment -> appointment.getStartDate().isAfter(getCurrentDateTimeArgentina()))
                 .map(appointmentEntity -> {
                     String clientName = appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null
                             ? appointmentEntity.getPet().getClient().getName()
@@ -438,7 +478,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
      * Útil para mostrar días disponibles en el calendario
      */
     public List<AvailableAppointmentDTO> getAvailableAppointmentsByReason(Reason reason) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = getCurrentDateTimeArgentina();
         List<AppointmentEntity> appointments = this.appointmentRepository
                 .findAllByReasonAndStatusAndPetIsNullAndStartDateAfter(reason, Status.AVAILABLE, now);
         

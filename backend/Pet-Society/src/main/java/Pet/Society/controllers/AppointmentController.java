@@ -2,6 +2,7 @@ package Pet.Society.controllers;
 import Pet.Society.models.dto.appointment.AppointmentDTORequest;
 import Pet.Society.config.OwnershipValidator;
 import Pet.Society.models.dto.appointment.AppointmentDTO;
+import Pet.Society.models.dto.appointment.AppointmentHistoryDTO;
 import Pet.Society.models.dto.appointment.AppointmentResponseDTO;
 import Pet.Society.models.dto.appointment.AppointmentScheduleDTO;
 import Pet.Society.models.dto.appointment.AvailableAppointmentDTO;
@@ -158,6 +159,34 @@ public class AppointmentController {
     @GetMapping("/client/{clientId}")
     public ResponseEntity<List<AppointmentResponseDTO>> getAppointmentsByClientId(@PathVariable Long clientId) {
             return ResponseEntity.ok(this.appointmentService.getLastAppointmentsByClientId(clientId));
+    }
+
+    @Operation(
+            summary = "Get all appointments history from a specific client",
+            description = "Endpoint to retrieve all appointments (SUCCESSFULLY, CANCELED, TO_BEGIN) from a specific client by their ID, ordered by date descending",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Appointments history for the specified client retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = AppointmentHistoryDTO.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Client not found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class)
+                            )
+                    )
+            }
+    )
+    @PreAuthorize("@ownershipValidator.canAccessClient(#clientId)")
+    @GetMapping("/client/{clientId}/history")
+    public ResponseEntity<List<AppointmentHistoryDTO>> getAppointmentsHistoryByClientId(@PathVariable Long clientId) {
+        return ResponseEntity.ok(this.appointmentService.getAllAppointmentsHistoryByClientId(clientId));
     }
 
     @PostMapping("uploadAvailability/{doctorId}")

@@ -16,7 +16,8 @@
     <nav class="nav" [class.open]="isMenuOpen">
       <ul class="nav-list">
         <li class="nav-auth">
-          <button class="btn btn-action" routerLink="/client/citas" (click)="toggleMenu()">Historial de citas</button>
+          <button class="btn btn-action btn-home" routerLink="/client/home" (click)="toggleMenu()">Inicio</button>
+          <button class="btn btn-action" routerLink="/client/citas" (click)="toggleMenu()">Mis Citas</button>
           <button class="btn btn-action" routerLink="/client/diagnosticos" (click)="toggleMenu()">Diagnosticos</button>
           <button class="btn btn-logout" (click)="logout(); toggleMenu()">Cerrar sesión</button>
         </li>
@@ -25,7 +26,8 @@
 
     <!-- Botones de acción (solo en escritorio) -->
     <div class="action-buttons">
-      <button class="btn btn-action" routerLink="/client/citas">Historial de citas</button>
+      <button class="btn btn-action btn-home" routerLink="/client/home">Inicio</button>
+      <button class="btn btn-action" routerLink="/client/citas">Mis Citas</button>
       <button class="btn btn-action" routerLink="/client/diagnosticos">Diagnosticos</button>
       <button class="btn btn-logout" (click)="logout()">Cerrar sesión</button>
     </div>

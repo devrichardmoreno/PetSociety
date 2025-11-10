@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { AppointmentDTORequest } from '../models/dto/appointment-dto-request';
 import { AppointmentResponseDTO } from '../models/dto/appointment-response-dto';
+import { AppointmentHistoryDTO } from '../models/dto/appointment-history-dto';
 import { DoctorAvailabilityDTO } from '../models/dto/doctor-availability-dto';
 import { AvailableAppointmentDTO } from '../models/dto/available-appointment-dto';
 import { Reason } from '../models/dto/reason.enum';
@@ -46,6 +47,10 @@ export class AppointmentService {
 
   getAppointmentsByClient(clientId: number): Observable<AppointmentResponseDTO[]> {
     return this.http.get<AppointmentResponseDTO[]>(`${this.url}/client/${clientId}`, { headers: this.getAuthHeaders() });
+  }
+
+  getAppointmentsHistoryByClient(clientId: number): Observable<AppointmentHistoryDTO[]> {
+    return this.http.get<AppointmentHistoryDTO[]>(`${this.url}/client/${clientId}/history`, { headers: this.getAuthHeaders() });
   }
 
   uploadDoctorAvailability(doctorId: number, availability: DoctorAvailabilityDTO): Observable<string> {
