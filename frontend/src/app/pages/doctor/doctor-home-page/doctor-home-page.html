@@ -6,11 +6,13 @@
 
     <div class="tabs" role="tablist">
       <nav>
-        <a role="tab" href="">Perfil</a>
-        <a role="tab" href="">Próximas citas</a>
+        <a role="tab" (click)="showDoctorProfile()">Perfil</a>
+        <a role="tab" (click)="showAppointmentsList()">Próximas citas</a>
       </nav>
     </div>
-
+    
+    @if (showProfile==false) {
+      
     <section aria-labelledby="appointments-title">
       <h2 id="appointments-title" class="visually-hidden">Próximas citas</h2>
 
@@ -44,6 +46,19 @@
         <p class="no-appointments">No hay citas para mostrar.</p>
       }
     </section>
+    }
+    @else {
+      <h2 class="doctor-profile">Perfil</h2>
+
+      <div class="doctor-profile-details">
+        <p class="doctor-profile-atribute"><strong>Nombre :</strong> {{doctor?.name}}</p>
+        <p class="doctor-profile-atribute"><strong>Apellido :</strong> {{doctor?.surname}}</p>
+        <p class="doctor-profile-atribute"><strong>Dni :</strong> {{doctor?.dni}}</p>
+        <p class="doctor-profile-atribute"><strong>Especialidad :</strong> {{doctor?.speciality}}</p>
+        <p class="doctor-profile-atribute"><strong>Teléfono :</strong> {{doctor?.phone}}</p>
+        <p class="doctor-profile-atribute"><strong>Correo electrónico :</strong> {{doctor?.email}}</p>
+      </div>
+    }
   </main>
 
   <aside id="sidebar" role="complementary" aria-labelledby="sidebar-title">

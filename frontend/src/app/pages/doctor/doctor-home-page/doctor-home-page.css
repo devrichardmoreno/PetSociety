@@ -254,6 +254,43 @@
     border-radius: 8px;
 }
 
+/* === Perfil del doctor === */
+.page-doctor .doctor-profile {
+  font-size: 1.6rem;
+  color: var(--dh-primary);
+  font-weight: 700;
+  margin-bottom: 18px;
+  border-bottom: 2px solid var(--dh-border);
+  padding-bottom: 6px;
+  text-align: left;
+}
+
+/* Contenedor de detalles del perfil */
+.page-doctor .doctor-profile-details {
+  background-color: var(--dh-card-bg);
+  border: 1px solid var(--dh-border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 500px;
+}
+
+/* Atributos del perfil */
+.page-doctor .doctor-profile-atribute {
+  font-size: 1rem;
+  color: #333;
+}
+
+.page-doctor .doctor-profile-atribute strong {
+  color: var(--dh-text-muted);
+  margin-right: 8px;
+}
+
+
+
 /* Responsive */
 @media (max-width: 1024px) {
     #main-content { max-width: calc(100% - 300px); }
@@ -278,4 +315,20 @@
     }
     .card { grid-template-columns: 1fr; }
     .diagnose-meta { align-items: flex-start; text-align: left; }
+
+     .page-doctor .doctor-profile {
+    font-size: 1.4rem;
+    text-align: center;
+  }
+
+  .page-doctor .doctor-profile-details {
+    width: 100%;
+    padding: 16px;
+    align-items: center;
+    text-align: center;
+  }
+
+  .page-doctor .doctor-profile-atribute {
+    font-size: 0.95rem;
+  }
 }

@@ -17,8 +17,8 @@
                     <span class="diagnose-date">{{ diagnose.date | date:'dd/MM/yyyy HH:mm' }}</span>
                 </div>
                 <div class="diagnose-body">
-                    <p class="diagnose-summary">{{ diagnose.diagnose || diagnose.reason || 'Sin resumen' }}</p>
-                    <p class="diagnose-summary">{{diagnose.treatment}}</p>
+                    <p class="diagnose-summary"><strong>Diagnóstico :</strong>{{ diagnose.diagnose || 'Sin diagnóstico' }}</p>
+                    <p class="diagnose-summary"><strong>Tratamiento :</strong>{{diagnose.treatment}}</p>
                     <p class="diagnose-doctor">Doctor: {{ diagnose.doctorName || '—' }}</p>
                 </div>
             </li>

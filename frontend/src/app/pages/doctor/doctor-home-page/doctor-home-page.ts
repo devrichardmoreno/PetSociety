@@ -22,6 +22,7 @@ import { DiagnosesHistoryModal } from '../../diagnoses-history-modal/diagnoses-h
   styleUrl: './doctor-home-page.css'
 })
 export class DoctorHomePage implements OnInit, OnDestroy {
+  showProfile = false;
   appointmentArray: (AppointmentDto & { startDate?: Date | null; endDate?: Date | null })[] = [];
   doctor?: Doctor;
   lastestDiagnoses: DiagnoseDto[] = [];
@@ -55,11 +56,9 @@ export class DoctorHomePage implements OnInit, OnDestroy {
     this.doctorService.getDoctorById(userId).subscribe({
       next: (doc) => {
         this.doctor = doc;
-        // aquí puedes cargar appointments/diagnósticos usando doc.id u otros
       },
       error: (err) => {
         console.error('Error cargando doctor:', err);
-        // manejar error
       }
     });
 
@@ -140,5 +139,13 @@ export class DoctorHomePage implements OnInit, OnDestroy {
       data: { petId },
       panelClass: 'diagnose-history-dialog-panel' 
     })
+  }
+
+  showDoctorProfile() {
+    this.showProfile = true;
+  }
+
+  showAppointmentsList() { 
+    this.showProfile = false;
   }
 }

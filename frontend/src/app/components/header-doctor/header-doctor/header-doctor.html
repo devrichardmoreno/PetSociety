@@ -27,7 +27,7 @@
     <div class="action-buttons">
       <button class="btn btn-action" routerLink="/client/citas">Historial de citas</button>
       <button class="btn btn-action" routerLink="/client/diagnosticos">Diagnosticos</button>
-      <button class="btn btn-logout" (click)="logout()">Cerrar sesión</button>
+      <button class="btn btn-logout" (click)="logout(); toggleMenu()">Cerrar sesión</button>
     </div>
   </div>
 </header>
