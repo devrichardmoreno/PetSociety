@@ -21,11 +21,9 @@ public class DiagnosesDTOResponse {
 
 
     @NotBlank
-    @Pattern(regexp = "^[A-Za-z0-9 ]+$")
     private String diagnose;
 
     @NotBlank
-    @Pattern(regexp = "^[A-Za-z0-9 ]+$")
     private String treatment;
 
     @NotNull

@@ -4,6 +4,7 @@ import { LandingComponent } from './pages/landing-component/landing-component';
 import { LoginComponent } from './pages/login-component/login-component';
 import { ClientHomePage } from './pages/client/client-home-page/client-home-page';
 import { ClientAppointmentsComponent } from './pages/client/client-appointments/client-appointments';
+import { ClientDiagnosesComponent } from './pages/client/client-diagnoses/client-diagnoses';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import { AdminHome } from './pages/admin/admin-home/admin-home';
@@ -52,6 +53,12 @@ export const routes: Routes = [
       data: { headerType: 'client' },
       canActivate: [authGuard, roleGuard(['ROLE_CLIENT'])]
     },
+    { 
+      path: 'client/diagnosticos', 
+      component: ClientDiagnosesComponent,
+      data: { headerType: 'client' },
+      canActivate: [authGuard, roleGuard(['ROLE_CLIENT'])]
+    },
 
     // Rutas del Doctor
 
@@ -61,11 +68,6 @@ export const routes: Routes = [
       data: { headerType: 'doctor' },
       canActivate: [authGuard, roleGuard(['ROLE_DOCTOR'])]
     }
-    // { 
-    //   path: 'client/diagnosticos', 
-    //   component: DiagnosticosComponent,
-    //   canActivate: [authGuard]
-    // }, // Futuro
     
     // Rutas del DOCTOR (cuando las crees)
     // { 

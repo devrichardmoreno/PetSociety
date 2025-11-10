@@ -70,11 +70,11 @@ public class SecurityConfig {
                         // ACCESS TO DIAGNOSES
                         .requestMatchers("/diagnoses/create").hasRole("DOCTOR")
                         .requestMatchers("/diagnoses/getByPetId/**").hasAnyRole("CLIENT","ADMIN")
+                        .requestMatchers("/diagnoses/lastDiagnoses/**").hasAnyRole("CLIENT","ADMIN","DOCTOR")
                         .requestMatchers("/diagnoses/findById/**",
                                     "/diagnoses/getLastDiagnoses/**",
                                     "/diagnoses/getAll",
-                                    "/diagnoses/getByDoctorId/**",
-                                "/diagnoses/lastDiagnoses/**").hasAnyRole("ADMIN","DOCTOR")
+                                    "/diagnoses/getByDoctorId/**").hasAnyRole("ADMIN","DOCTOR")
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() //For use correctly the OPENAPI
                         .anyRequest().permitAll()
 
