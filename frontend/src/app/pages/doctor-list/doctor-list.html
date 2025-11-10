@@ -1,0 +1,23 @@
+<div class="doctor-list-container">
+  <h2>Lista de Doctores</h2>
+
+  @if (loading) {
+    <p>Cargando doctores...</p>
+  } @else if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  } @else if (doctors.length === 0) {
+    <p>No hay doctores registrados.</p>
+  } @else {
+    <div class="doctor-grid">
+      @for (doctor of doctors; track doctor.dni) {
+        <div class="doctor-card">
+          <h3>{{ doctor.name }} {{ doctor.surname }}</h3>
+          <p><strong>Especialidad:</strong> {{ doctor.speciality }}</p>
+          <p><strong>DNI:</strong> {{ doctor.dni }}</p>
+          <p><strong>Teléfono:</strong> {{ doctor.phone }}</p>
+          <p><strong>Email:</strong> {{ doctor.email }}</p>
+        </div>
+      }
+    </div>
+  }
+</div>

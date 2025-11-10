@@ -52,7 +52,7 @@ export class AppointmentService {
   }
 
   getAvailableAppointmentsDoctor(doctorId: number): Observable<AppointmentResponseDTO[]> {
-    return this.http.get<AppointmentResponseDTO[]>(`${this.url}/doctor/${doctorId}`, { headers: this.getAuthHeaders() });
+    return this.http.get<AppointmentResponseDTO[]>(`${this.url}/doctor/${doctorId}/available`, { headers: this.getAuthHeaders() });
   }
 
   getAvailableAppointments(): Observable<AppointmentResponseDTO[]> {
@@ -60,6 +60,6 @@ export class AppointmentService {
   }
 
   getAllAppointments(): Observable<AppointmentResponseDTO[]> {
-    return this.http.get<AppointmentResponseDTO[]>(`${this.url}/available`, { headers: this.getAuthHeaders() });
+    return this.http.get<AppointmentResponseDTO[]>(`${this.url}/getAll`, { headers: this.getAuthHeaders() });
   }
 }

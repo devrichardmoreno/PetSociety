@@ -11,12 +11,11 @@ import { AppointmentResponseDTO } from '../../../../models/dto/appointment-respo
   imports: [CommonModule]
 })
 export class AppointmentListComponent implements OnInit {
-
   appointments: AppointmentResponseDTO[] = [];
   loading: boolean = false;
   error: string | null = null;
 
-  constructor(private appointmentService: AppointmentService) { }
+  constructor(private appointmentService: AppointmentService) {}
 
   ngOnInit(): void {
     this.loadAppointments();
@@ -26,14 +25,14 @@ export class AppointmentListComponent implements OnInit {
     this.loading = true;
     this.error = null;
 
-    this.appointmentService.getAllAppointments().subscribe({
+    this.appointmentService.getAvailableAppointments().subscribe({
       next: (data) => {
         this.appointments = data;
         this.loading = false;
       },
       error: (err) => {
         console.error('Error al cargar las citas', err);
-        this.error = 'No se pudieron cargar las citas. Intente nuevamente.';
+        this.error = `No se pudieron cargar las citas. Error: ${err.message}`;
         this.loading = false;
       }
     });
