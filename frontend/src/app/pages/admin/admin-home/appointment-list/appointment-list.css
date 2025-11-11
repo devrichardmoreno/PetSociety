@@ -99,6 +99,7 @@ h1 {
 
 .search-container {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   margin-bottom: 1.5rem;
 }
@@ -125,6 +126,14 @@ h1 {
   outline: none;
 }
 
+.filter-select {
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  background-color: white;
+}
 
 @media (max-width: 768px) {
   .table-container {

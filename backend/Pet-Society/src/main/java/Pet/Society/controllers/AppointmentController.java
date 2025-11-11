@@ -273,6 +273,11 @@ public class AppointmentController {
         return ResponseEntity.ok(appointmentId);
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments() {
+        return ResponseEntity.ok(this.appointmentService.getAllAppointmets());
+    }
+
     @Operation(
             summary = "Get appointments from a specific doctor",
             description = "Endpoint to retrieve an appointments from a specific doctor by their ID",

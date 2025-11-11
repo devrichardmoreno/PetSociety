@@ -16,6 +16,18 @@
         (change)="filterAppointments()"
         class="date-input"
       />
+      <select [(ngModel)]="selectedDoctor" (change)="filterAppointments()" class="filter-select">
+        <option value="">Todos los doctores</option>
+        <option *ngFor="let doctor of doctors" [value]="doctor">{{ doctor }}</option>
+      </select>
+      <select [(ngModel)]="selectedStatus" (change)="filterAppointments()" class="filter-select">
+        <option value="">Todos los estados</option>
+        <option *ngFor="let status of statuses" [value]="status">{{ status }}</option>
+      </select>
+      <select [(ngModel)]="selectedReason" (change)="filterAppointments()" class="filter-select">
+        <option value="">Todas las razones</option>
+        <option *ngFor="let reason of reasons" [value]="reason">{{ reason }}</option>
+      </select>
     </div>
 
     <div class="loading-msg" [hidden]="!loading">Cargando citas...</div>

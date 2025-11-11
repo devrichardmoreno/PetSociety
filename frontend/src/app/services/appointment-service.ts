@@ -53,6 +53,7 @@ export class AppointmentService {
     return this.http.get<AppointmentHistoryDTO[]>(`${this.url}/client/${clientId}/history`, { headers: this.getAuthHeaders() });
   }
 
+
   uploadDoctorAvailability(doctorId: number, availability: DoctorAvailabilityDTO): Observable<string> {
   return this.http.post(
     `${this.url}/uploadAvailability/${doctorId}`,
