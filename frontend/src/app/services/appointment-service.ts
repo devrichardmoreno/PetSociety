@@ -54,8 +54,15 @@ export class AppointmentService {
   }
 
   uploadDoctorAvailability(doctorId: number, availability: DoctorAvailabilityDTO): Observable<string> {
-    return this.http.post<string>(`${this.url}/uploadAvailability/${doctorId}`, availability, { headers: this.getAuthHeaders() });
-  }
+  return this.http.post(
+    `${this.url}/uploadAvailability/${doctorId}`,
+    availability,
+    {
+      headers: this.getAuthHeaders(),
+      responseType: 'text'  // 👈 importante: no pongas 'as json' acá
+    }
+  );
+}
 
   getAppointmentsByPet(petId: number): Observable<AppointmentResponseDTO[]> {
     return this.http.get<AppointmentResponseDTO[]>(`${this.url}/pet/${petId}`, { headers: this.getAuthHeaders() });

@@ -2,14 +2,27 @@
   <div class="table-container">
     <h1>Lista de Citas</h1>
 
-  
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="filterAppointments()"
+        placeholder="Buscar por doctor, mascota, razón o estado"
+        class="search-input"
+      />
+      <input
+        type="date"
+        [(ngModel)]="searchDate"
+        (change)="filterAppointments()"
+        class="date-input"
+      />
+    </div>
+
     <div class="loading-msg" [hidden]="!loading">Cargando citas...</div>
 
-    
     <div class="error-msg" [hidden]="!error">{{ error }}</div>
 
-   
-    <table class="appointment-table" [hidden]="loading || appointments.length === 0">
+    <table class="appointment-table" [hidden]="loading || filteredAppointments.length === 0">
       <thead>
         <tr>
           <th>Doctor</th>
@@ -22,7 +35,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let appt of appointments">
+        <tr *ngFor="let appt of filteredAppointments">
           <td>{{ appt.doctorName }}</td>
           <td>{{ appt.petName }}</td>
           <td>{{ appt.reason }}</td>
@@ -38,7 +51,7 @@
       </tbody>
     </table>
 
-    <div class="no-data-msg" [hidden]="loading || appointments.length > 0">
+    <div class="no-data-msg" [hidden]="loading || filteredAppointments.length > 0">
       No hay citas para mostrar.
     </div>
   </div>
