@@ -371,7 +371,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
             throw new AppointmentDoesntExistException("Doctor does not exist");
         }
         return this.appointmentRepository.findAllByDoctorIdOrderByStartDateAsc(id).stream()
-                .filter(appointment -> appointment.getStartDate().isAfter(getCurrentDateTimeArgentina()))
+                .filter(appointment -> appointment.getEndDate().isAfter(getCurrentDateTimeArgentina()))
                 .map(appointmentEntity -> {
                     String clientName = appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null
                             ? appointmentEntity.getPet().getClient().getName()
