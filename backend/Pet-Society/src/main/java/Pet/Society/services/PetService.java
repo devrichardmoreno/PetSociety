@@ -47,10 +47,25 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
         if(pets.size()>4){
             throw new TooManyPetsException("The client can have a maximum of 5 active pets");
         }
+        
+        // Validar que petType no sea null
+        if (dto.getPetType() == null) {
+            throw new IllegalArgumentException("El tipo de animal (petType) es requerido");
+        }
+        
+        // Validar que si petType es OTHER, otherType no sea null o vacío
+        if (dto.getPetType() == Pet.Society.models.enums.PetType.OTHER) {
+            if (dto.getOtherType() == null || dto.getOtherType().trim().isEmpty()) {
+                throw new IllegalArgumentException("Si el tipo de animal es 'Otro', debe especificar el tipo de animal personalizado");
+            }
+        }
+        
         PetEntity pet = new PetEntity();
         pet.setName(dto.getName());
         pet.setAge(dto.getAge());
         pet.setActive(dto.isActive());
+        pet.setPetType(dto.getPetType());
+        pet.setOtherType(dto.getPetType() == Pet.Society.models.enums.PetType.OTHER ? dto.getOtherType() : null);
         pet.setClient(client);
         petRepository.save(pet);
 
@@ -62,8 +77,16 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
     public PetDTO updatePet(Long id,PetDTO pet) {
         PetEntity existingPet = petRepository.findById(id)
                 .orElseThrow(() -> new PetNotFoundException("La mascota con ID: " + id + " no existe."));
-                takeAttributes(toEntity(pet),existingPet);
-                return toDTO(petRepository.save(existingPet));
+        
+        // Validar que si petType es OTHER, otherType no sea null o vacío
+        if (pet.getPetType() == Pet.Society.models.enums.PetType.OTHER) {
+            if (pet.getOtherType() == null || pet.getOtherType().trim().isEmpty()) {
+                throw new IllegalArgumentException("Si el tipo de animal es 'Otro', debe especificar el tipo de animal personalizado");
+            }
+        }
+        
+        takeAttributes(toEntity(pet),existingPet);
+        return toDTO(petRepository.save(existingPet));
     }
 
     public void deletePet(Long id) {
@@ -79,6 +102,15 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
         if (origin.getAge() != 0) {detination.setAge(origin.getAge());}
         if (origin.getClient() == null){origin.setClient(detination.getClient());}
         if (origin.isActive() != detination.isActive()) {detination.setActive(origin.isActive());}
+        if (origin.getPetType() != null) {
+            detination.setPetType(origin.getPetType());
+            // Si el tipo es OTHER, actualizar otherType; si no, limpiarlo
+            if (origin.getPetType() == Pet.Society.models.enums.PetType.OTHER) {
+                detination.setOtherType(origin.getOtherType());
+            } else {
+                detination.setOtherType(null);
+            }
+        }
 
         return detination;
     }
@@ -138,12 +170,15 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
 
     @Override
     public PetEntity toEntity(PetDTO dto) {
-        return PetEntity.builder()
+        PetEntity entity = PetEntity.builder()
                 .name(dto.getName())
                 .age(dto.getAge())
                 .active(dto.isActive())
+                .petType(dto.getPetType())
+                .otherType(dto.getPetType() == Pet.Society.models.enums.PetType.OTHER ? dto.getOtherType() : null)
                 .client(this.clientRepository.findById(dto.getClientId()).get())
                 .build();
+        return entity;
     }
 
     @Override
@@ -153,6 +188,8 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
                 .name(entity.getName())
                 .age(entity.getAge())
                 .active(entity.isActive())
+                .petType(entity.getPetType())
+                .otherType(entity.getOtherType())
                 .clientId(entity.getClient().getId())
                 .build();
     }

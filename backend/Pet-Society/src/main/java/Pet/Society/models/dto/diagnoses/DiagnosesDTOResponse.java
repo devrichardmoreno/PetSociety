@@ -1,6 +1,7 @@
 package Pet.Society.models.dto.diagnoses;
 
 import Pet.Society.models.entities.DiagnosesEntity;
+import Pet.Society.models.enums.PetType;
 import Pet.Society.models.enums.Reason;
 import Pet.Society.models.interfaces.Mapper;
 import jakarta.validation.constraints.NotBlank;
@@ -31,6 +32,11 @@ public class DiagnosesDTOResponse {
 
     @NotNull
     private String petName;
+
+    @NotNull
+    private Pet.Society.models.enums.PetType petType;
+
+    private String otherType;
 
     @NotNull
     private Reason appointmentReason;

@@ -21,8 +21,13 @@
           <li><a href="#nosotros" class="nav-link" (click)="toggleMenu()">Sobre Nosotros</a></li>
           <li><a href="#contacto" class="nav-link" (click)="toggleMenu()">Contacto</a></li>
           <li class="nav-auth">
-            <a class="btn btn-secondary" routerLink="/login" (click)="toggleMenu()">Iniciar Sesión</a>
-            <a class="btn btn-primary" routerLink="/register" (click)="toggleMenu()">Registrarse</a>
+            @if (isAuthenticated) {
+              <button class="btn btn-primary" (click)="goToUserMenu(); toggleMenu()">{{ getButtonText() }}</button>
+              <button class="btn btn-logout" (click)="logout(); toggleMenu()">Cerrar sesión</button>
+            } @else {
+              <a class="btn btn-secondary" routerLink="/login" (click)="toggleMenu()">Iniciar Sesión</a>
+              <a class="btn btn-primary" routerLink="/register" (click)="toggleMenu()">Registrarse</a>
+            }
           </li>
         </ul>
       </nav>
@@ -30,9 +35,13 @@
       <!-- Botones de acción (ocultos en móvil) -->
 
       <div class="auth-buttons">
-        <button class="btn btn-secondary" routerLink="/login">Iniciar Sesión</button>
-      
-        <button class="btn btn-primary" routerLink="/register">Registrarse</button>
+        @if (isAuthenticated) {
+          <button class="btn btn-primary" (click)="goToUserMenu()">{{ getButtonText() }}</button>
+          <button class="btn btn-logout" (click)="logout()">Cerrar sesión</button>
+        } @else {
+          <button class="btn btn-secondary" routerLink="/login">Iniciar Sesión</button>
+          <button class="btn btn-primary" routerLink="/register">Registrarse</button>
+        }
       </div>
     </div>
   </header>

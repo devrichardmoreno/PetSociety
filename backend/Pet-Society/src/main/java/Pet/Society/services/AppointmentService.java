@@ -316,6 +316,8 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .doctorSpeciality(appointmentEntity.getDoctor().getSpeciality())
                         .petName(appointmentEntity.getPet().getName())
                         .petId(appointmentEntity.getPet().getId())
+                        .petType(appointmentEntity.getPet().getPetType())
+                        .otherType(appointmentEntity.getPet().getOtherType())
                         .reason(appointmentEntity.getReason())
                         .status(appointmentEntity.getStatus())
                         .hasDiagnosis(appointmentEntity.getDiagnoses() != null)

@@ -119,6 +119,8 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
                 .treatment(entity.getTreatment())
                 .doctorName(entity.getDoctor().getName() + " " + entity.getDoctor().getSurname())
                 .petName(entity.getPet().getName())
+                .petType(entity.getPet().getPetType())
+                .otherType(entity.getPet().getOtherType())
                 .appointmentReason(entity.getAppointment().getReason())
                 .date(entity.getDate())
                 .build();

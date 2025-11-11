@@ -86,6 +86,11 @@ public class GlobalControllerException {
     }
 
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ProblemDetail HandlerIllegalArgumentException(IllegalArgumentException ex, HttpServletRequest request) {
+        return createProblemDetail(HttpStatus.BAD_REQUEST, "Invalid Argument", ex.getMessage(), request);
+    }
+
     @ExceptionHandler(Exception.class)
     public ProblemDetail HandlerException(Exception ex, HttpServletRequest request) {
         return createProblemDetail(HttpStatus.INTERNAL_SERVER_ERROR, "Internal Server Error", "There was an error processing the request. " + ex.getMessage(), request);

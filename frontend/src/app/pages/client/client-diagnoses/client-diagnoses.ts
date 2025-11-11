@@ -6,7 +6,9 @@ import { AuthService } from '../../../services/auth.service';
 import { PetService } from '../../../services/pet.service';
 import { DiagnosesDTOResponse } from '../../../models/dto/diagnoses-response-dto';
 import { Reason } from '../../../models/dto/reason.enum';
+import { PetType } from '../../../models/dto/pet-type.enum';
 import { HeaderClient } from '../../../components/header-client/header-client';
+import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
 import { Page } from '../../../models/paging/page';
 import Swal from 'sweetalert2';
 
@@ -211,6 +213,10 @@ export class ClientDiagnosesComponent implements OnInit {
     }
     
     return pages;
+  }
+
+  getPetEmoji(petType: PetType): string {
+    return PetEmojiUtil.getEmoji(petType);
   }
 }
 

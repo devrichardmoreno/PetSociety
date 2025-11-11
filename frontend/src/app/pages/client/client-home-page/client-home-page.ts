@@ -11,6 +11,7 @@ import Swal from 'sweetalert2';
 import { Pet } from '../../../models/Pet';
 import { UserData } from '../../../models/UserData';
 import { Status } from '../../../models/dto/status.enum';
+import { PetType, PetTypeLabels } from '../../../models/dto/pet-type.enum';
 import { ClientProfileSection } from '../components/client-profile-section/client-profile-section';
 import { ClientProfileEdit } from '../components/client-profile-edit/client-profile-edit';
 import { ClientPetsList } from '../components/client-pets-list/client-pets-list';
@@ -94,13 +95,41 @@ export class ClientHomePage implements OnInit {
     // Formulario de nueva mascota
     this.addPetForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      edad: ['', [Validators.required, Validators.min(1), Validators.max(30)]]
+      edad: ['', [Validators.required, Validators.min(1), Validators.max(30)]],
+      tipoAnimal: ['', [Validators.required]],
+      tipoAnimalOtro: ['']
     });
 
     // Formulario de edición de mascota
     this.editPetForm = this.fb.group({
       nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      edad: ['', [Validators.required, Validators.min(1), Validators.max(30)]]
+      edad: ['', [Validators.required, Validators.min(1), Validators.max(30)]],
+      tipoAnimal: ['', [Validators.required]],
+      tipoAnimalOtro: ['']
+    });
+
+    // Agregar listener para validación condicional en addPetForm
+    this.addPetForm.get('tipoAnimal')?.valueChanges.subscribe(value => {
+      const otroControl = this.addPetForm.get('tipoAnimalOtro');
+      if (value === PetType.OTHER) {
+        otroControl?.setValidators([Validators.required, Validators.maxLength(50)]);
+      } else {
+        otroControl?.clearValidators();
+        otroControl?.setValue('');
+      }
+      otroControl?.updateValueAndValidity();
+    });
+
+    // Agregar listener para validación condicional en editPetForm
+    this.editPetForm.get('tipoAnimal')?.valueChanges.subscribe(value => {
+      const otroControl = this.editPetForm.get('tipoAnimalOtro');
+      if (value === PetType.OTHER) {
+        otroControl?.setValidators([Validators.required, Validators.maxLength(50)]);
+      } else {
+        otroControl?.clearValidators();
+        otroControl?.setValue('');
+      }
+      otroControl?.updateValueAndValidity();
     });
   }
 
@@ -135,7 +164,9 @@ export class ClientHomePage implements OnInit {
           this.pets = petsDTO.map(petDTO => ({
             id: petDTO.id!,
             nombre: petDTO.name,
-            edad: petDTO.age
+            edad: petDTO.age,
+            tipoAnimal: petDTO.petType,
+            tipoAnimalOtro: petDTO.otherType
           }));
           
           // Cargar citas para cada mascota
@@ -257,10 +288,28 @@ export class ClientHomePage implements OnInit {
     }
 
     const formData = this.addPetForm.value;
+    
+    // Validar que si tipoAnimal es OTHER, tipoAnimalOtro no sea vacío
+    if (formData.tipoAnimal === PetType.OTHER && (!formData.tipoAnimalOtro || formData.tipoAnimalOtro.trim() === '')) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo requerido',
+        text: 'Si seleccionas "Otro", debes especificar el tipo de animal',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#45AEDD',
+        iconColor: '#000000'
+      });
+      this.addPetForm.get('tipoAnimalOtro')?.markAsTouched();
+      return;
+    }
+    
     const petDTO = {
       name: formData.nombre,
       age: parseInt(formData.edad),
       active: true,
+      petType: formData.tipoAnimal as PetType,
+      otherType: formData.tipoAnimal === PetType.OTHER ? formData.tipoAnimalOtro : undefined,
       clientId: userId
     };
 
@@ -312,7 +361,9 @@ export class ClientHomePage implements OnInit {
     // Pre-cargar el formulario con los datos actuales de la mascota
     this.editPetForm.patchValue({
       nombre: pet.nombre,
-      edad: pet.edad
+      edad: pet.edad,
+      tipoAnimal: pet.tipoAnimal,
+      tipoAnimalOtro: pet.tipoAnimalOtro || ''
     });
     
     this.editingPetId = petId;
@@ -382,10 +433,28 @@ export class ClientHomePage implements OnInit {
     }
 
     const formData = this.editPetForm.value;
+    
+    // Validar que si tipoAnimal es OTHER, tipoAnimalOtro no sea vacío
+    if (formData.tipoAnimal === PetType.OTHER && (!formData.tipoAnimalOtro || formData.tipoAnimalOtro.trim() === '')) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Campo requerido',
+        text: 'Si seleccionas "Otro", debes especificar el tipo de animal',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#45AEDD',
+        iconColor: '#000000'
+      });
+      this.editPetForm.get('tipoAnimalOtro')?.markAsTouched();
+      return;
+    }
+
     const petDTO = {
       name: formData.nombre,
       age: parseInt(formData.edad),
       active: true,
+      petType: formData.tipoAnimal,
+      otherType: formData.tipoAnimal === PetType.OTHER ? formData.tipoAnimalOtro : undefined,
       clientId: userId
     };
 

@@ -52,7 +52,7 @@
         <div class="diagnosis-card">
           <div class="diagnosis-header">
             <div class="pet-name-badge">
-              <span class="pet-icon">🐾</span>
+              <span class="pet-icon">{{ getPetEmoji(diagnosis.petType) }}</span>
               <span class="pet-name">{{ diagnosis.petName }}</span>
             </div>
             <span class="diagnosis-date">{{ formatDate(diagnosis.date) }}</span>
