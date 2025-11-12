@@ -21,6 +21,7 @@ public class AppointmentHistoryDTO {
     private String doctorName;
     private Long doctorId;
     private Speciality doctorSpeciality;
+    private String clientName;
     private String petName;
     private Long petId;
     private Reason reason;

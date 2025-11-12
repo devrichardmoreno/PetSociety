@@ -18,6 +18,7 @@ import Pet.Society.models.enums.Reason;
 import Pet.Society.models.dto.appointment.AppointmentDTORequest;
 import Pet.Society.models.enums.Status;
 import Pet.Society.models.exceptions.AppointmentDoesntExistException;
+import Pet.Society.models.exceptions.DoctorNotFoundException;
 import Pet.Society.models.exceptions.DuplicatedAppointmentException;
 import Pet.Society.models.exceptions.UnavailableAppointmentException;
 import Pet.Society.models.interfaces.Mapper;
@@ -339,6 +340,33 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .petName(appointmentEntity.getPet().getName())
                         .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
                         .build()).collect(Collectors.toList());
+    }
+
+    public List<AppointmentHistoryDTO> getAllPastAppointmentsByDoctorId(long doctorId){
+        Optional <DoctorEntity> doctor = Optional.ofNullable(this.doctorService.findById1(doctorId));
+
+        if (doctor.isEmpty()){
+            throw new DoctorNotFoundException("Doctor does not exist");
+        }
+
+        return this.appointmentRepository.findAllByDoctorId(doctorId).stream()
+                .filter(appointment -> appointment.getStatus().equals(Status.SUCCESSFULLY))
+                .map(appointmentEntity -> AppointmentHistoryDTO.builder()
+                        .startTime(appointmentEntity.getStartDate())
+                        .endTime(appointmentEntity.getEndDate())
+                        .doctorName(appointmentEntity.getDoctor().getName())
+                        .doctorId(appointmentEntity.getDoctor().getId())
+                        .doctorSpeciality(appointmentEntity.getDoctor().getSpeciality())
+                        .clientName(appointmentEntity.getPet().getClient().getName())
+                        .petName(appointmentEntity.getPet().getName())
+                        .petId(appointmentEntity.getPet().getId())
+                        .reason(appointmentEntity.getReason())
+                        .status(appointmentEntity.getStatus())
+                        .hasDiagnosis(appointmentEntity.getDiagnoses() != null)
+                        .diagnosisId(appointmentEntity.getDiagnoses() != null ? appointmentEntity.getDiagnoses().getId() : null)
+                        .build()
+                )
+                .collect(Collectors.toList());
     }
 
     /**

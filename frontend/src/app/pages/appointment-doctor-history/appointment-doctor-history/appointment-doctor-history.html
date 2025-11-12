@@ -1,3 +1,23 @@
 <section id="appointment-doctor-history-container-all">
-    <p>HISTORY</p>
+    <main id="main-content">
+        @if (appointementArray.length>0) {
+            <div class="cards-container">
+                @for (appointment of appointementArray; track $index) {
+                    <article class="appointment-card" role="article" aria-label="Cita {{ $index + 1 }}">
+                        <div class="appointment-card-header">
+                            <h3 class="appointment-card-title">Cita con {{ appointment.petName || '—' }}</h3>
+                            <div class="appointment-card-date">{{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</div>
+                        </div>
+                        <div class="appointment-card-body">
+                            <p><strong>Motivo:</strong> {{ appointment.reason || 'No especificado' }}</p>
+                            <p><strong>Cliente:</strong> {{ appointment.clientName || 'No especificado' }}</p>
+                            <p><strong>Mascota:</strong> {{ appointment.petName || '—' }}</p>
+                        </div>
+                    </article>
+                }
+            </div>
+        } @else {
+            <p class="no-appointments">No hay citas para mostrar.</p>
+        }
+    </main>
 </section>

@@ -102,4 +102,6 @@ export class AppointmentService {
   getScheduledAppointmentIdByPetId(petId: number): Observable<number> {
     return this.http.get<number>(`${this.url}/pet/${petId}/scheduled-id`, { headers: this.getAuthHeaders() });
   }
+
+  
 }

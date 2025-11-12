@@ -364,4 +364,9 @@ public ResponseEntity<List<LocalDate>> getAvailableDaysByReason(@PathVariable Re
     return ResponseEntity.ok(this.appointmentService.getAvailableDaysByReason(reason));
 }
 
+    @GetMapping("/pastByDoctor/{doctorId}")
+    public ResponseEntity<List<AppointmentHistoryDTO>> getAllPastAppointmentByDoctorId(@PathVariable Long doctorId){
+        return ResponseEntity.ok(this.appointmentService.getAllPastAppointmentsByDoctorId(doctorId));
+    }
+
 }
