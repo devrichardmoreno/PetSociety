@@ -40,7 +40,7 @@ export class CreateAppointment implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // --- Formulario para UNA cita ---
+
     this.appointmentForm = this.fb.group({
       startTime: [null, [Validators.required, this.futureDateValidator]],
       endTime: [null, [Validators.required]],
@@ -48,7 +48,7 @@ export class CreateAppointment implements OnInit {
       reason: [null, Validators.required]
     }, { validators: this.endAfterStartValidator });
 
-    // --- Formulario para MÚLTIPLES citas ---
+
     this.appointmentBulkForm = this.fb.group({
       doctor: [null, Validators.required],
       startDate: [null, [Validators.required, this.futureDateValidator]],

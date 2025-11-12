@@ -1,18 +1,22 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { RegisterDTO } from '../models/dto/RegisterDTO';
-
+import { RegisterDoctorDTO } from '../models/dto/register-doctor-dto';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterService {
 
-  readonly API = 'http://localhost:8080/register/new/client'
+  readonly API = 'http://localhost:8080/register';
 
-  constructor(private http : HttpClient){}
+  constructor(private http: HttpClient) {}
 
-  registerClient(client : RegisterDTO){
-    return this.http.post<String>(this.API, client);
+  registerClient(client: RegisterDTO) {
+    return this.http.post<string>(`${this.API}/new/client`, client);
+  }
+
+  registerDoctor(doctor: RegisterDoctorDTO) {
+    return this.http.post<string>(`${this.API}/new/doctor`, doctor);
   }
 }

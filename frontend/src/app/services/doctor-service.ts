@@ -22,4 +22,6 @@ export class DoctorService {
   getAllDoctorsEntity(): Observable<Doctor[]> {
     return this.http.get<Doctor[]>(`${this.url}/list-id`);
   }
+
+  
 }
