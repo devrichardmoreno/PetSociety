@@ -12,6 +12,7 @@ import { CreateAppointment } from './pages/admin/create-appointment/create-appoi
 import { AppointmentListComponent } from './pages/admin/admin-home/appointment-list/appointment-list';
 import { DoctorHomePage } from './pages/doctor/doctor-home-page/doctor-home-page';
 import { AppointmentDoctorHistory } from './pages/appointment-doctor-history/appointment-doctor-history/appointment-doctor-history';
+import { AppointmentDetail } from './pages/admin/appointment-detail/appointment-detail';
 import { DoctorListComponent } from './pages/doctor-list/doctor-list';
 
 export const routes: Routes = [
@@ -19,6 +20,12 @@ export const routes: Routes = [
     {
       path: 'admin/home', 
       component:AdminHome, 
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'admin/appointment/:id',
+      component: AppointmentDetail,
       data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },

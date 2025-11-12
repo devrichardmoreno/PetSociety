@@ -1,0 +1,53 @@
+<div class="appointment-detail-container">
+  @if (appointment) {
+    <div class="appointment-card">
+      <div class="card-header">
+        <h2>Appointment Details</h2>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>ID:</strong> {{ appointment.id }}</p>
+            <p><strong>Doctor:</strong> {{ appointment.doctorName }}</p>
+            <p><strong>Pet:</strong> {{ appointment.petName }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Reason:</strong> {{ appointment.reason }}</p>
+            <p><strong>Start Time:</strong> {{ appointment.startTime | date:'medium' }}</p>
+            <p><strong>End Time:</strong> {{ appointment.endTime | date:'medium' }}</p>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Status:</strong> <span class="badge">{{ appointment.status }}</span></p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Approved:</strong> 
+              @if (appointment.aproved) {
+                <span class="text-success">Yes</span>
+              } @else {
+                <span class="text-danger">No</span>
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        @if (!appointment.aproved) {
+          <button (click)="approveAppointment()" class="btn btn-success me-2">Approve</button>
+        } @else {
+          <button (click)="disapproveAppointment()" class="btn btn-danger me-2">Disapprove</button>
+        }
+        <a routerLink="/admin" class="btn btn-secondary">Back to Home</a>
+      </div>
+    </div>
+  } @else {
+    <div class="loading-container">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p>Loading appointment...</p>
+    </div>
+  }
+</div>

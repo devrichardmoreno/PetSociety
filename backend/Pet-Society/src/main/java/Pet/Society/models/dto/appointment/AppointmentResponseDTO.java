@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Data
 @SuperBuilder
 public class AppointmentResponseDTO {
+    private Long id;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String doctorName;

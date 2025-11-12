@@ -1,8 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { AppointmentService } from '../../../../services/appointment-service';
 import { AppointmentResponseDTO } from '../../../../models/dto/appointment-response-dto';
-import { FormsModule } from '@angular/forms';
+import { OnInit } from '@angular/core';
 import { Reason } from '../../../../models/dto/reason.enum';
 
 @Component({
@@ -22,15 +24,25 @@ export class AppointmentListComponent implements OnInit {
   selectedDoctor: string = '';
   selectedStatus: string = '';
   selectedReason: string = '';
+  selectedApproved: string = ''; // New property for approved filter
   doctors: string[] = [];
   statuses: string[] = [];
   reasons: string[] = [];
+  approvedOptions: string[] = ['Sí', 'No']; // Options for the approved filter
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
 
-  constructor(private appointmentService: AppointmentService) {}
+  paginatedAppointments: AppointmentResponseDTO[] = [];
+
+  constructor(private appointmentService: AppointmentService, private router: Router) {}
 
   ngOnInit(): void {
     this.loadAppointments();
     this.reasons = Object.values(Reason);
+  }
+
+  goToAppointmentDetail(appointmentId: number): void {
+    this.router.navigate(['/admin/appointment', appointmentId]);
   }
 
   loadAppointments(): void {
@@ -40,8 +52,8 @@ export class AppointmentListComponent implements OnInit {
     this.appointmentService.getAllAppointments().subscribe({
       next: (data) => {
         this.appointments = data;
-        this.filteredAppointments = data;
         this.populateFilterArrays();
+        this.filterAppointments(); // Initial filter and pagination
         this.loading = false;
       },
       error: (err) => {
@@ -94,6 +106,44 @@ export class AppointmentListComponent implements OnInit {
       filtered = filtered.filter(appointment => appointment.reason === this.selectedReason);
     }
 
+    // New filter for approved status
+    if (this.selectedApproved !== '') {
+      const isApproved = this.selectedApproved === 'Sí';
+      filtered = filtered.filter(appointment => appointment.aproved === isApproved);
+    }
+
     this.filteredAppointments = filtered;
+    this.currentPage = 1;
+    this.updatePaginatedAppointments();
+  }
+
+  updatePaginatedAppointments(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    this.paginatedAppointments = this.filteredAppointments.slice(startIndex, endIndex);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages().length) {
+      this.currentPage++;
+      this.updatePaginatedAppointments();
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePaginatedAppointments();
+    }
+  }
+
+  goToPage(page: number): void {
+    this.currentPage = page;
+    this.updatePaginatedAppointments();
+  }
+
+  totalPages(): number[] {
+    const pageCount = Math.ceil(this.filteredAppointments.length / this.itemsPerPage);
+    return Array.from({ length: pageCount }, (_, i) => i + 1);
   }
 }

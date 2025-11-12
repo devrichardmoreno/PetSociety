@@ -197,6 +197,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
 
     public List<AppointmentResponseDTO>getAllAppointmets(){
         return this.appointmentRepository.findAll().stream().map(appointmentEntity -> AppointmentResponseDTO.builder()
+                        .id(appointmentEntity.getId())
                         .startTime(appointmentEntity.getStartDate())
                         .endTime(appointmentEntity.getEndDate())
                         .reason(appointmentEntity.getReason())
@@ -243,6 +244,29 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         }
     }
 
+    public AppointmentResponseDTO approveAppointment(Long id){
+        Optional<AppointmentEntity> existingAppointment = this.appointmentRepository.findById(id);
+
+        if (existingAppointment.isEmpty()) {
+            throw new AppointmentDoesntExistException("Appointment does not exist");
+        }
+
+        existingAppointment.get().setApproved(true);
+        this.appointmentRepository.save(existingAppointment.get());
+        
+        String message = existingAppointment.get().getPet() == null ? "No hay mascota asignada" : existingAppointment.get().getPet().getName();
+        return AppointmentResponseDTO.builder()
+                .id(existingAppointment.get().getId())
+                .startTime(existingAppointment.get().getStartDate())
+                .endTime(existingAppointment.get().getEndDate())
+                .reason(existingAppointment.get().getReason())
+                .doctorName(existingAppointment.get().getDoctor().getName()+ " " +existingAppointment.get().getDoctor().getSurname())
+                .aproved(existingAppointment.get().isApproved())
+                .status(existingAppointment.get().getStatus())
+                .petName(message)
+                .build();
+    }
+
     /**
      * Obtiene el ID de la cita programada (TO_BEGIN) de una mascota
      * Útil para cancelar citas desde el frontend
@@ -271,6 +295,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         //This variable is for put in the pet name. For some reason, the method fails if there are not a Pet in the Appointment
         String message = existingAppointment.get().getPet() == null ? "No hay mascota asignada" : existingAppointment.get().getPet().getName();
         return AppointmentResponseDTO.builder()
+                .id(existingAppointment.get().getId())
                 .startTime(existingAppointment.get().getStartDate())
                 .endTime(existingAppointment.get().getEndDate())
                 .reason(existingAppointment.get().getReason())
@@ -424,6 +449,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .build()).collect(Collectors.toList());
     }
 
+    
 
 
     @Transactional
