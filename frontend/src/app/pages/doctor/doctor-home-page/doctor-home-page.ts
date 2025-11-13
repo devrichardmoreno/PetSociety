@@ -6,14 +6,15 @@ import { DiagnosesService } from '../../../services/diagnoses/diagnoses-service'
 import { Doctor } from '../../../models/doctor/doctor';
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
 import { DiagnoseDto } from '../../../models/dto/diagnose-dto/diagnose-dto';
 import { CommonModule } from '@angular/common';
 import { AppointmentService } from '../../../services/appointment/appointment-service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { DiagnosisFormModal } from '../../diagnosis-form-modal/diagnosis-form-modal';
-import { DiagnosesHistoryModal } from '../../diagnoses-history-modal/diagnoses-history-modal';
+import { DiagnosisFormModal } from '../../diagnoses/diagnosis-form-modal/diagnosis-form-modal';
+import { DiagnosesHistoryModal } from '../../diagnoses/diagnoses-history-modal/diagnoses-history-modal';
+import { Subscription } from 'rxjs';
+
 
 @Component({
   selector: 'app-doctor-home-page',

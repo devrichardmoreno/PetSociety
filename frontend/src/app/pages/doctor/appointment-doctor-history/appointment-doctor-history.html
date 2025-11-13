@@ -3,7 +3,7 @@
         @if (appointementArray.length>0) {
             <div class="cards-container">
                 @for (appointment of appointementArray; track $index) {
-                    <article class="appointment-card" role="article" aria-label="Cita {{ $index + 1 }}">
+                    <article class="appointment-card" role="article" aria-label="Cita {{ $index + 1 }}" (click)="goToDiagnose(appointment.diagnosisId)">
                         <div class="appointment-card-header">
                             <h3 class="appointment-card-title">Cita con {{ appointment.petName || '—' }}</h3>
                             <div class="appointment-card-date">{{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</div>

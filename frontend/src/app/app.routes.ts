@@ -11,7 +11,7 @@ import { AdminHome } from './pages/admin/admin-home/admin-home';
 import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
 import { AppointmentListComponent } from './pages/admin/admin-home/appointment-list/appointment-list';
 import { DoctorHomePage } from './pages/doctor/doctor-home-page/doctor-home-page';
-import { AppointmentDoctorHistory } from './pages/appointment-doctor-history/appointment-doctor-history/appointment-doctor-history';
+import { AppointmentDoctorHistory } from './pages/doctor/appointment-doctor-history/appointment-doctor-history';
 import { DoctorListComponent } from './pages/doctor-list/doctor-list';
 
 export const routes: Routes = [

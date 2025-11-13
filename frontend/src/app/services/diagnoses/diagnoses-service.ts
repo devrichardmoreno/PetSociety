@@ -52,6 +52,13 @@ export class DiagnosesService {
     );
   }
 
+  getDiagnoseById(diagnoseId: number): Observable<DiagnoseDto & { date: Date} >{
+    return this.http.get<DiagnoseDto>(`${this.url}/findById/${diagnoseId}`)
+    .pipe(
+      map(dto => mapDiagnoseDateToDate(dto))
+    );
+    }
+
   getLastestDiagnosesByPet(
     petId: number,
     page = 0,

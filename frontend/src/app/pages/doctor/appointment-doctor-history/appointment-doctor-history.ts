@@ -4,6 +4,8 @@ import { AppointmentService } from '../../../services/appointment/appointment-se
 import { AuthService } from '../../../services/auth.service';
 import { Router } from '@angular/router';
 import { AppointmentHistoryDTO, mapAppointmentDateToDate } from '../../../models/dto/appointment-history-dto';
+import { MatDialog } from '@angular/material/dialog';
+import { DiagnoseOfAppointmentModal } from '../../diagnoses/diagnose-of-appointment-modal/diagnose-of-appointment-modal';
 
 
 @Component({
@@ -19,7 +21,8 @@ export class AppointmentDoctorHistory implements OnInit{
   constructor(
     private appointmentService: AppointmentService,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private matDialog: MatDialog
   ) {}
 
 
@@ -43,6 +46,15 @@ export class AppointmentDoctorHistory implements OnInit{
         console.error('Error cargando citas pasadas del doctor:', erro);
       }
     })
+  }
+
+  goToDiagnose(diagnoseId: number | null): void{
+    if(diagnoseId === null) return;
+
+     this.matDialog.open(DiagnoseOfAppointmentModal,{
+      width: '700px',
+      data: {diagnoseId: diagnoseId}
+     })
   }
 
 

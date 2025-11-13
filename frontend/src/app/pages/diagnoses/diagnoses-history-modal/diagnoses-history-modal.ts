@@ -1,9 +1,10 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { DiagnosesService } from '../../services/diagnoses/diagnoses-service';
-import { DiagnoseDto, mapDiagnoseDateToDate } from '../../models/dto/diagnose-dto/diagnose-dto';
+
 import { CommonModule} from '@angular/common';
 import { MatAnchor } from "@angular/material/button";
+import { DiagnoseDto, mapDiagnoseDateToDate } from '../../../models/dto/diagnose-dto/diagnose-dto';
+import { DiagnosesService } from '../../../services/diagnoses/diagnoses-service';
 
 
 @Component({

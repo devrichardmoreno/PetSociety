@@ -5,8 +5,8 @@ import { MatDialogRef, MAT_DIALOG_DATA, MatDialogModule } from '@angular/materia
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
-import { DiagnosesService } from '../../services/diagnoses/diagnoses-service';
-import { DiagnoseRequest } from '../../models/dto/diagnose-dto/diagnose-request';
+import { DiagnosesService } from '../../../services/diagnoses/diagnoses-service';
+import { DiagnoseRequest } from '../../../models/dto/diagnose-dto/diagnose-request';
 import Swal from 'sweetalert2';
 
 @Component({

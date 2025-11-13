@@ -1,0 +1,99 @@
+/* === Diálogo de detalles del diagnóstico === */
+
+/* Título */
+.diagnose-details-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--hospital-blue);
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--border);
+  padding-top: 10px;
+  padding-bottom: 6px;
+  padding-left: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+
+/* Contenedor principal del contenido */
+.diagnose-details-container {
+  background-color: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 320px;
+}
+
+/* Texto de estado */
+.diagnose-details-container .loading {
+  text-align: center;
+  color: var(--hospital-blue);
+  font-weight: 600;
+}
+
+.diagnose-details-container .error-text {
+  text-align: center;
+  color: var(--error);
+  font-weight: 600;
+}
+
+/* Artículos de información */
+.diagnose-details-container .article {
+  font-size: 1rem;
+  color: #333;
+  margin: 4px 0;
+}
+
+.diagnose-details-container .article strong {
+  color: var(--secondary-text);
+  margin-right: 6px;
+}
+
+/* Botón de cierre */
+.close-button {
+  margin: 20px 10px 10px 10px;
+  background-color: var(--vibrant-orange);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.15s ease;
+  box-shadow: 0 4px 10px rgba(var(--vibrant-orange-rgb), 0.2);
+}
+
+.close-button:hover {
+  background-color: var(--orange);
+  transform: translateY(-2px);
+}
+
+.close-button:focus-visible {
+  outline: 3px solid rgba(69, 174, 221, 0.25);
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .diagnose-details-title {
+    font-size: 1.2rem;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .diagnose-details-container {
+    padding: 14px 16px;
+    width: 100%;
+  }
+
+  .close-button {
+    width: 100%;
+    padding: 10px;
+  }
+}
