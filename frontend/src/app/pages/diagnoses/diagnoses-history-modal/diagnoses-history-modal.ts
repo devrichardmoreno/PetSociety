@@ -50,8 +50,19 @@ export class DiagnosesHistoryModal implements OnInit{
         this.diagnosesPage.totalElements = response.totalElements;
         this.diagnosesPage.page = response.number;
       },
-      error: () => {
-        this.diagnosesError = 'Error al cargar los diagnósticos.';
+      error: (err) => {
+
+        if(err.status ===404){
+          this.diagnosesError = 'No se encontraron diagnósticos para esta mascota.';
+        }
+        else if(err.status ===500){
+          this.diagnosesError = 'Error del servidor. Por favor, inténtelo de nuevo más tarde.';
+        }
+        else{
+          this.diagnosesError = 'Error desconocido. Por favor, inténtelo de nuevo.';
+        }
+
+        this.loadingDiagnoses = false;
       },
       complete: () => {
         this.loadingDiagnoses = false;

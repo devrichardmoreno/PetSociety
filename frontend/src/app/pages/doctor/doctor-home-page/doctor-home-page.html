@@ -24,20 +24,24 @@
             <h3>Cliente : {{ appointment.clientName }}</h3>
             <p>Mascota : {{ appointment.petName }}</p>
             <p>Razón : {{appointment.reason}}</p>
-            
+
 
             @if (appointment.clientName === "Sin cliente asignado" && appointment.petName === "Sin mascota asignada") {
               <p class="no-appointments">Esta cita no tiene cliente ni mascota asignados.</p>
             } @else {
-              @if (appointment.startDate && appointment.startDate <= currentDate) {
+              
                 
                 <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
                 <button class="btn btn-history" type="button" (click)="openDiagnosesHistoryModal(appointment.petId)" >Ver historia clínica</button>
+                @if (appointment.startDate && appointment.startDate <= currentDate && appointment.hasDiagnose != true) {
                 <button mat-flat-button (click)="openDiagnosisModal(appointment.id)" class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
-                </div>
-              } @else {
+                } @else if (appointment.hasDiagnose == true) {
+                  <p class="no-appointments">Diagnóstico emitido</p>
+                } @else {
               <p class="no-appointments">Cita futura</p>
             }
+              </div>
+              
             }
           </div>
         </article>
@@ -45,6 +49,26 @@
       @empty {
         <p class="no-appointments">No hay citas para mostrar.</p>
       }
+
+      @if (appointmentArray.length > 0) {
+    <div class="pagination-container">
+      <button class="btn-pagination"
+              (click)="loadPrevAppointmentsPage()"
+              [disabled]="appointmentsPage.page <= 0">
+        ⬅️ Anterior
+      </button>
+
+      <span class="pagination-info">
+        Página {{ appointmentsPage.page + 1 }} de {{ appointmentsPage.totalPages }}
+      </span>
+
+      <button class="btn-pagination"
+              (click)="loadNextAppointmentsPage()"
+              [disabled]="appointmentsPage.page + 1 >= appointmentsPage.totalPages">
+        Siguiente ➡️
+      </button>
+    </div>
+  }
     </section>
     }
     @else {

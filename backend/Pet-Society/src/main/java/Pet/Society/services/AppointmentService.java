@@ -30,6 +30,7 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.cglib.core.Local;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
@@ -394,39 +395,42 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                 .collect(Collectors.toList());
     }
 
-    public List<AppointmentScheduleDTO> getScheduleAppointmentsDoctorForToday(long id) {
-        if(!doctorService.doctorExistById(id)){
+    public Page<AppointmentScheduleDTO> getScheduleAppointmentsDoctorForToday(long id, Pageable pageable) {
+        if (!doctorService.doctorExistById(id)) {
             throw new AppointmentDoesntExistException("Doctor does not exist");
         }
-        return this.appointmentRepository.findAllByDoctorIdOrderByStartDateAsc(id).stream()
-                .filter(appointment -> appointment.getEndDate().isAfter(getCurrentDateTimeArgentina()))
-                .map(appointmentEntity -> {
-                    String clientName = appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null
-                            ? appointmentEntity.getPet().getClient().getName()
-                            : "Sin cliente asignado";
 
-                    String petName = appointmentEntity.getPet() != null
-                            ? appointmentEntity.getPet().getName()
-                            : "Sin mascota asignada";
+        // Llamamos al repositorio con el filtro de fecha
+        Page<AppointmentEntity> page = appointmentRepository.findAllByDoctorIdOrderByStartDateAsc(
+                id, getCurrentDateTimeArgentina(), pageable);
 
-                    Long petId = appointmentEntity.getPet() != null
-                            ? appointmentEntity.getPet().getId()
-                            : 0;
+        // Mapeamos las entidades a DTO, conservando la paginación
+        return page.map(appointmentEntity -> {
+            String clientName = appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null
+                    ? appointmentEntity.getPet().getClient().getName()
+                    : "Sin cliente asignado";
 
-                    return AppointmentScheduleDTO.builder()
-                            .id(appointmentEntity.getId())
-                            .startTime(appointmentEntity.getStartDate())
-                            .endTime(appointmentEntity.getEndDate())
-                            .clientName(clientName)
-                            .reason(appointmentEntity.getReason())
-                            .petId(petId)
-                            .petName(petName)
-                            .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
-                            .build();
-                })
-                .collect(Collectors.toList());
+            String petName = appointmentEntity.getPet() != null
+                    ? appointmentEntity.getPet().getName()
+                    : "Sin mascota asignada";
 
+            Long petId = appointmentEntity.getPet() != null
+                    ? appointmentEntity.getPet().getId()
+                    : 0L;
+
+            return AppointmentScheduleDTO.builder()
+                    .id(appointmentEntity.getId())
+                    .startTime(appointmentEntity.getStartDate())
+                    .endTime(appointmentEntity.getEndDate())
+                    .clientName(clientName)
+                    .reason(appointmentEntity.getReason())
+                    .petId(petId)
+                    .petName(petName)
+                    .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
+                    .build();
+        });
     }
+
 
 
 

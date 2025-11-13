@@ -11,6 +11,9 @@ import Pet.Society.models.enums.Reason;
 import Pet.Society.models.dto.pet.AssingmentPetDTO;
 import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.services.AppointmentService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -296,8 +299,8 @@ public class AppointmentController {
             }
     )
     @GetMapping("/doctor/{doctorId}")
-    public ResponseEntity<List<AppointmentScheduleDTO>> scheduleAppointmentsDoctor(@PathVariable Long doctorId) {
-        return ResponseEntity.ok(this.appointmentService.getScheduleAppointmentsDoctorForToday(doctorId));
+    public ResponseEntity<Page<AppointmentScheduleDTO>> scheduleAppointmentsDoctor(@PageableDefault(size = 10, page = 0) Pageable pageable , @PathVariable Long doctorId) {
+        return ResponseEntity.ok(this.appointmentService.getScheduleAppointmentsDoctorForToday(doctorId, pageable));
     }
 
     @GetMapping("/available")

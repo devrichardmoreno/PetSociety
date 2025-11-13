@@ -24,12 +24,20 @@ import { Subscription } from 'rxjs';
 })
 export class DoctorHomePage implements OnInit, OnDestroy {
   showProfile = false;
-  appointmentArray: (AppointmentDto & { startDate?: Date | null; endDate?: Date | null })[] = [];
+  appointmentArray: (AppointmentDto & {
+     startDate?: Date | null;
+     endDate?: Date | null;
+     hasDiagnose?: boolean;
+     })[] = [];
   doctor?: Doctor;
   lastestDiagnoses: DiagnoseDto[] = [];
   loadingDiagnoses = false;
   diagnosesError: string | null = null;
   diagnosesPage = { page: 0, size: 5, totalPages: 0, totalElements: 0 };
+  appointmentsPage = { page: 0, size: 5, totalPages: 0, totalElements: 0};
+  loadingAppointments = false;
+  appointmentsError: string | null = null;
+
   currentDate: Date = new Date();
 
   private subs = new Subscription();
@@ -62,20 +70,48 @@ export class DoctorHomePage implements OnInit, OnDestroy {
         console.error('Error cargando doctor:', err);
       }
     });
-
-    this.appointmentService.getScheduledAppointments(userId).subscribe({
-      next: (appointments) => {
-         const mapped = appointments.map(a => mapAppointmentDateToDate(a));
-    console.log('Raw appointments from backend:', appointments);
-    console.log('Mapped appointments (startDate/endDate):', mapped);
-    this.appointmentArray = mapped;
-      },
-      error: (err) => {
-        console.error('Error cargando citas: ', err);
-      }
-    });
+    this.loadScheduledAppointments(userId, 0, 5);
+    
     this.loadLatestDiagnostics(userId, 0, this.diagnosesPage.size, false);
   }
+
+  loadScheduledAppointments(doctorId: number, page = 0, size = 5) {
+      const s = this.appointmentService.getScheduledAppointments(doctorId, page, size).subscribe({
+        next: (pageResp) => {
+
+          const mapped = (pageResp?.content ?? []).map(mapAppointmentDateToDate);
+          this.appointmentArray = mapped;
+
+
+          this.appointmentsPage.page = pageResp.number ?? page;
+          this.appointmentsPage.size = pageResp.size ?? size;
+          this.appointmentsPage.totalPages = pageResp.totalPages ?? 0;
+          this.appointmentsPage.totalElements = pageResp.totalElements ?? 0;
+          this.loadingAppointments = false;
+        },
+
+        error: (err) => {
+          console.error(err);
+          this.appointmentsError = 'Error cargando citas programadas';
+          this.loadingAppointments = false;
+        }
+      })
+  }
+
+  loadNextAppointmentsPage() {
+  if (this.appointmentsPage.page + 1 >= this.appointmentsPage.totalPages) return;
+  const userId = this.authService.getUserId();
+  if (userId === null) return;
+  this.loadScheduledAppointments(userId, this.appointmentsPage.page + 1, this.appointmentsPage.size);
+}
+
+loadPrevAppointmentsPage() {
+  if (this.appointmentsPage.page <= 0) return;
+  const userId = this.authService.getUserId();
+  if (userId === null) return;
+  this.loadScheduledAppointments(userId, this.appointmentsPage.page - 1, this.appointmentsPage.size);
+}
+
 
   loadLatestDiagnostics(doctorId: number, page = 0, size = 5, append = false) {
     this.loadingDiagnoses = true;
@@ -129,7 +165,11 @@ export class DoctorHomePage implements OnInit, OnDestroy {
     dialogRef.afterClosed().subscribe(result => {
       if (result) { 
         console.log('Diagnóstico enviado:', result);
-        // Aquí puedes llamar a un servicio para guardar el diagnóstico
+        
+        const appointment = this.appointmentArray.find(app => app.id === appointmentId);
+        if (appointment) {
+          appointment.hasDiagnose = true;
+        }
       }
   });
   }

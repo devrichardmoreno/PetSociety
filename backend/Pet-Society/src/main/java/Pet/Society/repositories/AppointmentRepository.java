@@ -5,8 +5,11 @@ import Pet.Society.models.entities.DoctorEntity;
 import Pet.Society.models.entities.PetEntity;
 import Pet.Society.models.enums.Reason;
 import Pet.Society.models.enums.Status;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -23,7 +26,10 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     List<AppointmentEntity> findAllByPetClientId(Long clientId);
     List<AppointmentEntity> findAllByPetId(Long petId);
     List<AppointmentEntity> findAllByDoctorId(Long doctorId);
-    List<AppointmentEntity> findAllByDoctorIdOrderByStartDateAsc(Long doctorId);
+    @Query(value = "SELECT * FROM appointments WHERE doctor_id = ?1 AND end_date > ?2 ORDER BY start_date ASC",
+            countQuery = "SELECT COUNT(*) FROM appointments WHERE doctor_id = ?1 AND end_date > ?2",
+            nativeQuery = true)
+    Page<AppointmentEntity> findAllByDoctorIdOrderByStartDateAsc(Long doctorId, LocalDateTime now, Pageable pageable);
     List<AppointmentEntity> findAppointmentByDoctor(DoctorEntity doctor);
     
     // Métodos para obtener citas disponibles filtradas

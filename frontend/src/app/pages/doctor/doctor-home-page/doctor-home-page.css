@@ -289,6 +289,50 @@
   margin-right: 8px;
 }
 
+/* === Paginación de citas (DoctorHomePage) === */
+.page-doctor .pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 10px 0;
+  border-top: 1px solid var(--dh-border);
+}
+
+.page-doctor .btn-pagination {
+  background-color: var(--dh-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+  box-shadow: 0 4px 10px rgba(69, 174, 221, 0.15);
+}
+
+.page-doctor .btn-pagination:hover:not(:disabled) {
+  background-color: #359ed1;
+  transform: translateY(-2px);
+}
+
+.page-doctor .btn-pagination:disabled {
+  background-color: #b0b0b0;
+  color: #f9f9f9;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.page-doctor .pagination-info {
+  font-weight: 600;
+  color: var(--dh-text-muted);
+  font-size: 0.95rem;
+}
+
+
+
 
 
 /* Responsive */
@@ -330,5 +374,19 @@
 
   .page-doctor .doctor-profile-atribute {
     font-size: 0.95rem;
+  }
+
+   .page-doctor .pagination-container {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .page-doctor .pagination-info {
+    font-size: 0.9rem;
+  }
+
+  .page-doctor .btn-pagination {
+    width: 100%;
+    max-width: 220px;
   }
 }
