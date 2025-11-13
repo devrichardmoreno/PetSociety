@@ -71,10 +71,55 @@ export class CreateAdmin implements OnInit {
         });
       },
       error: (error) => {
+        console.error('Error completo:', error); // Para debugging
+        
+        let errorMessage = 'Error desconocido';
+        
+        // Cuando hay un error HTTP, Angular intenta parsear el error como JSON
+        // El backend devuelve ProblemDetail en formato JSON con estructura:
+        // { type: "...", title: "...", status: 409, detail: "...", instance: "..." }
+        if (error.error) {
+          // Si error.error es un objeto (ProblemDetail)
+          if (typeof error.error === 'object') {
+            // Intentar leer el campo 'detail' del ProblemDetail
+            if (error.error.detail) {
+              errorMessage = error.error.detail;
+            } 
+            // Si no tiene 'detail', intentar leer 'title'
+            else if (error.error.title) {
+              errorMessage = error.error.title;
+            }
+            // Si es un objeto pero no tiene campos conocidos, convertir a string
+            else {
+              errorMessage = JSON.stringify(error.error);
+            }
+          } 
+          // Si error.error es un string
+          else if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          }
+        }
+        
+        // Si es un error 409 (Conflict), probablemente es porque el usuario ya existe
+        if (error.status === 409) {
+          if (errorMessage === 'Error desconocido' || errorMessage.includes('409')) {
+            errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
+          }
+        }
+        
+        // Fallback a otros campos del error solo si no tenemos un mensaje útil
+        if (errorMessage === 'Error desconocido' || errorMessage.includes('Http failure')) {
+          if (error.message && !error.message.includes('Http failure')) {
+            errorMessage = error.message;
+          } else if (error.statusText && error.statusText !== 'OK') {
+            errorMessage = error.statusText;
+          }
+        }
+
         Swal.fire({
           icon: 'error',
           title: 'Error al registrar el administrador',
-          text: `Ocurrió un problema: ${error.message || error.statusText || 'Error desconocido'}`,
+          text: errorMessage,
           background: '#fff',
           color: '#333',
           confirmButtonColor: '#F47B20',

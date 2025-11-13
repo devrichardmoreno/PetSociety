@@ -46,6 +46,17 @@
   color: #333;
 }
 
+#card-information-5.clickable {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+#card-information-5.clickable:hover {
+  background-color: #e0e0e0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 #card-information-5 h3 {
   margin-bottom: 20px;
 }
@@ -58,4 +69,12 @@
 
 #card-information-5 span {
   font-weight: normal;
+}
+
+.no-appointment-message {
+  text-align: center !important;
+  font-style: italic;
+  color: #666;
+  margin-top: 20px !important;
+  font-size: 1em !important;
 }

@@ -95,9 +95,14 @@ public class AppointmentController {
         return ResponseEntity.ok(this.appointmentService.bookAppointment(appointmentId,pet));
     }
 
-    @PatchMapping("approve/{id}")
+    @PatchMapping("/approve/{id}")
     public ResponseEntity<AppointmentResponseDTO> approveAppointment(@PathVariable Long id){
         return ResponseEntity.ok(this.appointmentService.approveAppointment(id));
+    }
+
+    @PatchMapping("/disapprove/{id}")
+    public ResponseEntity<AppointmentResponseDTO> disapproveAppointment(@PathVariable Long id){
+        return ResponseEntity.ok(this.appointmentService.disapproveAppointment(id));
     }
 
 

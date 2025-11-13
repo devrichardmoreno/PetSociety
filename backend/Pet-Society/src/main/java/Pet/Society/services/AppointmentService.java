@@ -244,25 +244,54 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         }
     }
 
+    @Transactional
     public AppointmentResponseDTO approveAppointment(Long id){
-        Optional<AppointmentEntity> existingAppointment = this.appointmentRepository.findById(id);
+        // Primero verificar que existe
+        AppointmentEntity appointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
 
-        if (existingAppointment.isEmpty()) {
-            throw new AppointmentDoesntExistException("Appointment does not exist");
-        }
-
-        existingAppointment.get().setApproved(true);
-        this.appointmentRepository.save(existingAppointment.get());
+        // Actualizar directamente en la base de datos usando un query nativo para evitar validaciones
+        this.appointmentRepository.updateApprovedStatus(id, true);
         
-        String message = existingAppointment.get().getPet() == null ? "No hay mascota asignada" : existingAppointment.get().getPet().getName();
+        // Recargar la entidad para obtener los datos actualizados
+        AppointmentEntity updatedAppointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
+        
+        String message = updatedAppointment.getPet() == null ? "No hay mascota asignada" : updatedAppointment.getPet().getName();
         return AppointmentResponseDTO.builder()
-                .id(existingAppointment.get().getId())
-                .startTime(existingAppointment.get().getStartDate())
-                .endTime(existingAppointment.get().getEndDate())
-                .reason(existingAppointment.get().getReason())
-                .doctorName(existingAppointment.get().getDoctor().getName()+ " " +existingAppointment.get().getDoctor().getSurname())
-                .aproved(existingAppointment.get().isApproved())
-                .status(existingAppointment.get().getStatus())
+                .id(updatedAppointment.getId())
+                .startTime(updatedAppointment.getStartDate())
+                .endTime(updatedAppointment.getEndDate())
+                .reason(updatedAppointment.getReason())
+                .doctorName(updatedAppointment.getDoctor().getName()+ " " +updatedAppointment.getDoctor().getSurname())
+                .aproved(updatedAppointment.isApproved())
+                .status(updatedAppointment.getStatus())
+                .petName(message)
+                .build();
+    }
+
+    @Transactional
+    public AppointmentResponseDTO disapproveAppointment(Long id){
+        // Primero verificar que existe
+        AppointmentEntity appointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
+
+        // Actualizar directamente en la base de datos usando un query nativo para evitar validaciones
+        this.appointmentRepository.updateApprovedStatus(id, false);
+        
+        // Recargar la entidad para obtener los datos actualizados
+        AppointmentEntity updatedAppointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
+        
+        String message = updatedAppointment.getPet() == null ? "No hay mascota asignada" : updatedAppointment.getPet().getName();
+        return AppointmentResponseDTO.builder()
+                .id(updatedAppointment.getId())
+                .startTime(updatedAppointment.getStartDate())
+                .endTime(updatedAppointment.getEndDate())
+                .reason(updatedAppointment.getReason())
+                .doctorName(updatedAppointment.getDoctor().getName()+ " " +updatedAppointment.getDoctor().getSurname())
+                .aproved(updatedAppointment.isApproved())
+                .status(updatedAppointment.getStatus())
                 .petName(message)
                 .build();
     }

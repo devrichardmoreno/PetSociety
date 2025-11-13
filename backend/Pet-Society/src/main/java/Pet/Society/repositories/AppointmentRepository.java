@@ -6,6 +6,9 @@ import Pet.Society.models.entities.PetEntity;
 import Pet.Society.models.enums.Reason;
 import Pet.Society.models.enums.Status;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import org.springframework.stereotype.Repository;
 
@@ -32,4 +35,8 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     
     List<AppointmentEntity> findAllByReasonAndStatusAndPetIsNullAndStartDateBetween(
         Reason reason, Status status, LocalDateTime startDate, LocalDateTime endDate);
+    
+    @Modifying
+    @Query("UPDATE AppointmentEntity a SET a.approved = :approved WHERE a.id = :id")
+    void updateApprovedStatus(@Param("id") Long id, @Param("approved") boolean approved);
 }

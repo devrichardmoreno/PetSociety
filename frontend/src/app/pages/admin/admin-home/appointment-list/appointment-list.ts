@@ -6,6 +6,7 @@ import { AppointmentService } from '../../../../services/appointment-service';
 import { AppointmentResponseDTO } from '../../../../models/dto/appointment-response-dto';
 import { OnInit } from '@angular/core';
 import { Reason } from '../../../../models/dto/reason.enum';
+import { Status } from '../../../../models/dto/status.enum';
 
 @Component({
   selector: 'app-appointment-list',
@@ -26,8 +27,8 @@ export class AppointmentListComponent implements OnInit {
   selectedReason: string = '';
   selectedApproved: string = ''; // New property for approved filter
   doctors: string[] = [];
-  statuses: string[] = [];
-  reasons: string[] = [];
+  statuses: Status[] = [];
+  reasons: Reason[] = [];
   approvedOptions: string[] = ['Sí', 'No']; // Options for the approved filter
   currentPage: number = 1;
   itemsPerPage: number = 10;
@@ -38,7 +39,29 @@ export class AppointmentListComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadAppointments();
-    this.reasons = Object.values(Reason);
+    this.reasons = Object.values(Reason) as Reason[];
+    this.statuses = Object.values(Status) as Status[];
+  }
+
+  getStatusLabel(status: Status): string {
+    const labels: { [key in Status]: string } = {
+      [Status.CANCELED]: 'Cancelada',
+      [Status.RESCHEDULED]: 'Reprogramada',
+      [Status.SUCCESSFULLY]: 'Completada',
+      [Status.TO_BEGIN]: 'Por comenzar',
+      [Status.AVAILABLE]: 'Disponible'
+    };
+    return labels[status] || status;
+  }
+
+  getReasonLabel(reason: Reason): string {
+    const labels: { [key in Reason]: string } = {
+      [Reason.CONTROL]: 'Control',
+      [Reason.EMERGENCY]: 'Emergencia',
+      [Reason.VACCINATION]: 'Vacunación',
+      [Reason.NUTRITION]: 'Nutrición'
+    };
+    return labels[reason] || reason;
   }
 
   goToAppointmentDetail(appointmentId: number): void {
@@ -51,7 +74,12 @@ export class AppointmentListComponent implements OnInit {
 
     this.appointmentService.getAllAppointments().subscribe({
       next: (data) => {
-        this.appointments = data;
+        // Ordenar de la más nueva a la más vieja por startTime
+        this.appointments = data.sort((a, b) => {
+          const dateA = new Date(a.startTime).getTime();
+          const dateB = new Date(b.startTime).getTime();
+          return dateB - dateA; // Orden descendente (más nueva primero)
+        });
         this.populateFilterArrays();
         this.filterAppointments(); // Initial filter and pagination
         this.loading = false;
@@ -66,9 +94,8 @@ export class AppointmentListComponent implements OnInit {
 
   populateFilterArrays(): void {
     const doctorNames = this.appointments.map(appt => appt.doctorName);
-    const statusValues = this.appointments.map(appt => appt.status);
     this.doctors = [...new Set(doctorNames)];
-    this.statuses = [...new Set(statusValues)];
+    // Los statuses y reasons ya están inicializados con todos los valores del enum
   }
 
   filterAppointments(): void {
@@ -79,6 +106,8 @@ export class AppointmentListComponent implements OnInit {
       filtered = filtered.filter(appointment =>
         appointment.doctorName.toLowerCase().includes(searchTermLower) ||
         appointment.petName.toLowerCase().includes(searchTermLower) ||
+        this.getReasonLabel(appointment.reason).toLowerCase().includes(searchTermLower) ||
+        this.getStatusLabel(appointment.status).toLowerCase().includes(searchTermLower) ||
         appointment.reason.toLowerCase().includes(searchTermLower) ||
         appointment.status.toLowerCase().includes(searchTermLower)
       );
@@ -86,11 +115,16 @@ export class AppointmentListComponent implements OnInit {
 
     if (this.searchDate) {
       filtered = filtered.filter(appointment => {
+        // Crear fechas en zona horaria local para evitar problemas de UTC
         const appointmentDate = new Date(appointment.startTime);
-        const searchDate = new Date(this.searchDate);
-        return appointmentDate.getFullYear() === searchDate.getFullYear() &&
-               appointmentDate.getMonth() === searchDate.getMonth() &&
-               appointmentDate.getDate() === searchDate.getDate();
+        // this.searchDate viene en formato "YYYY-MM-DD", crear fecha en zona local
+        const [year, month, day] = this.searchDate.split('-').map(Number);
+        const searchDateLocal = new Date(year, month - 1, day); // month es 0-indexed
+        
+        // Comparar solo año, mes y día en zona horaria local
+        return appointmentDate.getFullYear() === searchDateLocal.getFullYear() &&
+               appointmentDate.getMonth() === searchDateLocal.getMonth() &&
+               appointmentDate.getDate() === searchDateLocal.getDate();
       });
     }
 
@@ -111,6 +145,13 @@ export class AppointmentListComponent implements OnInit {
       const isApproved = this.selectedApproved === 'Sí';
       filtered = filtered.filter(appointment => appointment.aproved === isApproved);
     }
+
+    // Ordenar de la más nueva a la más vieja por startTime
+    filtered = filtered.sort((a, b) => {
+      const dateA = new Date(a.startTime).getTime();
+      const dateB = new Date(b.startTime).getTime();
+      return dateB - dateA; // Orden descendente (más nueva primero)
+    });
 
     this.filteredAppointments = filtered;
     this.currentPage = 1;

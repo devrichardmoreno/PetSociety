@@ -25,17 +25,17 @@
       <select [(ngModel)]="selectedStatus" (change)="filterAppointments()" class="filter-select">
         <option value="">Todos los estados</option>
         @for (status of statuses; track status) {
-          <option [value]="status">{{ status }}</option>
+          <option [value]="status">{{ getStatusLabel(status) }}</option>
         }
       </select>
       <select [(ngModel)]="selectedReason" (change)="filterAppointments()" class="filter-select">
         <option value="">Todas las razones</option>
         @for (reason of reasons; track reason) {
-          <option [value]="reason">{{ reason }}</option>
+          <option [value]="reason">{{ getReasonLabel(reason) }}</option>
         }
       </select>
       <select [(ngModel)]="selectedApproved" (change)="filterAppointments()" class="filter-select">
-        <option value="">Todos (Aprobado)</option>
+        <option value="">Todos (Pagado)</option>
         <option value="Sí">Sí</option>
         <option value="No">No</option>
       </select>
@@ -53,7 +53,7 @@
           <th>Razón</th>
           <th>Inicio</th>
           <th>Fin</th>
-          <th>Aprobado</th>
+          <th>Pagado</th>
           <th>Estado</th>
         </tr>
       </thead>
@@ -62,15 +62,19 @@
           <tr (click)="goToAppointmentDetail(appt.id)" style="cursor: pointer;">
             <td>{{ appt.doctorName }}</td>
             <td>{{ appt.petName }}</td>
-            <td>{{ appt.reason }}</td>
-            <td>{{ appt.startTime | date:'short' }}</td>
-            <td>{{ appt.endTime | date:'short' }}</td>
+            <td>{{ getReasonLabel(appt.reason) }}</td>
+            <td>{{ appt.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ appt.endTime | date:'dd/MM/yyyy HH:mm' }}</td>
             <td>
-              <span [ngClass]="appt.aproved ? 'approved' : 'not-approved'">
-                {{ appt.aproved ? 'Sí' : 'No' }}
-              </span>
+              @if (appt.status === 'SUCCESSFULLY' || appt.status === 'TO_BEGIN') {
+                <span [ngClass]="appt.aproved ? 'approved' : 'not-approved'">
+                  {{ appt.aproved ? 'Sí' : 'No' }}
+                </span>
+              } @else {
+                <span>-</span>
+              }
             </td>
-            <td>{{ appt.status }}</td>
+            <td>{{ getStatusLabel(appt.status) }}</td>
           </tr>
         }
       </tbody>

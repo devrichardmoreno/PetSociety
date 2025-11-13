@@ -16,14 +16,18 @@
         <h3>Mascotas atendidas</h3>
     </div>
     <div id="card-information-4">
-           <h1>0</h1>
+           <h1>{{this.paidAppointments}}</h1>
         <h3>Citas programadas pagadas</h3>
     </div>
     
-    <div id="card-information-5">
+    <div id="card-information-5" [class.clickable]="nextAppointment" (click)="goToAppointmentDetail()">
         <h3>Próxima cita</h3>
-        <p>Doctor: <span>{{nextAppointment?.doctorName}}</span></p>
-        <p>Hora: <span>{{nextAppointment?.startTime}}</span></p>
-        <p>Mascota: <span>{{nextAppointment?.petName}}</span></p>
+        @if (nextAppointment) {
+            <p>Doctor: <span>{{nextAppointment.doctorName}}</span></p>
+            <p>Hora: <span>{{nextAppointment.startTime | date:'dd/MM/yyyy HH:mm'}}</span></p>
+            <p>Mascota: <span>{{nextAppointment.petName || 'Sin asignar'}}</span></p>
+        } @else {
+            <p class="no-appointment-message">No hay citas programadas a futuro</p>
+        }
     </div>
 </div>

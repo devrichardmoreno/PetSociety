@@ -17,10 +17,10 @@ export class RegisterService {
   }
 
   registerDoctor(doctor: RegisterDoctorDTO) {
-    return this.http.post<string>(`${this.API}/new/doctor`, doctor);
+    return this.http.post(`${this.API}/new/doctor`, doctor, { responseType: 'text' });
   }
 
   registerAdmin(admin: RegisterDTO){
-    return this.http.post<string>(`${this.API}/new/admin`, admin);
+    return this.http.post(`${this.API}/new/admin`, admin, { responseType: 'text' });
   }
 }

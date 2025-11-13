@@ -20,6 +20,15 @@ export class CreateDoctor implements OnInit {
 
   private apiUrl = 'http://localhost:8080/register/new/doctor';
 
+  getSpecialityLabel(speciality: Speciality): string {
+    const labels: { [key in Speciality]: string } = {
+      [Speciality.GENERAL_MEDICINE]: 'Medicina General',
+      [Speciality.INTERNAL_MEDICINE]: 'Medicina Interna',
+      [Speciality.NUTRITION]: 'Nutrición'
+    };
+    return labels[speciality] || speciality;
+  }
+
   constructor(private fb: FormBuilder, private http: HttpClient) {}
 
   ngOnInit(): void {

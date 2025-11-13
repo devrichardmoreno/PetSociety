@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { DoctorService } from '../../services/doctor-service';
 import { Doctor } from '../../models/doctor';
+import { Speciality } from '../../models/dto/speciality.enum';
 
 @Component({
   selector: 'app-doctor-list',
@@ -14,6 +15,15 @@ export class DoctorListComponent implements OnInit {
   errorMessage: string = '';
 
   constructor(private doctorService: DoctorService) {}
+
+  getSpecialityLabel(speciality: Speciality): string {
+    const labels: { [key in Speciality]: string } = {
+      [Speciality.GENERAL_MEDICINE]: 'Medicina General',
+      [Speciality.INTERNAL_MEDICINE]: 'Medicina Interna',
+      [Speciality.NUTRITION]: 'Nutrición'
+    };
+    return labels[speciality] || speciality;
+  }
 
   ngOnInit(): void {
     this.loadDoctors();
@@ -31,5 +41,15 @@ export class DoctorListComponent implements OnInit {
         this.loading = false;
       }
     });
+  }
+
+  editDoctor(doctor: Doctor): void {
+    // TODO: Implementar edición de doctor
+    console.log('Editar doctor:', doctor);
+  }
+
+  deleteDoctor(doctor: Doctor): void {
+    // TODO: Implementar dar de baja de doctor
+    console.log('Dar de baja doctor:', doctor);
   }
 }

@@ -88,7 +88,7 @@
         <select id="speciality" class="custom-input" formControlName="speciality">
           <option [ngValue]="null" disabled selected>Seleccione una especialidad</option>
           @for (spec of specialities; track spec) {
-            <option [ngValue]="spec">{{ spec }}</option>
+            <option [ngValue]="spec">{{ getSpecialityLabel(spec) }}</option>
           }
         </select>
       </div>

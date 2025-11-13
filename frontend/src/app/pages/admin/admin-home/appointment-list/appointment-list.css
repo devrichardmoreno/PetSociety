@@ -61,12 +61,12 @@ h1 {
   transition: background 0.2s ease;
 }
 
-.appointment-table tbody tr:hover {
-  background-color: #e3f2fd;
-}
-
 .appointment-table tbody tr:nth-child(even) {
   background-color: #f8f9fa;
+}
+
+.appointment-table tbody tr:hover {
+  background-color: #e3f2fd !important;
 }
 
 .approved {
