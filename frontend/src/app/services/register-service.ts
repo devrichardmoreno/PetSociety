@@ -19,4 +19,8 @@ export class RegisterService {
   registerDoctor(doctor: RegisterDoctorDTO) {
     return this.http.post<string>(`${this.API}/new/doctor`, doctor);
   }
+
+  registerAdmin(admin: RegisterDTO){
+    return this.http.post<string>(`${this.API}/new/admin`, admin);
+  }
 }

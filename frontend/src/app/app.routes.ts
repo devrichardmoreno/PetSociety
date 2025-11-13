@@ -15,6 +15,7 @@ import { AppointmentDoctorHistory } from './pages/appointment-doctor-history/app
 import { AppointmentDetail } from './pages/admin/appointment-detail/appointment-detail';
 import { DoctorListComponent } from './pages/doctor-list/doctor-list';
 import { CreateDoctor } from './pages/create-doctor/create-doctor';
+import { CreateAdmin } from './pages/create-admin/create-admin';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -48,6 +49,13 @@ export const routes: Routes = [
       path: 'register/new/doctor',
       component:CreateDoctor,
       data: { headerType: 'admin'},
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+
+    {
+      path : 'register/new/admin',
+      component:CreateAdmin,
+      data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
 
