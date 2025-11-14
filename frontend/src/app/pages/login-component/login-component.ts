@@ -39,22 +39,56 @@ export class LoginComponent implements OnInit {
     }
 
     showActiveSessionModal(username: string | null): void {
+      const userRole = this.authService.getUserRole();
+      let roleLabel = 'usuario';
+      let menuRoute = '/login';
+
+      switch(userRole) {
+        case 'ROLE_CLIENT':
+          roleLabel = 'Cliente';
+          menuRoute = '/client/home';
+          break;
+        case 'ROLE_ADMIN':
+          roleLabel = 'Administrador';
+          menuRoute = '/admin/home';
+          break;
+        case 'ROLE_DOCTOR':
+          roleLabel = 'Doctor';
+          menuRoute = '/doctor/home';
+          break;
+      }
+
       Swal.fire({
-        title: 'Confirmar',
-        html: `<p>Actualmente ha iniciado sesión como <strong>${username}</strong>, necesita salir antes de volver a entrar con un usuario diferente.</p>`,
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Cerrar sesión',
-        cancelButtonText: 'Cancelar',
+        title: 'Sesión activa',
+        html: `<p>Ya tienes una sesión activa como <strong>${username}</strong> (${roleLabel}).</p>`,
+        icon: 'info',
+        showCancelButton: false,
+        showDenyButton: true,
+        confirmButtonText: 'Ir a mi cuenta',
+        denyButtonText: 'Cerrar sesión',
+        allowOutsideClick: false,
+        allowEscapeKey: false,
         background: '#fff',
         color: '#333',
         confirmButtonColor: '#45AEDD',
-        cancelButtonColor: '#d33',
+        denyButtonColor: '#d33',
         iconColor: '#45AEDD'
       }).then((result) => {
         if (result.isConfirmed) {
+          // Ir al menú del usuario
+          this.router.navigate([menuRoute]);
+        } else if (result.isDenied) {
+          // Cerrar sesión
           this.authService.logout();
-          // El usuario ya está en la página de login, no necesitamos navegar
+          Swal.fire({
+            title: 'Sesión cerrada',
+            text: 'Has cerrado sesión correctamente',
+            icon: 'success',
+            timer: 1500,
+            showConfirmButton: false,
+            background: '#fff',
+            color: '#333'
+          });
         }
       });
     }
@@ -62,7 +96,15 @@ export class LoginComponent implements OnInit {
     onSubmit(): void {
 
       if(this.loginForm.invalid){
-        alert("Datos faltantes")
+        Swal.fire({
+          icon: 'warning',
+          title: 'Datos faltantes',
+          text: 'Por favor completá todos los campos requeridos',
+          background: '#fff',
+          color: '#333',
+          confirmButtonColor: '#45AEDD',
+          iconColor: '#45AEDD'
+        });
         return;
       }
       
@@ -97,13 +139,29 @@ export class LoginComponent implements OnInit {
                 break;
               default:
                 console.error('Rol no reconocido:', role);
-                alert('Error: Rol de usuario no válido');
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Error',
+                  text: 'Rol de usuario no válido. Por favor contactá al administrador.',
+                  background: '#fff',
+                  color: '#333',
+                  confirmButtonColor: '#d33',
+                  iconColor: '#d33'
+                });
             }
           }
         },
         error: (e) => {
           console.error('Error en el login:', e);
-          alert('Error al iniciar sesión. Verifica tus credenciales.');
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al iniciar sesión',
+            text: 'Verificá tus credenciales e intentá nuevamente',
+            background: '#fff',
+            color: '#333',
+            confirmButtonColor: '#d33',
+            iconColor: '#d33'
+          });
         }
       })
     }

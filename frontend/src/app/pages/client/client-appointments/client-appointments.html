@@ -49,7 +49,7 @@
         <div class="appointment-card">
           <div class="appointment-header">
             <div class="pet-name-badge">
-              <span class="pet-icon">🐾</span>
+              <span class="pet-icon">{{ getPetEmoji(appointment.petType) }}</span>
               <span class="pet-name">{{ appointment.petName }}</span>
             </div>
             <span class="status-badge" [style.background-color]="getStatusColor(appointment.status)">

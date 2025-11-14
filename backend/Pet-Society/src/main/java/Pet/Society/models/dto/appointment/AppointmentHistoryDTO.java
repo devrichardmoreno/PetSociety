@@ -1,5 +1,6 @@
 package Pet.Society.models.dto.appointment;
 
+import Pet.Society.models.enums.PetType;
 import Pet.Society.models.enums.Reason;
 import Pet.Society.models.enums.Speciality;
 import Pet.Society.models.enums.Status;
@@ -24,6 +25,8 @@ public class AppointmentHistoryDTO {
     private String clientName;
     private String petName;
     private Long petId;
+    private PetType petType;
+    private String otherType;
     private Reason reason;
     private Status status;
     private boolean hasDiagnosis;

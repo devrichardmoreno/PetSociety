@@ -1,5 +1,8 @@
 <section id="register-container-all">
     <div class="logo-background">
+        <a routerLink="/" class="back-home-link">
+            <span class="back-icon">←</span> Volver al inicio
+        </a>
         <img src="/assets/images/logo.svg" alt="Pet Society Logo" id="img-logo">
     </div>
 
@@ -85,17 +88,33 @@
         <div class="input-wrapper">
             <input type="password" class="custom-input" placeholder="Contraseña" formControlName="password">
         </div>
-        @if (registerForm.get('password')?.errors && registerForm.get('password')?.touched) {
+        @if (registerForm.get('password')?.touched || registerForm.get('password')?.value) {
+            <div class="password-requirements">
+                <div class="requirement-item" [class.valid]="hasMinLength()" [class.invalid]="!hasMinLength()">
+                    <span class="requirement-icon">{{ hasMinLength() ? '✓' : '✗' }}</span>
+                    <span class="requirement-text">Debe tener al menos 8 caracteres</span>
+                </div>
+                <div class="requirement-item" [class.valid]="hasLetter()" [class.invalid]="!hasLetter()">
+                    <span class="requirement-icon">{{ hasLetter() ? '✓' : '✗' }}</span>
+                    <span class="requirement-text">Debe contener al menos una letra</span>
+                </div>
+                <div class="requirement-item" [class.valid]="hasNumber()" [class.invalid]="!hasNumber()">
+                    <span class="requirement-icon">{{ hasNumber() ? '✓' : '✗' }}</span>
+                    <span class="requirement-text">Debe contener al menos un número</span>
+                </div>
+                <div class="requirement-item" [class.valid]="hasMaxLength()" [class.invalid]="!hasMaxLength()">
+                    <span class="requirement-icon">{{ hasMaxLength() ? '✓' : '✗' }}</span>
+                    <span class="requirement-text">No puede exceder 50 caracteres</span>
+                </div>
+            </div>
+        }
+        @if (registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched) {
             <div class="error-message">
-                @if (registerForm.get('password')?.hasError('required')) {
-                    <p class="error-msg">La contraseña es obligatoria.</p>
-                } @else if (registerForm.get('password')?.hasError('minlength') || registerForm.get('password')?.hasError('maxlength')) {
-                    <p class="error-msg">Debe tener entre 2 y 50 caracteres.</p>
-                }
+                <p class="error-msg">La contraseña es obligatoria.</p>
             </div>
         }
 
-        <button class="register-btn" type="submit" [disabled]="registerForm.invalid">
+        <button class="register-btn" type="submit">
             Crear cuenta
         </button>
 

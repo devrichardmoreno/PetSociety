@@ -6,7 +6,9 @@ import { AuthService } from '../../../services/auth.service';
 import { AppointmentHistoryDTO } from '../../../models/dto/appointment-history-dto';
 import { Status } from '../../../models/dto/status.enum';
 import { Reason } from '../../../models/dto/reason.enum';
+import { PetType } from '../../../models/dto/pet-type.enum';
 import { HeaderClient } from '../../../components/header-client/header-client';
+import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -242,6 +244,10 @@ export class ClientAppointmentsComponent implements OnInit {
 
   getReasonOptions(): (Reason | 'ALL')[] {
     return ['ALL', Reason.CONTROL, Reason.EMERGENCY, Reason.VACCINATION, Reason.NUTRITION];
+  }
+
+  getPetEmoji(petType: PetType): string {
+    return PetEmojiUtil.getEmoji(petType);
   }
 }
 

@@ -5,7 +5,8 @@
     @for (pet of pets; track pet.id) {
       <div class="pet-card">
         <div class="pet-info">
-          <h3 class="pet-name">- {{ pet.nombre }}, Edad: {{ pet.edad }} años</h3>
+          <h3 class="pet-name">{{ getPetTypeEmoji(pet.tipoAnimal) }} {{ pet.nombre }}, Edad: {{ pet.edad }} años</h3>
+          <p class="pet-type">Tipo: {{ getPetTypeLabel(pet.tipoAnimal, pet.tipoAnimalOtro) }}</p>
         </div>
 
         <div class="pet-actions">

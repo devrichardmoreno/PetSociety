@@ -1,5 +1,6 @@
 package Pet.Society.models.entities;
 
+import Pet.Society.models.enums.PetType;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -27,10 +28,15 @@ public class PetEntity {
     private int age;
     @ColumnDefault("1")
     private boolean active = true;
+    @NotNull(message = "El tipo de animal no puede ser nulo")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "pet_type", nullable = false)
+    private PetType petType;
+    @Size(max = 50, message = "El tipo de animal personalizado no puede exceder 50 caracteres")
+    @Column(name = "other_type", length = 50)
+    private String otherType;
     @ManyToOne
     @JoinColumn(name = "id_cliente")
     @NotNull(message = "La id_cliente no puede ser nula")
     private ClientEntity client;
-
-
 }
