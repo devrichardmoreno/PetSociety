@@ -6,26 +6,28 @@
     </div>
 
     <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
-      <h1>Registrar Nuevo Doctor</h1>
+      <h1>{{ isEditMode ? 'Editar Doctor' : 'Registrar Nuevo Doctor' }}</h1>
 
-      <div class="input-wrapper">
-        <label for="username" class="input-label">Usuario</label>
-        <input id="username" type="text" class="custom-input" formControlName="username" placeholder="Ingrese un nombre de usuario">
-      </div>
-      @if (doctorForm.get('username')?.touched && doctorForm.get('username')?.hasError('required')) {
-        <div class="error-message">
-          <p class="error-msg">El usuario es obligatorio.</p>
+      @if (!isEditMode) {
+        <div class="input-wrapper">
+          <label for="username" class="input-label">Usuario</label>
+          <input id="username" type="text" class="custom-input" formControlName="username" placeholder="Ingrese un nombre de usuario">
         </div>
-      }
+        @if (doctorForm.get('username')?.touched && doctorForm.get('username')?.hasError('required')) {
+          <div class="error-message">
+            <p class="error-msg">El usuario es obligatorio.</p>
+          </div>
+        }
 
-      <div class="input-wrapper">
-        <label for="password" class="input-label">Contraseña</label>
-        <input id="password" type="password" class="custom-input" formControlName="password" placeholder="Ingrese una contraseña segura">
-      </div>
-      @if (doctorForm.get('password')?.touched && doctorForm.get('password')?.hasError('required')) {
-        <div class="error-message">
-          <p class="error-msg">La contraseña es obligatoria.</p>
+        <div class="input-wrapper">
+          <label for="password" class="input-label">Contraseña</label>
+          <input id="password" type="password" class="custom-input" formControlName="password" placeholder="Ingrese una contraseña segura">
         </div>
+        @if (doctorForm.get('password')?.touched && doctorForm.get('password')?.hasError('required')) {
+          <div class="error-message">
+            <p class="error-msg">La contraseña es obligatoria.</p>
+          </div>
+        }
       }
 
       <div class="input-wrapper">
@@ -99,7 +101,7 @@
       }
 
       <button class="register-btn" type="submit" [disabled]="doctorForm.invalid">
-        Registrar Doctor
+        {{ isEditMode ? 'Guardar Cambios' : 'Registrar Doctor' }}
       </button>
     </form>
   </div>

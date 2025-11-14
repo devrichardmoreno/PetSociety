@@ -51,6 +51,12 @@ export const routes: Routes = [
       data: { headerType: 'admin'},
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
+    {
+      path: 'register/new/doctor/:id',
+      component:CreateDoctor,
+      data: { headerType: 'admin'},
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
 
     {
       path : 'register/new/admin',
