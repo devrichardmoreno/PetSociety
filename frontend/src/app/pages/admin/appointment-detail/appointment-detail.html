@@ -1,0 +1,59 @@
+<div class="appointment-detail-container">
+  @if (appointment) {
+    <div class="appointment-card">
+      <div class="card-header">
+        <h2>Detalles de la Cita</h2>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>ID:</strong> {{ appointment.id }}</p>
+            <p><strong>Doctor:</strong> {{ appointment.doctorName }}</p>
+            <p><strong>Mascota:</strong> {{ appointment.petName }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Razón:</strong> {{ getReasonLabel(appointment.reason) }}</p>
+            <p><strong>Hora de inicio:</strong> {{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</p>
+            <p><strong>Hora de fin:</strong> {{ appointment.endTime | date:'dd/MM/yyyy HH:mm' }}</p>
+          </div>
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <p><strong>Estado:</strong> <span class="badge">{{ getStatusLabel(appointment.status) }}</span></p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Pagado:</strong> 
+              @if (appointment.status === 'SUCCESSFULLY' || appointment.status === 'TO_BEGIN') {
+                @if (appointment.aproved) {
+                  <span class="text-success">Sí</span>
+                } @else {
+                  <span class="text-danger">No</span>
+                }
+              } @else {
+                <span>-</span>
+              }
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        @if (appointment.status === 'SUCCESSFULLY' || appointment.status === 'TO_BEGIN') {
+          @if (!appointment.aproved) {
+            <button (click)="approveAppointment()" class="btn btn-success me-2">Marcar como pagado</button>
+          } @else {
+            <button (click)="disapproveAppointment()" class="btn btn-danger me-2">Marcar como no pagado</button>
+          }
+        }
+        <button (click)="goBack()" class="btn btn-secondary">Volver</button>
+      </div>
+    </div>
+  } @else {
+    <div class="loading-container">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Cargando...</span>
+      </div>
+      <p>Cargando cita...</p>
+    </div>
+  }
+</div>

@@ -1,5 +1,5 @@
 header {
-  background-color: rgb(129, 183, 69);
+  background-color: #45aedd;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -58,7 +58,7 @@ ul.buttons a:hover {
   position: absolute;
   top: 100%;
   left: 0;
-  background-color: rgb(129, 183, 69);
+  background-color: #45aedd;
   border-radius: 6px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
   display: none;

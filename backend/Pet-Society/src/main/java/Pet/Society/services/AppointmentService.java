@@ -199,6 +199,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
 
     public List<AppointmentResponseDTO>getAllAppointmets(){
         return this.appointmentRepository.findAll().stream().map(appointmentEntity -> AppointmentResponseDTO.builder()
+                        .id(appointmentEntity.getId())
                         .startTime(appointmentEntity.getStartDate())
                         .endTime(appointmentEntity.getEndDate())
                         .reason(appointmentEntity.getReason())
@@ -245,6 +246,58 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         }
     }
 
+    @Transactional
+    public AppointmentResponseDTO approveAppointment(Long id){
+        // Primero verificar que existe
+        AppointmentEntity appointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
+
+        // Actualizar directamente en la base de datos usando un query nativo para evitar validaciones
+        this.appointmentRepository.updateApprovedStatus(id, true);
+        
+        // Recargar la entidad para obtener los datos actualizados
+        AppointmentEntity updatedAppointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
+        
+        String message = updatedAppointment.getPet() == null ? "No hay mascota asignada" : updatedAppointment.getPet().getName();
+        return AppointmentResponseDTO.builder()
+                .id(updatedAppointment.getId())
+                .startTime(updatedAppointment.getStartDate())
+                .endTime(updatedAppointment.getEndDate())
+                .reason(updatedAppointment.getReason())
+                .doctorName(updatedAppointment.getDoctor().getName()+ " " +updatedAppointment.getDoctor().getSurname())
+                .aproved(updatedAppointment.isApproved())
+                .status(updatedAppointment.getStatus())
+                .petName(message)
+                .build();
+    }
+
+    @Transactional
+    public AppointmentResponseDTO disapproveAppointment(Long id){
+        // Primero verificar que existe
+        AppointmentEntity appointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
+
+        // Actualizar directamente en la base de datos usando un query nativo para evitar validaciones
+        this.appointmentRepository.updateApprovedStatus(id, false);
+        
+        // Recargar la entidad para obtener los datos actualizados
+        AppointmentEntity updatedAppointment = this.appointmentRepository.findById(id)
+                .orElseThrow(() -> new AppointmentDoesntExistException("Appointment does not exist"));
+        
+        String message = updatedAppointment.getPet() == null ? "No hay mascota asignada" : updatedAppointment.getPet().getName();
+        return AppointmentResponseDTO.builder()
+                .id(updatedAppointment.getId())
+                .startTime(updatedAppointment.getStartDate())
+                .endTime(updatedAppointment.getEndDate())
+                .reason(updatedAppointment.getReason())
+                .doctorName(updatedAppointment.getDoctor().getName()+ " " +updatedAppointment.getDoctor().getSurname())
+                .aproved(updatedAppointment.isApproved())
+                .status(updatedAppointment.getStatus())
+                .petName(message)
+                .build();
+    }
+
     /**
      * Obtiene el ID de la cita programada (TO_BEGIN) de una mascota
      * Útil para cancelar citas desde el frontend
@@ -273,6 +326,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         //This variable is for put in the pet name. For some reason, the method fails if there are not a Pet in the Appointment
         String message = existingAppointment.get().getPet() == null ? "No hay mascota asignada" : existingAppointment.get().getPet().getName();
         return AppointmentResponseDTO.builder()
+                .id(existingAppointment.get().getId())
                 .startTime(existingAppointment.get().getStartDate())
                 .endTime(existingAppointment.get().getEndDate())
                 .reason(existingAppointment.get().getReason())
@@ -458,6 +512,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                         .build()).collect(Collectors.toList());
     }
 
+    
 
 
     @Transactional

@@ -26,6 +26,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+
 
 @Tag(
         name = "Appointment",
@@ -92,6 +96,16 @@ public class AppointmentController {
     @PreAuthorize("@ownershipValidator.canAccessPet(#pet.petId)")
     public ResponseEntity<AppointmentResponseDTO> assignAppointment(@PathVariable("id") Long appointmentId, @RequestBody AssingmentPetDTO pet) {
         return ResponseEntity.ok(this.appointmentService.bookAppointment(appointmentId,pet));
+    }
+
+    @PatchMapping("/approve/{id}")
+    public ResponseEntity<AppointmentResponseDTO> approveAppointment(@PathVariable Long id){
+        return ResponseEntity.ok(this.appointmentService.approveAppointment(id));
+    }
+
+    @PatchMapping("/disapprove/{id}")
+    public ResponseEntity<AppointmentResponseDTO> disapproveAppointment(@PathVariable Long id){
+        return ResponseEntity.ok(this.appointmentService.disapproveAppointment(id));
     }
 
 
@@ -274,6 +288,11 @@ public class AppointmentController {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(appointmentId);
+    }
+
+    @GetMapping("/getAll")
+    public ResponseEntity<List<AppointmentResponseDTO>> getAllAppointments() {
+        return ResponseEntity.ok(this.appointmentService.getAllAppointmets());
     }
 
     @Operation(

@@ -55,6 +55,57 @@
   color: #f57c00;
 }
 
+.doctor-card-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-edit,
+.btn-delete {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn-edit {
+  background: linear-gradient(135deg, #45aedd 0%, #3a9bc7 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.3);
+}
+
+.btn-edit:hover {
+  background: linear-gradient(135deg, #3a9bc7 0%, #2d8bb3 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(69, 174, 221, 0.4);
+}
+
+.btn-delete {
+  background: linear-gradient(135deg, #f57c00 0%, #e66a00 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
+}
+
+.btn-delete:hover {
+  background: linear-gradient(135deg, #e66a00 0%, #d45a00 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 124, 0, 0.4);
+}
+
+.btn-edit:active,
+.btn-delete:active {
+  transform: translateY(0);
+}
+
 .error {
   color: #f57c00;
   font-weight: bold;
@@ -82,5 +133,16 @@
 
   .doctor-card p {
     font-size: 0.9rem;
+  }
+
+  .doctor-card-actions {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
+    padding: 0.8rem;
   }
 }

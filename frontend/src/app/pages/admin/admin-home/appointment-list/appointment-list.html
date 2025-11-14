@@ -2,14 +2,50 @@
   <div class="table-container">
     <h1>Lista de Citas</h1>
 
-  
+    <div class="search-container">
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="filterAppointments()"
+        placeholder="Buscar por doctor, mascota, razón o estado"
+        class="search-input"
+      />
+      <input
+        type="date"
+        [(ngModel)]="searchDate"
+        (change)="filterAppointments()"
+        class="date-input"
+      />
+      <select [(ngModel)]="selectedDoctor" (change)="filterAppointments()" class="filter-select">
+        <option value="">Todos los doctores</option>
+        @for (doctor of doctors; track doctor) {
+          <option [value]="doctor">{{ doctor }}</option>
+        }
+      </select>
+      <select [(ngModel)]="selectedStatus" (change)="filterAppointments()" class="filter-select">
+        <option value="">Todos los estados</option>
+        @for (status of statuses; track status) {
+          <option [value]="status">{{ getStatusLabel(status) }}</option>
+        }
+      </select>
+      <select [(ngModel)]="selectedReason" (change)="filterAppointments()" class="filter-select">
+        <option value="">Todas las razones</option>
+        @for (reason of reasons; track reason) {
+          <option [value]="reason">{{ getReasonLabel(reason) }}</option>
+        }
+      </select>
+      <select [(ngModel)]="selectedApproved" (change)="filterAppointments()" class="filter-select">
+        <option value="">Todos (Pagado)</option>
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+      </select>
+    </div>
+
     <div class="loading-msg" [hidden]="!loading">Cargando citas...</div>
 
-    
     <div class="error-msg" [hidden]="!error">{{ error }}</div>
 
-   
-    <table class="appointment-table" [hidden]="loading || appointments.length === 0">
+    <table class="appointment-table" [hidden]="loading || paginatedAppointments.length === 0">
       <thead>
         <tr>
           <th>Doctor</th>
@@ -17,28 +53,42 @@
           <th>Razón</th>
           <th>Inicio</th>
           <th>Fin</th>
-          <th>Aprobado</th>
+          <th>Pagado</th>
           <th>Estado</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let appt of appointments">
-          <td>{{ appt.doctorName }}</td>
-          <td>{{ appt.petName }}</td>
-          <td>{{ appt.reason }}</td>
-          <td>{{ appt.startTime | date:'short' }}</td>
-          <td>{{ appt.endTime | date:'short' }}</td>
-          <td>
-            <span [ngClass]="appt.aproved ? 'approved' : 'not-approved'">
-              {{ appt.aproved ? 'Sí' : 'No' }}
-            </span>
-          </td>
-          <td>{{ appt.status }}</td>
-        </tr>
+        @for (appt of paginatedAppointments; track appt.id) {
+          <tr (click)="goToAppointmentDetail(appt.id)" style="cursor: pointer;">
+            <td>{{ appt.doctorName }}</td>
+            <td>{{ appt.petName }}</td>
+            <td>{{ getReasonLabel(appt.reason) }}</td>
+            <td>{{ appt.startTime | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>{{ appt.endTime | date:'dd/MM/yyyy HH:mm' }}</td>
+            <td>
+              @if (appt.status === 'SUCCESSFULLY' || appt.status === 'TO_BEGIN') {
+                <span [ngClass]="appt.aproved ? 'approved' : 'not-approved'">
+                  {{ appt.aproved ? 'Sí' : 'No' }}
+                </span>
+              } @else {
+                <span>-</span>
+              }
+            </td>
+            <td>{{ getStatusLabel(appt.status) }}</td>
+          </tr>
+        }
       </tbody>
     </table>
 
-    <div class="no-data-msg" [hidden]="loading || appointments.length > 0">
+    <div class="pagination-controls" [hidden]="loading || filteredAppointments.length === 0">
+      <button (click)="previousPage()" [disabled]="currentPage === 1">Anterior</button>
+      @for (page of totalPages(); track page) {
+        <button (click)="goToPage(page)" [class.active]="currentPage === page">{{ page }}</button>
+      }
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages().length">Siguiente</button>
+    </div>
+
+    <div class="no-data-msg" [hidden]="loading || paginatedAppointments.length > 0">
       No hay citas para mostrar.
     </div>
   </div>

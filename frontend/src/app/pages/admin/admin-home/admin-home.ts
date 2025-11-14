@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import { RouterLink, Router } from "@angular/router";
+import { CommonModule } from '@angular/common';
 import { AppointmentService } from '../../../services/appointment-service';
 import { AppointmentResponseDTO } from '../../../models/dto/appointment-response-dto';
 import { Status } from '../../../models/dto/status.enum';
@@ -8,7 +9,7 @@ import { map, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-admin-home',
-  imports: [],
+  imports: [CommonModule, RouterLink],
   templateUrl: './admin-home.html',
   styleUrl: './admin-home.css'
 })
@@ -21,7 +22,10 @@ export class AdminHome implements OnInit {
     nextAppointment!: AppointmentResponseDTO | null;
     paidAppointments! :Number
 
-    constructor(private appointmentService : AppointmentService){
+    constructor(
+      private appointmentService : AppointmentService,
+      private router: Router
+    ){
         
     }
 
@@ -30,6 +34,7 @@ export class AdminHome implements OnInit {
         this.getAllAppointmentsForToday();
         this.getAllSuccessfulAppointmentsByMonth();
         this.getNextAppointmentToBegin();
+        this.getPaidAppointments();
     }
 
     
@@ -103,13 +108,13 @@ getNextAppointmentToBegin(): void {
     next: (data) => {
       const now = new Date();
 
+      // Filtrar citas futuras (excluyendo canceladas) y ordenar por fecha
       const upcomingAppointments = data
         .filter(a => {
           const start = new Date(a.startTime);
           return (
-            a.status === Status.TO_BEGIN &&
-            start > now &&
-            a.petName != null && a.petName.trim() !== ''
+            a.status !== Status.CANCELED &&
+            start > now
           );
         })
         .sort(
@@ -121,8 +126,32 @@ getNextAppointmentToBegin(): void {
         upcomingAppointments.length > 0 ? upcomingAppointments[0] : null;
     },
     error: (err) => {
-      console.error('Error al cargar la próxima cita por comenzar', err);
+      console.error('Error al cargar la próxima cita', err);
+      this.nextAppointment = null;
     },
+  });
+}
+
+goToAppointmentDetail(): void {
+  if (this.nextAppointment) {
+    this.router.navigate(['/admin/appointment', this.nextAppointment.id]);
+  }
+}
+
+getPaidAppointments(): void {
+  this.appointmentService.getAllAppointments().subscribe({
+    next: (data) => {
+      const paidAppointments = data.filter(a => 
+        a.status === Status.TO_BEGIN && 
+        a.aproved === true
+      ).length;
+
+      this.paidAppointments = paidAppointments;
+    },
+    error: (err) => {
+      console.error('Error al cargar las citas pagadas', err);
+      this.paidAppointments = 0;
+    }
   });
 }
 

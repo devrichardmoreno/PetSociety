@@ -31,7 +31,7 @@ export class AppointmentService {
   }
 
   updateAppointment(appointmentId: number, appointment: AppointmentDTORequest): Observable<AppointmentResponseDTO> {
-    return this.http.patch<AppointmentResponseDTO>(`${this.url}/update/${appointmentId}`, appointment, { headers: this.getAuthHeaders() });
+    return this.http.put<AppointmentResponseDTO>(`${this.url}/update/${appointmentId}`, appointment, { headers: this.getAuthHeaders() });
   }
 
   cancelAppointment(appointmentId: number): Observable<string> {
@@ -53,9 +53,17 @@ export class AppointmentService {
     return this.http.get<AppointmentHistoryDTO[]>(`${this.url}/client/${clientId}/history`, { headers: this.getAuthHeaders() });
   }
 
+
   uploadDoctorAvailability(doctorId: number, availability: DoctorAvailabilityDTO): Observable<string> {
-    return this.http.post<string>(`${this.url}/uploadAvailability/${doctorId}`, availability, { headers: this.getAuthHeaders() });
-  }
+  return this.http.post(
+    `${this.url}/uploadAvailability/${doctorId}`,
+    availability,
+    {
+      headers: this.getAuthHeaders(),
+      responseType: 'text'  // 👈 importante: no pongas 'as json' acá
+    }
+  );
+}
 
   getAppointmentsByPet(petId: number): Observable<AppointmentResponseDTO[]> {
     return this.http.get<AppointmentResponseDTO[]>(`${this.url}/pet/${petId}`, { headers: this.getAuthHeaders() });
@@ -103,5 +111,11 @@ export class AppointmentService {
     return this.http.get<number>(`${this.url}/pet/${petId}/scheduled-id`, { headers: this.getAuthHeaders() });
   }
 
-  
+  disapproveAppointment(appointmentId: number): Observable<AppointmentResponseDTO> {
+    return this.http.patch<AppointmentResponseDTO>(`${this.url}/disapprove/${appointmentId}`, {}, { headers: this.getAuthHeaders() });
+  }
+
+  approveAppointment(appointmentId: number): Observable<AppointmentResponseDTO> {
+    return this.http.patch<AppointmentResponseDTO>(`${this.url}/approve/${appointmentId}`, {}, { headers: this.getAuthHeaders() });
+  }
 }

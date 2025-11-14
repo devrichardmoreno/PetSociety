@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors, FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AppointmentService } from '../../../services/appointment-service';
@@ -7,18 +7,21 @@ import { DoctorService } from '../../../services/doctor-service';
 import { AppointmentDTORequest } from '../../../models/dto/appointment-dto-request';
 import { Reason } from '../../../models/dto/reason.enum';
 import { Doctor } from '../../../models/doctor';
+import { DoctorAvailabilityDTO } from '../../../models/dto/doctor-availability-dto';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-create-appointment',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, FormsModule],
   templateUrl: './create-appointment.html',
   styleUrls: ['./create-appointment.css'],
   standalone: true
 })
 export class CreateAppointment implements OnInit {
 
-  appointmentForm!: FormGroup;
+   appointmentForm!: FormGroup;
+  appointmentBulkForm!: FormGroup;
+  isMultipleMode = false; // 🔁 Nuevo switch
 
   reasonOptions = [
     { value: Reason.CONTROL, label: 'Control' },
@@ -37,10 +40,19 @@ export class CreateAppointment implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     this.appointmentForm = this.fb.group({
       startTime: [null, [Validators.required, this.futureDateValidator]],
       endTime: [null, [Validators.required]],
       doctor: [null, Validators.required],
+      reason: [null, Validators.required]
+    }, { validators: this.endAfterStartValidator });
+
+
+    this.appointmentBulkForm = this.fb.group({
+      doctor: [null, Validators.required],
+      startDate: [null, [Validators.required, this.futureDateValidator]],
+      endDate: [null, [Validators.required]],
       reason: [null, Validators.required]
     }, { validators: this.endAfterStartValidator });
 
@@ -49,7 +61,6 @@ export class CreateAppointment implements OnInit {
       error: (err) => console.error('Error al cargar doctores:', err)
     });
   }
-
   futureDateValidator(control: AbstractControl): ValidationErrors | null {
     const selected = new Date(control.value);
     const now = new Date();
@@ -129,6 +140,57 @@ export class CreateAppointment implements OnInit {
               color: '#333',
               confirmButtonColor: '#F47B20',
               iconColor: '#000000'
+            });
+          }
+        });
+      }
+    });
+  }
+
+  onSubmitBulk(): void {
+    if (this.appointmentBulkForm.invalid) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Formulario incompleto',
+        text: 'Por favor, completá todos los campos para la carga masiva.',
+        confirmButtonColor: '#F47B20'
+      });
+      return;
+    }
+
+    Swal.fire({
+      title: '¿Confirmar carga masiva?',
+      text: 'Se crearán múltiples citas según el rango de fechas. ¿Continuar?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Sí, cargar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#F47B20'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const { doctor, startDate, endDate, reason } = this.appointmentBulkForm.value;
+
+       const payload: DoctorAvailabilityDTO = {
+      start: new Date(startDate).toISOString(),
+      end: new Date(endDate).toISOString(),
+      reason
+      };
+
+
+        this.appointmentService.uploadDoctorAvailability(doctor.id, payload).subscribe({
+          next: () => {
+            Swal.fire({
+              icon: 'success',
+              title: '¡Citas creadas!',
+              text: 'Las citas han sido generadas exitosamente.',
+              confirmButtonColor: '#F47B20'
+            }).then(() => this.router.navigate(['/admin/home']));
+          },
+          error: (err) => {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error en la carga masiva',
+              text: `Ocurrió un problema: ${err.message + this.appointmentBulkForm.value || 'Error desconocido'}`
             });
           }
         });

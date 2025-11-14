@@ -12,13 +12,22 @@ import { CreateAppointment } from './pages/admin/create-appointment/create-appoi
 import { AppointmentListComponent } from './pages/admin/admin-home/appointment-list/appointment-list';
 import { DoctorHomePage } from './pages/doctor/doctor-home-page/doctor-home-page';
 import { AppointmentDoctorHistory } from './pages/doctor/appointment-doctor-history/appointment-doctor-history';
+import { AppointmentDetail } from './pages/admin/appointment-detail/appointment-detail';
 import { DoctorListComponent } from './pages/doctor-list/doctor-list';
+import { CreateDoctor } from './pages/create-doctor/create-doctor';
+import { CreateAdmin } from './pages/create-admin/create-admin';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
     {
       path: 'admin/home', 
       component:AdminHome, 
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'admin/appointment/:id',
+      component: AppointmentDetail,
       data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
@@ -36,6 +45,26 @@ export const routes: Routes = [
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
 
+    {
+      path: 'register/new/doctor',
+      component:CreateDoctor,
+      data: { headerType: 'admin'},
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'register/new/doctor/:id',
+      component:CreateDoctor,
+      data: { headerType: 'admin'},
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+
+    {
+      path : 'register/new/admin',
+      component:CreateAdmin,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+
     {path: 'doctor/list',
       component:DoctorListComponent,
       data: { headerType: 'admin' },
@@ -46,7 +75,7 @@ export const routes: Routes = [
     // Rutas públicas (sin guard)
     { path: '', component: LandingComponent, data: { headerType: 'default' } },
     { path: 'login', component: LoginComponent, data: { headerType: 'none' } },
-    { path: 'register', component: RegisterComponent, data: { headerType: 'none' } },
+    { path: 'register/new/client', component: RegisterComponent, data: { headerType: 'none' } },
     
     // Rutas del CLIENT (protegidas con AuthGuard + RoleGuard)
     { 

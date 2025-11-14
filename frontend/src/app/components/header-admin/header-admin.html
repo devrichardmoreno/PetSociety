@@ -11,7 +11,7 @@
       <li class="dropdown-container">
         <a>Citas ▾</a>
         <ul class="dropdown">
-          <li><a routerLink="/appointment/create">Crear cita programada</a></li><li><a routerLink="/appointment/list">Citas disponibles</a></li>
+          <li><a routerLink="/appointment/create">Crear cita programada</a></li><li><a routerLink="/appointment/list">Listado de citas</a></li>
         </ul>
       </li>
 
@@ -19,7 +19,7 @@
       <li class="dropdown-container">
         <a>Doctores ▾</a>
         <ul class="dropdown">
-          <li><a routerLink="/doctor/list">Listar doctores</a></li><li><a routerLink="/doctor/add">Agregar doctor</a></li>
+          <li><a routerLink="register/new/doctor">Agregar doctor</a></li><li><a routerLink="/doctor/list">Listar doctores</a></li>
         </ul>
       </li>
 
@@ -27,11 +27,11 @@
       <li class="dropdown-container">
         <a>Configuración ▾</a>
         <ul class="dropdown">
-          <li><a routerLink="/admin/add">Agregar administrador</a></li><li><a routerLink="/doctor/add">Agregar doctor</a></li>
+          <li><a routerLink="register/new/admin">Agregar administrador</a></li>
         </ul>
       </li>
 
-      <li><a routerLink="/logout">Salir</a></li>
+      <li><a routerLink="/logout" (click)="logout()">Salir</a></li>
     </ul>
   </nav>
 </header>
