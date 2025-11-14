@@ -1,104 +1,161 @@
-#admin-register-section {
+#admin-container-all {
+  display: flex;
   min-height: 100vh;
+  width: 100%;
+  background-color: #4eb5ff; /* Fondo azul para toda la sección */
+  overflow-y: auto;
+}
+
+/* Contenedor principal dividido en dos columnas */
+.admin-wrapper {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  align-items: stretch; /* Hacer que ambos hijos tengan la misma altura */
+}
+
+/* Sección del logo al costado izquierdo */
+.admin-image {
+  flex: 1;
+  background-color: #4eb5ff; /* mismo azul que el registro */
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #eef1f5, #dfe3e8);
-  font-family: 'Inter', 'Segoe UI', sans-serif;
+  position: sticky;
+  top: 0;
+  min-height: 100vh; /* Mínimo altura de viewport */
+  height: 100%; /* Extender según el contenido del formulario */
+  overflow: hidden;
 }
 
-
-.admin-form-container {
-  background: #ffffff;
-  padding: 2.8rem 3rem;
-  border-radius: 16px;
-  width: 100%;
-  max-width: 420px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
-  border: 1px solid #ececec;
-  animation: fadeIn 0.4s ease;
+.admin-image img {
+  width: 400px;
+  max-width: 80%;
+  height: auto;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+/* Formulario del lado derecho */
+form {
+  flex: 1;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 60px;
+  padding-top: 80px;
+  padding-bottom: 40px;
+  border-radius: 0 20px 20px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  min-height: 100vh;
 }
 
-
-.admin-form h1 {
-  font-size: 1.6rem;
+h1 {
   text-align: center;
-  margin-bottom: 0.4rem;
-  color: #2f3640;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-
-.subtitle {
-  text-align: center;
-  color: #6c757d;
-  font-size: 0.9rem;
-  margin-bottom: 2rem;
-}
-
-.form-group {
-  margin-bottom: 1.1rem;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  background: #fafafa;
-  font-size: 0.95rem;
+  margin-bottom: 20px;
+  margin-top: 0;
   color: #333;
-  transition: all 0.2s ease;
+  font-weight: bold;
+  flex-shrink: 0;
 }
 
-.form-group input:focus {
-  border-color: #4a90e2;
-  background: #fff;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.15);
-  outline: none;
+.input-wrapper {
+  margin-bottom: 15px;
 }
 
-/* Botón */
-.btn-submit {
+.input-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.custom-input {
   width: 100%;
-  background: #4a90e2;
-  color: #fff;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: 0.9rem;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+}
+
+.custom-input:focus {
+  border-color: #4eb5ff;
+  box-shadow: 0 0 5px rgba(78, 181, 255, 0.3);
+}
+
+.error-msg {
+  color: red;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.register-btn {
+  margin-top: 20px;
+  width: 100%;
+  background-color: #f6a742;
   border: none;
-  border-radius: 8px;
-  margin-top: 0.5rem;
+  border-radius: 25px;
+  padding: 12px;
+  font-weight: bold;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.15s ease;
+  color: #fff;
+  transition: 0.3s ease;
+  flex-shrink: 0;
 }
 
-.btn-submit:hover {
-  background: #357ac9;
-  transform: translateY(-1px);
+.register-btn:hover {
+  background-color: #e0922e;
 }
 
-.btn-submit:disabled {
-  background: #c6cdd3;
+.register-btn:disabled {
+  background-color: #ccc;
   cursor: not-allowed;
 }
 
+.password-requirements {
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
 
-.error {
-  color: #d9534f;
-  font-size: 0.83rem;
-  margin-top: -0.6rem;
-  display: block;
+.requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  transition: color 0.2s ease;
+}
+
+.requirement-item.valid {
+  color: #28a745;
+}
+
+.requirement-item.invalid {
+  color: #dc3545;
+}
+
+.requirement-icon {
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.requirement-text {
+  flex: 1;
+}
+
+.error-message {
+  margin-top: 0.5rem;
 }
 
 .back {
   text-align: center;
   margin-top: 1.5rem;
+  flex-shrink: 0;
 }
 
 .back a {
@@ -109,5 +166,26 @@
 }
 
 .back a:hover {
-  color: #4a90e2;
+  color: #4eb5ff;
+}
+
+@media (max-width: 768px) {
+  #admin-container-all {
+    flex-direction: column;
+  }
+
+  .admin-image {
+    position: relative;
+    min-height: 200px;
+    height: auto;
+  }
+
+  .admin-image img {
+    width: 200px;
+  }
+
+  form {
+    border-radius: 20px 20px 0 0;
+    padding: 40px 20px;
+  }
 }

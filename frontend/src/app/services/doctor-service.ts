@@ -35,9 +35,27 @@ export class DoctorService {
     return this.http.get<Doctor[]>(`${this.url}/list-id`);
   }
 
+  getAllInactiveDoctorsEntity(): Observable<Doctor[]> {
+    return this.http.get<Doctor[]>(`${this.url}/list-id/inactive`);
+  }
+
   updateDoctor(doctorId: number, doctor: Doctor): Observable<Doctor> {
     return this.http.patch<Doctor>(`${this.url}/update/${doctorId}`, doctor, {
       headers: this.getAuthHeaders()
+    });
+  }
+
+  unsubscribeDoctor(doctorId: number): Observable<string> {
+    return this.http.patch<string>(`${this.url}/unsubscribe/${doctorId}`, {}, {
+      headers: this.getAuthHeaders(),
+      responseType: 'text' as 'json'
+    });
+  }
+
+  reactivateDoctor(doctorId: number): Observable<string> {
+    return this.http.patch<string>(`${this.url}/reactivate/${doctorId}`, {}, {
+      headers: this.getAuthHeaders(),
+      responseType: 'text' as 'json'
     });
   }
 }

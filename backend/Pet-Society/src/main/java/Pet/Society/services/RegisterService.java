@@ -2,6 +2,7 @@ package Pet.Society.services;
 
 import Pet.Society.models.dto.client.ClientDTO;
 import Pet.Society.models.dto.register.RegisterDTO;
+import Pet.Society.models.dto.register.RegisterClientDTO;
 import Pet.Society.models.dto.register.RegisterDoctorDTO;
 import Pet.Society.models.entities.CredentialEntity;
 import Pet.Society.models.entities.DoctorEntity;
@@ -47,15 +48,44 @@ public class RegisterService  {
                 .email(registerDTO.getEmail())
                 .phone(registerDTO.getPhone())
                 .dni(registerDTO.getDni())
-                .phone(registerDTO.getPhone())
                 .build();
 
         CredentialEntity credentialEntity = new CredentialEntity();
         credentialEntity.setUsername(registerDTO.getUsername());
         credentialEntity.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         credentialEntity.setRole(Role.CLIENT);
-        credentialEntity.setUser(clientService.save(clientDTO));
+        
+        // Si foundation viene en el DTO, usar saveWithFoundation, sino usar save normal
+        if (registerDTO.getFoundation() != null) {
+            credentialEntity.setUser(clientService.saveWithFoundation(clientDTO, registerDTO.getFoundation()));
+        } else {
+            credentialEntity.setUser(clientService.save(clientDTO));
+        }
 
+        credentialService.save(credentialEntity);
+        return clientDTO;
+    }
+
+    @Transactional
+    public ClientDTO registerNewClientFromAdmin(RegisterClientDTO registerDTO) {
+        // Validar si el username ya existe
+        if (credentialService.findByUsername(registerDTO.getUsername()).isPresent()) {
+            throw new UserExistsException("Username already exists");
+        }
+
+        ClientDTO clientDTO = ClientDTO.builder()
+                .name(registerDTO.getName())
+                .surname(registerDTO.getSurname())
+                .email(registerDTO.getEmail())
+                .phone(registerDTO.getPhone())
+                .dni(registerDTO.getDni())
+                .build();
+
+        CredentialEntity credentialEntity = new CredentialEntity();
+        credentialEntity.setUsername(registerDTO.getUsername());
+        credentialEntity.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        credentialEntity.setRole(Role.CLIENT);
+        credentialEntity.setUser(clientService.saveWithFoundation(clientDTO, registerDTO.getFoundation()));
 
         credentialService.save(credentialEntity);
         return clientDTO;

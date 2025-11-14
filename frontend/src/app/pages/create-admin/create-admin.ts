@@ -1,10 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, Router, ActivatedRoute } from '@angular/router';
-import { FormGroup, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { RegisterService } from '../../services/register-service';
 import { RegisterDTO } from '../../models/dto/RegisterDTO';
+import { nameValidator, phoneValidator, dniValidator, capitalizeProperNames, usernameExistsValidator } from '../../utils/form-validators';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-create-admin',
@@ -21,27 +23,71 @@ export class CreateAdmin implements OnInit {
     private registerService: RegisterService,
     private route: Router,
     private fb: FormBuilder,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
     this.adminForm = this.fb.group({
-      username: ['', [Validators.required]],
-      password: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      phone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(20)]],
-      dni: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(8)]],
+      username: ['', 
+        [Validators.required], 
+        [usernameExistsValidator((username: string) => this.authService.checkUsernameExists(username))]
+      ],
+      password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordValidator]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      phone: ['', [Validators.required, phoneValidator()]],
+      dni: ['', [Validators.required, dniValidator()]],
       email: ['', [Validators.required, Validators.email]]
     });
   }
 
+  // Validador personalizado para contraseña
+  passwordValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    
+    if (!value) {
+      return null; // Dejamos que Validators.required maneje el caso vacío
+    }
+
+    const hasLetter = /[a-zA-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+
+    if (!hasLetter || !hasNumber) {
+      return { passwordStrength: true };
+    }
+
+    return null;
+  }
+
+  // Métodos para verificar cada validación individualmente
+  hasMinLength(): boolean {
+    const password = this.adminForm.get('password')?.value || '';
+    return password.length >= 8;
+  }
+
+  hasLetter(): boolean {
+    const password = this.adminForm.get('password')?.value || '';
+    return /[a-zA-Z]/.test(password);
+  }
+
+  hasNumber(): boolean {
+    const password = this.adminForm.get('password')?.value || '';
+    return /[0-9]/.test(password);
+  }
+
+  hasMaxLength(): boolean {
+    const password = this.adminForm.get('password')?.value || '';
+    return password.length <= 50;
+  }
+
   onSubmit() {
     if (this.adminForm.invalid) {
+      this.adminForm.markAllAsTouched();
       Swal.fire({
         icon: 'warning',
         title: 'Formulario incompleto',
-        text: 'Por favor completá todos los campos requeridos',
+        text: 'Por favor completá todos los campos requeridos correctamente',
         background: '#fff',
         color: '#333',
         confirmButtonColor: '#F47B20',
@@ -50,7 +96,13 @@ export class CreateAdmin implements OnInit {
       return;
     }
 
-    const adminData: RegisterDTO = this.adminForm.value;
+    // Capitalizar nombres propios antes de enviar
+    const formValue = { ...this.adminForm.value };
+    const capitalized = capitalizeProperNames(formValue.name, formValue.surname);
+    formValue.name = capitalized.name;
+    formValue.surname = capitalized.surname;
+
+    const adminData: RegisterDTO = formValue;
 
     this.registerService.registerAdmin(adminData).subscribe({
       next: () => {

@@ -1,60 +1,143 @@
-<section id="admin-register-section">
-  <div class="admin-form-container">
-    <form [formGroup]="adminForm" (ngSubmit)="onSubmit()" class="admin-form">
-      <h1>Nuevo Administrador</h1>
-      <p class="subtitle">Creá un acceso administrativo al sistema Pet Society.</p>
+<section id="admin-container-all">
 
-      <div class="form-group">
-        <input type="text" placeholder="Nombre" formControlName="name" />
+  <div class="admin-wrapper">
+    <div class="admin-image">
+      <img src="assets/images/admin-logo.png" alt="Admin Logo">
+    </div>
+
+    <form [formGroup]="adminForm" (ngSubmit)="onSubmit()" class="admin-form">
+      <h1>Registrar Nuevo Administrador</h1>
+
+      <div class="input-wrapper">
+        <label for="name" class="input-label">Nombre</label>
+        <input id="name" type="text" class="custom-input" formControlName="name" placeholder="Ingrese el nombre">
       </div>
       @if (adminForm.get('name')?.errors && adminForm.get('name')?.touched) {
-        <small class="error">El nombre es obligatorio (2 a 50 caracteres).</small>
+        <div class="error-message">
+          @if (adminForm.get('name')?.hasError('required')) {
+            <p class="error-msg">El nombre es obligatorio.</p>
+          } @else if (adminForm.get('name')?.hasError('invalidName')) {
+            <p class="error-msg">El nombre solo puede contener letras, espacios, ñ y tildes.</p>
+          } @else if (adminForm.get('name')?.hasError('minlength') || adminForm.get('name')?.hasError('maxlength')) {
+            <p class="error-msg">El nombre debe tener entre 2 y 50 caracteres.</p>
+          }
+        </div>
       }
 
-      <div class="form-group">
-        <input type="text" placeholder="Apellido" formControlName="surname" />
+      <div class="input-wrapper">
+        <label for="surname" class="input-label">Apellido</label>
+        <input id="surname" type="text" class="custom-input" formControlName="surname" placeholder="Ingrese el apellido">
       </div>
       @if (adminForm.get('surname')?.errors && adminForm.get('surname')?.touched) {
-        <small class="error">El apellido es obligatorio (2 a 50 caracteres).</small>
+        <div class="error-message">
+          @if (adminForm.get('surname')?.hasError('required')) {
+            <p class="error-msg">El apellido es obligatorio.</p>
+          } @else if (adminForm.get('surname')?.hasError('invalidName')) {
+            <p class="error-msg">El apellido solo puede contener letras, espacios, ñ y tildes.</p>
+          } @else if (adminForm.get('surname')?.hasError('minlength') || adminForm.get('surname')?.hasError('maxlength')) {
+            <p class="error-msg">El apellido debe tener entre 2 y 50 caracteres.</p>
+          }
+        </div>
       }
 
-      <div class="form-group">
-        <input type="text" placeholder="Teléfono" formControlName="phone" />
+      <div class="input-wrapper">
+        <label for="phone" class="input-label">Teléfono</label>
+        <input id="phone" type="text" class="custom-input" formControlName="phone" placeholder="Ingrese el teléfono">
       </div>
       @if (adminForm.get('phone')?.errors && adminForm.get('phone')?.touched) {
-        <small class="error">Debe tener entre 9 y 20 dígitos.</small>
+        <div class="error-message">
+          @if (adminForm.get('phone')?.hasError('required')) {
+            <p class="error-msg">El teléfono es obligatorio.</p>
+          } @else if (adminForm.get('phone')?.hasError('invalidPhone')) {
+            <p class="error-msg">El teléfono solo puede contener números.</p>
+          } @else if (adminForm.get('phone')?.hasError('invalidPhoneLength')) {
+            <p class="error-msg">El teléfono debe tener entre 9 y 20 dígitos.</p>
+          }
+        </div>
       }
 
-      <div class="form-group">
-        <input type="text" placeholder="DNI" formControlName="dni" />
+      <div class="input-wrapper">
+        <label for="dni" class="input-label">DNI</label>
+        <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI">
       </div>
       @if (adminForm.get('dni')?.errors && adminForm.get('dni')?.touched) {
-        <small class="error">Debe tener entre 7 y 8 dígitos.</small>
+        <div class="error-message">
+          @if (adminForm.get('dni')?.hasError('required')) {
+            <p class="error-msg">El DNI es obligatorio.</p>
+          } @else if (adminForm.get('dni')?.hasError('invalidDni')) {
+            <p class="error-msg">El DNI solo puede contener números.</p>
+          } @else if (adminForm.get('dni')?.hasError('invalidDniLength')) {
+            <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
+          }
+        </div>
       }
 
-      <div class="form-group">
-        <input type="email" placeholder="Email" formControlName="email" />
+      <div class="input-wrapper">
+        <label for="email" class="input-label">Email</label>
+        <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email">
       </div>
-      @if (adminForm.get('email')?.errors && adminForm.get('email')?.touched) {
-        <small class="error">El formato del email es incorrecto.</small>
+      @if (adminForm.get('email')?.touched && adminForm.get('email')?.hasError('required')) {
+        <div class="error-message">
+          <p class="error-msg">El email es obligatorio.</p>
+        </div>
+      }
+      @if (adminForm.get('email')?.hasError('email')) {
+        <div class="error-message">
+          <p class="error-msg">Debe ingresar un email válido.</p>
+        </div>
       }
 
-      <div class="form-group">
-        <input type="text" placeholder="Usuario" formControlName="username" />
+      <div class="input-wrapper">
+        <label for="username" class="input-label">Usuario</label>
+        <input id="username" type="text" class="custom-input" formControlName="username" placeholder="Ingrese un nombre de usuario">
       </div>
-      @if (adminForm.get('username')?.errors && adminForm.get('username')?.touched) {
-        <small class="error">El nombre de usuario es obligatorio.</small>
+      @if (adminForm.get('username')?.errors && (adminForm.get('username')?.touched || adminForm.get('username')?.dirty)) {
+        <div class="error-message">
+          @if (adminForm.get('username')?.hasError('required')) {
+            <p class="error-msg">El nombre de usuario es obligatorio.</p>
+          } @else if (adminForm.get('username')?.hasError('usernameExists')) {
+            <p class="error-msg">El nombre de usuario ya existe. Por favor, elegí otro.</p>
+          }
+        </div>
+      }
+      @if (adminForm.get('username')?.pending) {
+        <div class="error-message">
+          <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
+        </div>
       }
 
-      <div class="form-group">
-        <input type="password" placeholder="Contraseña" formControlName="password" />
+      <div class="input-wrapper">
+        <label for="password" class="input-label">Contraseña</label>
+        <input id="password" type="password" class="custom-input" formControlName="password" placeholder="Ingrese una contraseña segura">
       </div>
-      @if (adminForm.get('password')?.errors && adminForm.get('password')?.touched) {
-        <small class="error">Debe tener entre 2 y 50 caracteres.</small>
+      @if (adminForm.get('password')?.touched || adminForm.get('password')?.value) {
+        <div class="password-requirements">
+          <div class="requirement-item" [class.valid]="hasMinLength()" [class.invalid]="!hasMinLength()">
+            <span class="requirement-icon">{{ hasMinLength() ? '✓' : '✗' }}</span>
+            <span class="requirement-text">Debe tener al menos 8 caracteres</span>
+          </div>
+          <div class="requirement-item" [class.valid]="hasLetter()" [class.invalid]="!hasLetter()">
+            <span class="requirement-icon">{{ hasLetter() ? '✓' : '✗' }}</span>
+            <span class="requirement-text">Debe contener al menos una letra</span>
+          </div>
+          <div class="requirement-item" [class.valid]="hasNumber()" [class.invalid]="!hasNumber()">
+            <span class="requirement-icon">{{ hasNumber() ? '✓' : '✗' }}</span>
+            <span class="requirement-text">Debe contener al menos un número</span>
+          </div>
+          <div class="requirement-item" [class.valid]="hasMaxLength()" [class.invalid]="!hasMaxLength()">
+            <span class="requirement-icon">{{ hasMaxLength() ? '✓' : '✗' }}</span>
+            <span class="requirement-text">No puede exceder 50 caracteres</span>
+          </div>
+        </div>
+      }
+      @if (adminForm.get('password')?.hasError('required') && adminForm.get('password')?.touched) {
+        <div class="error-message">
+          <p class="error-msg">La contraseña es obligatoria.</p>
+        </div>
       }
 
-      <button type="submit" [disabled]="adminForm.invalid" class="btn-submit">
-        Crear administrador
+      <button class="register-btn" type="submit" [disabled]="adminForm.invalid">
+        Crear Administrador
       </button>
 
       <p class="back">
@@ -62,4 +145,5 @@
       </p>
     </form>
   </div>
+
 </section>

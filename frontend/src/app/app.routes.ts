@@ -14,8 +14,13 @@ import { DoctorHomePage } from './pages/doctor/doctor-home-page/doctor-home-page
 import { AppointmentDoctorHistory } from './pages/doctor/appointment-doctor-history/appointment-doctor-history';
 import { AppointmentDetail } from './pages/admin/appointment-detail/appointment-detail';
 import { DoctorListComponent } from './pages/doctor-list/doctor-list';
+import { DoctorListInactiveComponent } from './pages/doctor-list-inactive/doctor-list-inactive';
+import { ClientListComponent } from './pages/client-list/client-list';
+import { ClientListInactiveComponent } from './pages/client-list-inactive/client-list-inactive';
 import { CreateDoctor } from './pages/create-doctor/create-doctor';
 import { CreateAdmin } from './pages/create-admin/create-admin';
+import { ClientFormComponent } from './pages/client-form/client-form';
+import { PetFormComponent } from './pages/pet-form/pet-form';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -70,11 +75,51 @@ export const routes: Routes = [
       data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
+    {path: 'doctor/list/inactive',
+      component:DoctorListInactiveComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {path: 'client/list',
+      component:ClientListComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {path: 'client/list/inactive',
+      component:ClientListInactiveComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'register/new/client/admin/:id',
+      component: ClientFormComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'register/new/client/admin',
+      component: ClientFormComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'pet/create/admin',
+      component: PetFormComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'pet/create/admin/:id',
+      component: PetFormComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
 
 
     // Rutas públicas (sin guard)
     { path: '', component: LandingComponent, data: { headerType: 'default' } },
     { path: 'login', component: LoginComponent, data: { headerType: 'none' } },
+    { path: 'register', component: RegisterComponent, data: { headerType: 'none' } },
     { path: 'register/new/client', component: RegisterComponent, data: { headerType: 'none' } },
     
     // Rutas del CLIENT (protegidas con AuthGuard + RoleGuard)

@@ -28,6 +28,8 @@ import static java.sql.DriverManager.getConnection;
 public interface ClientRepository extends JpaRepository<ClientEntity, Long> {
 
     Optional<ClientEntity> findByDni(String dni);
+    List<ClientEntity> findBySubscribedTrue();
+    List<ClientEntity> findBySubscribedFalse();
 }
 
 

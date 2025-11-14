@@ -13,7 +13,7 @@ export class RegisterService {
   constructor(private http: HttpClient) {}
 
   registerClient(client: RegisterDTO) {
-    return this.http.post<string>(`${this.API}/new/client`, client);
+    return this.http.post(`${this.API}/new/client`, client);
   }
 
   registerDoctor(doctor: RegisterDoctorDTO) {

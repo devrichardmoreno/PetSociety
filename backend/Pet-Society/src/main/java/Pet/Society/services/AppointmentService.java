@@ -12,6 +12,7 @@ import Pet.Society.models.dto.pet.AssingmentPetDTO;
 import Pet.Society.models.dto.pet.PetDTO;
 import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.models.entities.ClientEntity;
+import Pet.Society.models.entities.DiagnosesEntity;
 import Pet.Society.models.entities.DoctorEntity;
 import Pet.Society.models.entities.PetEntity;
 import Pet.Society.models.enums.Reason;
@@ -23,6 +24,7 @@ import Pet.Society.models.exceptions.DuplicatedAppointmentException;
 import Pet.Society.models.exceptions.UnavailableAppointmentException;
 import Pet.Society.models.interfaces.Mapper;
 import Pet.Society.repositories.AppointmentRepository;
+import Pet.Society.repositories.DiagnosesRepository;
 import jakarta.transaction.Transactional;
 import org.aspectj.weaver.patterns.ThisOrTargetAnnotationPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +52,7 @@ import java.util.stream.DoubleStream;
 public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEntity> {
 
     private final AppointmentRepository appointmentRepository;
+    private final DiagnosesRepository diagnosesRepository;
     private final DoctorService doctorService;
     private final PetService petService;
     private final ClientService clientService;
@@ -68,8 +71,9 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
 
 
     @Autowired
-    public AppointmentService(AppointmentRepository appointmentRepository, DoctorService doctorService, PetService petService, ClientService clientService, HttpMessageConverters messageConverters) {
+    public AppointmentService(AppointmentRepository appointmentRepository, DiagnosesRepository diagnosesRepository, DoctorService doctorService, PetService petService, ClientService clientService, HttpMessageConverters messageConverters) {
         this.appointmentRepository = appointmentRepository;
+        this.diagnosesRepository = diagnosesRepository;
         this.doctorService = doctorService;
         this.petService = petService;
         this.clientService = clientService;
@@ -319,22 +323,37 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     }
 
     public AppointmentResponseDTO getAppointment(long id) {
-        Optional<AppointmentEntity> existingAppointment = this.appointmentRepository.findById(id);
+        Optional<AppointmentEntity> existingAppointment = this.appointmentRepository.findByIdWithDiagnoses(id);
         if (existingAppointment.isEmpty()) {
             throw new AppointmentDoesntExistException("Appointment does not exist");
         }
         //This variable is for put in the pet name. For some reason, the method fails if there are not a Pet in the Appointment
         String message = existingAppointment.get().getPet() == null ? "No hay mascota asignada" : existingAppointment.get().getPet().getName();
-        return AppointmentResponseDTO.builder()
-                .id(existingAppointment.get().getId())
-                .startTime(existingAppointment.get().getStartDate())
-                .endTime(existingAppointment.get().getEndDate())
-                .reason(existingAppointment.get().getReason())
-                .doctorName(existingAppointment.get().getDoctor().getName()+ " " +existingAppointment.get().getDoctor().getSurname())
-                .aproved(existingAppointment.get().isApproved())
-                .status(existingAppointment.get().getStatus())
-                .petName(message)
-                .build();
+        AppointmentEntity appointment = existingAppointment.get();
+        AppointmentResponseDTO.AppointmentResponseDTOBuilder builder = AppointmentResponseDTO.builder()
+                .id(appointment.getId())
+                .startTime(appointment.getStartDate())
+                .endTime(appointment.getEndDate())
+                .reason(appointment.getReason())
+                .doctorName(appointment.getDoctor().getName()+ " " +appointment.getDoctor().getSurname())
+                .aproved(appointment.isApproved())
+                .status(appointment.getStatus())
+                .petName(message);
+        
+        // Agregar nombre del cliente si existe la mascota
+        if (appointment.getPet() != null && appointment.getPet().getClient() != null) {
+            builder.clientName(appointment.getPet().getClient().getName() + " " + appointment.getPet().getClient().getSurname());
+        }
+        
+        // Buscar diagnóstico directamente por appointmentId en la tabla de diagnósticos
+        Optional<DiagnosesEntity> diagnosis = this.diagnosesRepository.findByAppointmentId(id);
+        if (diagnosis.isPresent()) {
+            DiagnosesEntity diagnosesEntity = diagnosis.get();
+            builder.diagnose(diagnosesEntity.getDiagnose())
+                   .treatment(diagnosesEntity.getTreatment());
+        }
+        
+        return builder.build();
     }
 
     public List<AppointmentResponseDTO> getLastAppointmentsByClientId(long id) {

@@ -1,0 +1,42 @@
+<div class="client-list-container">
+  <h2>Lista de Clientes Dados de Baja</h2>
+
+  @if (loading) {
+    <p>Cargando clientes...</p>
+  } @else if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  } @else {
+    <div class="search-container">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Buscar por nombre, apellido o nombre completo..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      />
+    </div>
+
+    @if (clients.length === 0) {
+      <p>No hay clientes dados de baja.</p>
+    } @else if (filteredClients.length === 0) {
+      <p>No se encontraron clientes que coincidan con la búsqueda.</p>
+    } @else {
+      <div class="client-grid">
+        @for (client of filteredClients; track client.dni) {
+          <div class="client-card inactive">
+            <h3>{{ client.name }} {{ client.surname }}</h3>
+            <p><strong>DNI:</strong> {{ client.dni }}</p>
+            <p><strong>Teléfono:</strong> {{ client.phone }}</p>
+            <p><strong>Email:</strong> {{ client.email }}</p>
+            <p class="pets-count"><strong>Mascotas:</strong> {{ client.petsCount || 0 }}</p>
+            <div class="client-card-actions">
+              <button class="btn-edit" (click)="editClient(client)">Editar</button>
+              <button class="btn-reactivate" (click)="reactivateClient(client)">Reactivar</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+

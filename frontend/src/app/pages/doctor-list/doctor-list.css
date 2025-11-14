@@ -16,6 +16,32 @@
   text-align: center;
 }
 
+.search-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto 2rem auto;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 20px;
+  border: 2px solid #45aedd;
+  border-radius: 25px;
+  font-size: 1rem;
+  outline: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(69, 174, 221, 0.1);
+}
+
+.search-input:focus {
+  border-color: #3a9bc7;
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.2);
+}
+
+.search-input::placeholder {
+  color: #999;
+}
+
 .doctor-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));

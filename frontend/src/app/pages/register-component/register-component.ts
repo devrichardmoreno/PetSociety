@@ -5,6 +5,7 @@ import { RegisterService } from '../../services/register-service';
 import { AuthService } from '../../services/auth.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { nameValidator, phoneValidator, dniValidator, capitalizeProperNames, usernameExistsValidator } from '../../utils/form-validators';
 
 @Component({
   selector: 'app-register-component',
@@ -28,13 +29,17 @@ export class RegisterComponent implements OnInit {
 
   ngOnInit(): void {
     this.registerForm = this.fb.group({
-      username: ['', [Validators.required]],
+      username: ['', 
+        [Validators.required], 
+        [usernameExistsValidator((username: string) => this.authService.checkUsernameExists(username))]
+      ],
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordValidator]],
-      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      phone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(20)]],
-      dni: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(8)]],
-      email: ['', [Validators.required, Validators.email]]
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      phone: ['', [Validators.required, phoneValidator()]],
+      dni: ['', [Validators.required, dniValidator()]],
+      email: ['', [Validators.required, Validators.email]],
+      foundation: [false]
     });
 
     // Verificar si hay una sesión activa
@@ -165,7 +170,13 @@ onSubmit() {
       return;
     }
 
-    this.registerService.registerClient(this.registerForm.value).subscribe({
+    // Capitalizar nombres propios antes de enviar
+    const formValue = { ...this.registerForm.value };
+    const capitalized = capitalizeProperNames(formValue.name, formValue.surname);
+    formValue.name = capitalized.name;
+    formValue.surname = capitalized.surname;
+
+    this.registerService.registerClient(formValue).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
@@ -184,10 +195,39 @@ onSubmit() {
         });
       },
       error: (error) => {
+        let errorMessage = 'Ocurrió un problema al crear la cuenta.';
+        
+        // Manejo específico para username duplicado (409 CONFLICT)
+        if (error.status === 409) {
+          if (error.error) {
+            if (typeof error.error === 'object' && error.error.detail) {
+              errorMessage = error.error.detail;
+            } else if (typeof error.error === 'string') {
+              errorMessage = error.error;
+            } else {
+              errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
+            }
+          } else {
+            errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
+          }
+        } else if (error.error) {
+          if (typeof error.error === 'object' && error.error.detail) {
+            errorMessage = error.error.detail;
+          } else if (typeof error.error === 'string') {
+            errorMessage = error.error;
+          } else if (error.error.message) {
+            errorMessage = error.error.message;
+          }
+        } else if (error.message) {
+          errorMessage = error.message;
+        } else if (error.statusText) {
+          errorMessage = error.statusText;
+        }
+
         Swal.fire({
           icon: 'error',
           title: 'Error al crear la cuenta',
-          text: `Ocurrió un problema: ${error.message || error.statusText || 'Error desconocido'}`,
+          text: errorMessage,
           background: '#fff',
           color: '#333',
           confirmButtonColor: '#F47B20', 

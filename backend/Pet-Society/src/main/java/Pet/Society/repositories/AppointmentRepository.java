@@ -11,8 +11,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
-
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
@@ -45,4 +43,7 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     @Modifying
     @Query("UPDATE AppointmentEntity a SET a.approved = :approved WHERE a.id = :id")
     void updateApprovedStatus(@Param("id") Long id, @Param("approved") boolean approved);
+    
+    @Query("SELECT a FROM AppointmentEntity a LEFT JOIN FETCH a.diagnoses LEFT JOIN FETCH a.pet p LEFT JOIN FETCH p.client WHERE a.id = :id")
+    Optional<AppointmentEntity> findByIdWithDiagnoses(@Param("id") Long id);
 }

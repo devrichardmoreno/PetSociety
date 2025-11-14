@@ -9,6 +9,9 @@
           <div class="col-md-6">
             <p><strong>ID:</strong> {{ appointment.id }}</p>
             <p><strong>Doctor:</strong> {{ appointment.doctorName }}</p>
+            @if (appointment.clientName) {
+              <p><strong>Cliente:</strong> {{ appointment.clientName }}</p>
+            }
             <p><strong>Mascota:</strong> {{ appointment.petName }}</p>
           </div>
           <div class="col-md-6">
@@ -36,6 +39,23 @@
             </p>
           </div>
         </div>
+        @if (appointment.diagnose || appointment.treatment) {
+          <hr>
+          <div class="diagnosis-section">
+            @if (appointment.diagnose) {
+              <div class="diagnosis-item">
+                <p><strong>Diagnóstico:</strong></p>
+                <p class="diagnosis-text">{{ appointment.diagnose }}</p>
+              </div>
+            }
+            @if (appointment.treatment) {
+              <div class="treatment-item">
+                <p><strong>Tratamiento:</strong></p>
+                <p class="treatment-text">{{ appointment.treatment }}</p>
+              </div>
+            }
+          </div>
+        }
       </div>
       <div class="card-footer">
         @if (appointment.status === 'SUCCESSFULLY' || appointment.status === 'TO_BEGIN') {

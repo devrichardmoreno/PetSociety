@@ -36,5 +36,6 @@ public class RegisterDTO {
     @Email
     @NotNull
     private String email;
+    private Boolean foundation;
 
 }

@@ -1,0 +1,242 @@
+#pet-container-all {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  background-color: #4eb5ff; /* Fondo azul para toda la sección */
+  overflow-y: auto;
+}
+
+/* Contenedor principal dividido en dos columnas */
+.pet-wrapper {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+  align-items: stretch; /* Hacer que ambos hijos tengan la misma altura */
+}
+
+/* Sección del logo al costado izquierdo */
+.pet-image {
+  flex: 1;
+  background-color: #4eb5ff; /* mismo azul que el registro */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  min-height: 100vh; /* Mínimo altura de viewport */
+  height: 100%; /* Extender según el contenido del formulario */
+  overflow: hidden;
+}
+
+.pet-image img {
+  width: 400px;
+  max-width: 80%;
+  height: auto;
+}
+
+/* Formulario del lado derecho */
+form {
+  flex: 1;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  padding: 60px;
+  padding-top: 80px;
+  padding-bottom: 40px;
+  border-radius: 0 20px 20px 0;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  min-height: 100vh;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 20px;
+  margin-top: 0;
+  color: #333;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.input-wrapper {
+  margin-bottom: 15px;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 5px;
+  color: #333;
+  font-weight: 500;
+  font-size: 14px;
+}
+
+.custom-input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #ccc;
+  border-radius: 20px;
+  outline: none;
+  font-size: 14px;
+}
+
+.custom-input:focus {
+  border-color: #4eb5ff;
+  box-shadow: 0 0 5px rgba(78, 181, 255, 0.3);
+}
+
+select.custom-input {
+  cursor: pointer;
+}
+
+.error-msg {
+  color: red;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.register-btn {
+  margin-top: 20px;
+  width: 100%;
+  background-color: #f6a742;
+  border: none;
+  border-radius: 25px;
+  padding: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  color: #fff;
+  transition: 0.3s ease;
+  flex-shrink: 0;
+}
+
+.register-btn:hover {
+  background-color: #e0922e;
+}
+
+.register-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.error-message {
+  margin-top: 0.5rem;
+}
+
+.back {
+  text-align: center;
+  margin-top: 1.5rem;
+  flex-shrink: 0;
+}
+
+.back a {
+  color: #5f6c7b;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.back a:hover {
+  color: #4eb5ff;
+}
+
+/* Estilos para el selector de cliente */
+.client-selector-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.client-selector-input {
+  position: relative;
+  width: 100%;
+}
+
+.client-selector-input input {
+  padding-right: 40px;
+  cursor: pointer;
+}
+
+.dropdown-arrow {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: auto;
+  cursor: pointer;
+  color: #666;
+  font-size: 18px;
+  z-index: 10;
+}
+
+.client-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  max-height: 300px;
+  overflow-y: auto;
+  z-index: 1000;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  margin-top: 5px;
+}
+
+.dropdown-item {
+  padding: 12px 15px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #f5f5f5;
+}
+
+.dropdown-item.no-results {
+  color: #999;
+  cursor: default;
+}
+
+.dropdown-item.no-results:hover {
+  background-color: transparent;
+}
+
+.selected-client {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #e3f2fd;
+  border-radius: 8px;
+  color: #1976d2;
+  font-size: 14px;
+}
+
+@media (max-width: 768px) {
+  #pet-container-all {
+    flex-direction: column;
+  }
+
+  .pet-image {
+    position: relative;
+    min-height: 200px;
+    height: auto;
+  }
+
+  .pet-image img {
+    width: 200px;
+  }
+
+  form {
+    border-radius: 20px 20px 0 0;
+    padding: 40px 20px;
+  }
+
+  .client-dropdown {
+    max-height: 200px;
+  }
+}
+

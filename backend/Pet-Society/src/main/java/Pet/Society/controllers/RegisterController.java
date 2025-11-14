@@ -2,6 +2,7 @@ package Pet.Society.controllers;
 
 import Pet.Society.models.dto.client.ClientDTO;
 import Pet.Society.models.dto.register.RegisterDTO;
+import Pet.Society.models.dto.register.RegisterClientDTO;
 import Pet.Society.models.dto.register.RegisterDoctorDTO;
 import Pet.Society.services.RegisterService;
 import jakarta.validation.Valid;
@@ -108,5 +109,31 @@ public class RegisterController {
     public ResponseEntity<String> registerDoctor(@Valid @RequestBody RegisterDoctorDTO dto) {
         registerService.registerNewDoctor(dto);
         return ResponseEntity.ok("Successfully registered doctor");
+    }
+
+    @Operation(
+            summary = "Register a new client user from admin",
+            description = "Creates a new user with the CLIENT role using the provided registration data, including foundation field.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Client registered successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = ClientDTO.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Invalid input data",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
+    @PostMapping("/new/client/admin")
+    public ResponseEntity<ClientDTO> registerClientFromAdmin(@Valid @RequestBody RegisterClientDTO dto) {
+        return ResponseEntity.ok(registerService.registerNewClientFromAdmin(dto));
     }
 }

@@ -69,6 +69,11 @@ public class DoctorController {
         return new ResponseEntity<>(doctorService.getAllDoctorsEntity(), HttpStatus.OK);
    }
 
+   @GetMapping("/list-id/inactive")
+   public ResponseEntity<List<DoctorEntity>> getAllInactiveDoctorsEntity(){
+        return new ResponseEntity<>(doctorService.getAllInactiveDoctorsEntity(), HttpStatus.OK);
+   }
+
     @PatchMapping("/update/{id}")
     public ResponseEntity<DoctorDTO> updateDoctor(@Valid @RequestBody DoctorDTO doctor, @PathVariable Long id) {
         return new ResponseEntity<>(doctorService.update(doctor, id), HttpStatus.OK);
@@ -94,6 +99,12 @@ public class DoctorController {
     public ResponseEntity<String> unsuscribe(@PathVariable Long id) {
         doctorService.unSubscribe(id);
         return ResponseEntity.ok("Unsubscribed successfully");
+    }
+
+    @PatchMapping("/reactivate/{id}")
+    public ResponseEntity<String> reactivate(@PathVariable Long id) {
+        doctorService.reSubscribe(id);
+        return ResponseEntity.ok("Reactivated successfully");
     }
 
     @Operation(

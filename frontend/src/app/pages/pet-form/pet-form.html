@@ -1,0 +1,120 @@
+<section id="pet-container-all">
+
+  <div class="pet-wrapper">
+    <div class="pet-image">
+      <img src="assets/images/pet-logo.png" alt="Pet Logo">
+    </div>
+
+    <form [formGroup]="petForm" (ngSubmit)="onSubmit()" class="pet-form">
+      <h1>{{ isEditMode ? 'Editar Mascota' : 'Registrar Nueva Mascota' }}</h1>
+
+      <div class="input-wrapper">
+        <label for="name" class="input-label">Nombre</label>
+        <input id="name" type="text" class="custom-input" formControlName="name" placeholder="Ingrese el nombre de la mascota">
+      </div>
+      @if (petForm.get('name')?.errors && petForm.get('name')?.touched) {
+        <div class="error-message">
+          @if (petForm.get('name')?.hasError('required')) {
+            <p class="error-msg">El nombre es obligatorio.</p>
+          } @else if (petForm.get('name')?.hasError('invalidName')) {
+            <p class="error-msg">El nombre solo puede contener letras, espacios, ñ y tildes.</p>
+          } @else if (petForm.get('name')?.hasError('minlength') || petForm.get('name')?.hasError('maxlength')) {
+            <p class="error-msg">El nombre debe tener entre 2 y 50 caracteres.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="age" class="input-label">Edad</label>
+        <input id="age" type="number" class="custom-input" formControlName="age" placeholder="Ingrese la edad" min="1" max="30">
+      </div>
+      @if (petForm.get('age')?.errors && petForm.get('age')?.touched) {
+        <div class="error-message">
+          @if (petForm.get('age')?.hasError('required')) {
+            <p class="error-msg">La edad es obligatoria.</p>
+          } @else if (petForm.get('age')?.hasError('min') || petForm.get('age')?.hasError('max')) {
+            <p class="error-msg">La edad debe estar entre 1 y 30 años.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="petType" class="input-label">Tipo de Mascota</label>
+        <select id="petType" class="custom-input" formControlName="petType">
+          <option value="">Seleccione un tipo</option>
+          @for (petType of petTypes; track petType) {
+            <option [value]="petType">{{ getPetTypeLabel(petType) }}</option>
+          }
+        </select>
+      </div>
+      @if (petForm.get('petType')?.errors && petForm.get('petType')?.touched) {
+        <div class="error-message">
+          <p class="error-msg">Debe seleccionar un tipo de mascota.</p>
+        </div>
+      }
+
+      @if (petForm.get('petType')?.value === 'OTHER') {
+        <div class="input-wrapper">
+          <label for="otherType" class="input-label">Especifique el tipo de mascota</label>
+          <input id="otherType" type="text" class="custom-input" formControlName="otherType" placeholder="Ingrese el tipo de mascota" maxlength="50">
+        </div>
+        @if (petForm.get('otherType')?.errors && petForm.get('otherType')?.touched) {
+          <div class="error-message">
+            @if (petForm.get('otherType')?.hasError('required')) {
+              <p class="error-msg">Debe especificar el tipo de mascota.</p>
+            } @else if (petForm.get('otherType')?.hasError('maxlength')) {
+              <p class="error-msg">El tipo de mascota no puede exceder 50 caracteres.</p>
+            }
+          </div>
+        }
+      }
+
+      <div class="input-wrapper">
+        <label for="clientId" class="input-label">Dueño</label>
+        <div class="client-selector-wrapper">
+          <div class="client-selector-input">
+            <input 
+              id="clientId"
+              type="text" 
+              class="custom-input" 
+              [ngModel]="clientSearchTerm"
+              (ngModelChange)="onClientSearchTermChange($event)"
+              (focus)="onClientInputFocus()"
+              (blur)="onClientInputBlur()"
+              [placeholder]="selectedClient ? '' : 'Buscar cliente por nombre o apellido...'"
+            />
+            <span class="dropdown-arrow" (click)="toggleClientDropdown()">▾</span>
+          </div>
+          @if (showClientDropdown) {
+            <div class="client-dropdown" (mousedown)="$event.preventDefault()">
+              @if (filteredClients.length === 0) {
+                <div class="dropdown-item no-results">No se encontraron clientes</div>
+              } @else {
+                @for (client of filteredClients; track client.dni) {
+                  <div class="dropdown-item" (click)="selectClient(client)" (mousedown)="$event.preventDefault()">
+                    {{ client.name }} {{ client.surname }}
+                  </div>
+                }
+              }
+            </div>
+          }
+        </div>
+      </div>
+      @if (petForm.get('clientId')?.errors && petForm.get('clientId')?.touched) {
+        <div class="error-message">
+          <p class="error-msg">Debe seleccionar un cliente.</p>
+        </div>
+      }
+
+      <button class="register-btn" type="submit" [disabled]="petForm.invalid">
+        {{ isEditMode ? 'Guardar Cambios' : 'Registrar Mascota' }}
+      </button>
+
+      <p class="back">
+        <a routerLink="/admin/home">⬅ Volver al panel</a>
+      </p>
+    </form>
+  </div>
+
+</section>
+

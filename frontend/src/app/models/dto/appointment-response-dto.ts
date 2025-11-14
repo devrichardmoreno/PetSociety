@@ -6,8 +6,11 @@ export interface AppointmentResponseDTO {
   startTime: string;
   endTime: string;    
   doctorName: string;
+  clientName?: string;
   petName: string;
   reason: Reason;
   aproved: boolean;
   status: Status;
+  diagnose?: string;
+  treatment?: string;
 }

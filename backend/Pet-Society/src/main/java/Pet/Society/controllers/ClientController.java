@@ -1,6 +1,7 @@
 package Pet.Society.controllers;
 
 import Pet.Society.models.dto.client.ClientDTO;
+import Pet.Society.models.dto.client.ClientListDTO;
 import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.models.entities.ClientEntity;
 import Pet.Society.services.ClientService;
@@ -159,5 +160,49 @@ public class ClientController {
     @GetMapping("/getAll")
     public ResponseEntity<Page<ClientDTO>> getAll(@PageableDefault(size = 10, page = 0)Pageable pageable) {
         return ResponseEntity.ok(this.clientService.getAllClients(pageable));
+    }
+
+    @GetMapping("/list-id")
+    public ResponseEntity<List<ClientEntity>> getAllClientsEntity(){
+        return new ResponseEntity<>(clientService.getAllClientsEntity(), HttpStatus.OK);
+    }
+
+    @GetMapping("/list-id/active")
+    public ResponseEntity<List<ClientListDTO>> getAllActiveClientsWithPetsCount(){
+        return new ResponseEntity<>(clientService.getAllActiveClientsWithPetsCount(), HttpStatus.OK);
+    }
+
+    @GetMapping("/list-id/inactive")
+    public ResponseEntity<List<ClientListDTO>> getAllInactiveClientsWithPetsCount(){
+        return new ResponseEntity<>(clientService.getAllInactiveClientsWithPetsCount(), HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Reactivate a client",
+            description = "Endpoint to reactivate a previously unsubscribed client by setting their subscribed status to true.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Client reactivated successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Client not found",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = String.class)
+                            )
+                    )
+            }
+    )
+    @PreAuthorize("@ownershipValidator.canAccessClient(#id)")
+    @PatchMapping("/reactivate/{id}")
+    public ResponseEntity<String> reactivate(@PathVariable long id) {
+        this.clientService.reSubscribe(id);
+        return ResponseEntity.status(HttpStatus.OK).body("Client reactivated successfully");
     }
 }

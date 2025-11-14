@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,6 +8,8 @@ import { Speciality } from '../../models/dto/speciality.enum';
 import { DoctorService } from '../../services/doctor-service';
 import { Doctor } from '../../models/doctor';
 import Swal from 'sweetalert2';
+import { nameValidator, phoneValidator, dniValidator, capitalizeProperNames, usernameExistsValidator } from '../../utils/form-validators';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-create-doctor',
@@ -39,7 +41,8 @@ export class CreateDoctor implements OnInit {
     private http: HttpClient,
     private route: ActivatedRoute,
     private router: Router,
-    private doctorService: DoctorService
+    private doctorService: DoctorService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -52,18 +55,21 @@ export class CreateDoctor implements OnInit {
 
     // Crear formulario con validaciones condicionales
     const formControls: any = {
-      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      dni: ['', [Validators.required, Validators.minLength(7), Validators.maxLength(8)]],
-      phone: ['', [Validators.required, Validators.minLength(9), Validators.maxLength(20)]],
+      name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      dni: ['', [Validators.required, dniValidator()]],
+      phone: ['', [Validators.required, phoneValidator()]],
       email: ['', [Validators.required, Validators.email]],
       speciality: [null, Validators.required],
     };
 
     // Solo agregar username y password si NO estamos en modo edición
     if (!this.isEditMode) {
-      formControls.username = ['', Validators.required];
-      formControls.password = ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]];
+      formControls.username = ['', 
+        [Validators.required], 
+        [usernameExistsValidator((username: string) => this.authService.checkUsernameExists(username))]
+      ];
+      formControls.password = ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordValidator]];
     }
 
     this.doctorForm = this.fb.group(formControls);
@@ -100,6 +106,45 @@ export class CreateDoctor implements OnInit {
         this.router.navigate(['/doctor/list']);
       }
     });
+  }
+
+  // Validador personalizado para contraseña
+  passwordValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    
+    if (!value) {
+      return null; // Dejamos que Validators.required maneje el caso vacío
+    }
+
+    const hasLetter = /[a-zA-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+
+    if (!hasLetter || !hasNumber) {
+      return { passwordStrength: true };
+    }
+
+    return null;
+  }
+
+  // Métodos para verificar cada validación individualmente
+  hasMinLength(): boolean {
+    const password = this.doctorForm.get('password')?.value || '';
+    return password.length >= 8;
+  }
+
+  hasLetter(): boolean {
+    const password = this.doctorForm.get('password')?.value || '';
+    return /[a-zA-Z]/.test(password);
+  }
+
+  hasNumber(): boolean {
+    const password = this.doctorForm.get('password')?.value || '';
+    return /[0-9]/.test(password);
+  }
+
+  hasMaxLength(): boolean {
+    const password = this.doctorForm.get('password')?.value || '';
+    return password.length <= 50;
   }
 
   onSubmit(): void {
@@ -150,9 +195,11 @@ export class CreateDoctor implements OnInit {
         if (result.isConfirmed) {
           // Actualizar doctor en el backend
           if (this.doctorId) {
+            // Capitalizar nombres propios antes de enviar
+            const capitalized = capitalizeProperNames(formData.name, formData.surname);
             const doctorData: Doctor = {
-              name: formData.name,
-              surname: formData.surname,
+              name: capitalized.name,
+              surname: capitalized.surname,
               dni: formData.dni,
               phone: formData.phone,
               email: formData.email,
@@ -215,7 +262,13 @@ export class CreateDoctor implements OnInit {
         }
       });
     } else {
-      const newDoctor = this.doctorForm.value;
+      // Capitalizar nombres propios antes de enviar
+      const formValue = { ...this.doctorForm.value };
+      const capitalized = capitalizeProperNames(formValue.name, formValue.surname);
+      formValue.name = capitalized.name;
+      formValue.surname = capitalized.surname;
+
+      const newDoctor = formValue;
 
       this.http.post(this.apiUrl, newDoctor, { responseType: 'text' })
         .subscribe({
@@ -233,10 +286,41 @@ export class CreateDoctor implements OnInit {
           },
           error: (error) => {
             console.error('❌ Error al registrar el doctor:', error);
+            let errorMessage = 'Ocurrió un problema al registrar el doctor.';
+            
+            // Manejo específico para username duplicado (409 CONFLICT)
+            if (error.status === 409) {
+              if (error.error) {
+                if (typeof error.error === 'object' && error.error.detail) {
+                  errorMessage = error.error.detail;
+                } else if (typeof error.error === 'string') {
+                  errorMessage = error.error;
+                } else {
+                  errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
+                }
+              } else {
+                errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
+              }
+            } else if (error.error) {
+              if (typeof error.error === 'object') {
+                if (error.error.detail) {
+                  errorMessage = error.error.detail;
+                } else if (error.error.message) {
+                  errorMessage = error.error.message;
+                }
+              } else if (typeof error.error === 'string') {
+                errorMessage = error.error;
+              }
+            } else if (error.message) {
+              errorMessage = error.message;
+            } else if (error.statusText) {
+              errorMessage = error.statusText;
+            }
+
             Swal.fire({
               icon: 'error',
               title: 'Error al registrar el doctor',
-              text: `Ocurrió un problema: ${error.message || error.statusText || 'Error desconocido'}`,
+              text: errorMessage,
               background: '#fff',
               color: '#333',
               confirmButtonColor: '#F47B20',

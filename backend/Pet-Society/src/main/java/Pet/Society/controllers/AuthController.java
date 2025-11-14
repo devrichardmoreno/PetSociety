@@ -3,6 +3,7 @@ package Pet.Society.controllers;
 import Pet.Society.models.dto.login.LoginDTO;
 import Pet.Society.models.dto.login.LoginResponseDTO;
 import Pet.Society.services.AuthService;
+import Pet.Society.services.CredentialService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,10 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Tag(
         name = "Login",
@@ -27,10 +28,12 @@ public class AuthController {
     // Currently, it serves as a placeholder for future authentication-related functionality.
 
     private final AuthService authService;
+    private final CredentialService credentialService;
 
     @Autowired
-    public AuthController(AuthService authService) {
+    public AuthController(AuthService authService, CredentialService credentialService) {
         this.authService = authService;
+        this.credentialService = credentialService;
     }
 
 
@@ -53,6 +56,25 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginDTO request){
         return ResponseEntity.ok(authService.login(request));
+    }
+
+    @Operation(
+            summary = "Check if username exists",
+            description = "Verifies if a username is already taken.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Username availability checked",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
+    @GetMapping("/check-username")
+    public ResponseEntity<Map<String, Boolean>> checkUsername(@RequestParam String username) {
+        boolean exists = credentialService.findByUsername(username).isPresent();
+        Map<String, Boolean> response = new HashMap<>();
+        response.put("exists", exists);
+        return ResponseEntity.ok(response);
     }
 
 

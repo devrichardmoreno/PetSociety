@@ -106,6 +106,16 @@ public class DoctorService implements Mapper<DoctorDTO, DoctorEntity> {
         this.doctorRepository.save(doctorToUnsubscribe);
     }
 
+    public void reSubscribe(Long id){
+        Optional<DoctorEntity> existingDoctor = this.doctorRepository.findById(id);
+        if (existingDoctor.isEmpty()){
+            throw new UserNotFoundException("Doctor does not exist");
+        }
+        DoctorEntity doctorToResubscribe = existingDoctor.get();
+        doctorToResubscribe.setSubscribed(true);
+        this.doctorRepository.save(doctorToResubscribe);
+    }
+
     public boolean doctorExistByDni(String dni){
         Optional<DoctorEntity> existing = doctorRepository.findByDni(dni);
         if(existing.isEmpty())
@@ -120,7 +130,11 @@ public class DoctorService implements Mapper<DoctorDTO, DoctorEntity> {
     }
 
     public List<DoctorEntity> getAllDoctorsEntity(){
-        return this.doctorRepository.findAll();
+        return this.doctorRepository.findBySubscribedTrue();
+    }
+
+    public List<DoctorEntity> getAllInactiveDoctorsEntity(){
+        return this.doctorRepository.findBySubscribedFalse();
     }
 
 

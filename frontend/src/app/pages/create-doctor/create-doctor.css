@@ -1,14 +1,18 @@
 #doctor-container-all {
   display: flex;
-  height: 100vh;
+  min-height: 100vh;
   width: 100%;
-  background-color: #f7f8fa;
+  background-color: #4eb5ff; /* Fondo azul para toda la sección */
+  overflow-y: auto;
+  position: relative;
 }
 
 /* Contenedor principal dividido en dos columnas */
 .doctor-wrapper {
   display: flex;
   width: 100%;
+  min-height: 100vh;
+  align-items: stretch; /* Hacer que ambos hijos tengan la misma altura */
 }
 
 /* Sección del logo al costado izquierdo */
@@ -18,6 +22,11 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  position: sticky;
+  top: 0;
+  align-self: stretch; /* Extender para igualar la altura del wrapper */
+  min-height: 100vh; /* Mínimo altura de viewport */
+  overflow: hidden;
 }
 
 .doctor-image img {
@@ -32,17 +41,23 @@ form {
   background-color: #fff;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   padding: 60px;
+  padding-top: 80px;
+  padding-bottom: 40px;
   border-radius: 0 20px 20px 0;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  overflow-y: auto;
+  min-height: 100vh;
 }
 
 h1 {
   text-align: center;
   margin-bottom: 20px;
+  margin-top: 0;
   color: #333;
   font-weight: bold;
+  flex-shrink: 0;
 }
 
 .input-wrapper {
@@ -79,8 +94,58 @@ h1 {
   cursor: pointer;
   color: #fff;
   transition: 0.3s ease;
+  flex-shrink: 0;
 }
 
 .register-btn:hover {
   background-color: #e0922e;
+}
+
+.register-btn:disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.register-btn:disabled:hover {
+  background-color: #ccc;
+}
+
+.password-requirements {
+  width: 100%;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.requirement-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  margin-bottom: 0.4rem;
+  transition: color 0.2s ease;
+}
+
+.requirement-item.valid {
+  color: #28a745;
+}
+
+.requirement-item.invalid {
+  color: #dc3545;
+}
+
+.requirement-icon {
+  font-weight: bold;
+  font-size: 1rem;
+  min-width: 1.2rem;
+  text-align: center;
+}
+
+.requirement-text {
+  flex: 1;
+}
+
+.error-message {
+  margin-top: 0.5rem;
 }

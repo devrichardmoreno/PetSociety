@@ -1,9 +1,15 @@
 import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, map } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
+  
+  private readonly API_URL = 'http://localhost:8080/auth';
+
+  constructor(private http: HttpClient) {}
 
   private readonly TOKEN_KEY = 'token';
   private readonly USER_ROLE_KEY = 'userRole';
@@ -149,6 +155,17 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USER_ROLE_KEY);
     localStorage.removeItem(this.USER_ID_KEY);
+  }
+
+  /**
+   * Verifica si un username ya existe
+   */
+  checkUsernameExists(username: string): Observable<boolean> {
+    return this.http.get<{ exists: boolean }>(`${this.API_URL}/check-username`, {
+      params: { username }
+    }).pipe(
+      map(response => response.exists)
+    );
   }
 }
 

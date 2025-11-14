@@ -25,7 +25,10 @@ public class GlobalControllerException {
 
     @ExceptionHandler(UserExistsException.class)
     public ProblemDetail HandlerUserExistsException(UserExistsException ex, HttpServletRequest request) {
-        return createProblemDetail(HttpStatus.CONFLICT, "User Exists", "The user already exists", request);
+        String detail = ex.getMessage() != null && !ex.getMessage().isEmpty() 
+            ? ex.getMessage() 
+            : "The username already exists. Please choose a different one.";
+        return createProblemDetail(HttpStatus.CONFLICT, "User Exists", detail, request);
     }
 
     @ExceptionHandler(NoPetsException.class)

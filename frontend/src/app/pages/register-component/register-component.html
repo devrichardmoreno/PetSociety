@@ -16,6 +16,8 @@
             <div class="error-message">
                 @if (registerForm.get('name')?.hasError('required')) {
                     <p class="error-msg">El nombre es obligatorio.</p>
+                } @else if (registerForm.get('name')?.hasError('invalidName')) {
+                    <p class="error-msg">El nombre solo puede contener letras, espacios, ñ y tildes.</p>
                 } @else if (registerForm.get('name')?.hasError('minlength') || registerForm.get('name')?.hasError('maxlength')) {
                     <p class="error-msg">El nombre debe tener entre 2 y 50 caracteres.</p>
                 }
@@ -29,6 +31,8 @@
             <div class="error-message">
                 @if (registerForm.get('surname')?.hasError('required')) {
                     <p class="error-msg">El apellido es obligatorio.</p>
+                } @else if (registerForm.get('surname')?.hasError('invalidName')) {
+                    <p class="error-msg">El apellido solo puede contener letras, espacios, ñ y tildes.</p>
                 } @else if (registerForm.get('surname')?.hasError('minlength') || registerForm.get('surname')?.hasError('maxlength')) {
                     <p class="error-msg">El apellido debe tener entre 2 y 50 caracteres.</p>
                 }
@@ -42,8 +46,10 @@
             <div class="error-message">
                 @if (registerForm.get('phone')?.hasError('required')) {
                     <p class="error-msg">El teléfono es obligatorio.</p>
-                } @else if (registerForm.get('phone')?.hasError('minlength') || registerForm.get('phone')?.hasError('maxlength')) {
-                    <p class="error-msg">Debe tener entre 9 y 20 dígitos.</p>
+                } @else if (registerForm.get('phone')?.hasError('invalidPhone')) {
+                    <p class="error-msg">El teléfono solo puede contener números.</p>
+                } @else if (registerForm.get('phone')?.hasError('invalidPhoneLength')) {
+                    <p class="error-msg">El teléfono debe tener entre 9 y 20 dígitos.</p>
                 }
             </div>
         }
@@ -55,8 +61,10 @@
             <div class="error-message">
                 @if (registerForm.get('dni')?.hasError('required')) {
                     <p class="error-msg">El DNI es obligatorio.</p>
-                } @else if (registerForm.get('dni')?.hasError('minlength') || registerForm.get('dni')?.hasError('maxlength')) {
-                    <p class="error-msg">Debe tener entre 7 y 8 dígitos.</p>
+                } @else if (registerForm.get('dni')?.hasError('invalidDni')) {
+                    <p class="error-msg">El DNI solo puede contener números.</p>
+                } @else if (registerForm.get('dni')?.hasError('invalidDniLength')) {
+                    <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
                 }
             </div>
         }
@@ -77,11 +85,18 @@
         <div class="input-wrapper">
             <input type="text" class="custom-input" placeholder="Nombre de Usuario" formControlName="username">
         </div>
-        @if (registerForm.get('username')?.errors && registerForm.get('username')?.touched) {
+        @if (registerForm.get('username')?.errors && (registerForm.get('username')?.touched || registerForm.get('username')?.dirty)) {
             <div class="error-message">
                 @if (registerForm.get('username')?.hasError('required')) {
                     <p class="error-msg">El nombre de usuario es obligatorio.</p>
+                } @else if (registerForm.get('username')?.hasError('usernameExists')) {
+                    <p class="error-msg">El nombre de usuario ya existe. Por favor, elegí otro.</p>
                 }
+            </div>
+        }
+        @if (registerForm.get('username')?.pending) {
+            <div class="error-message">
+                <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
             </div>
         }
 
@@ -114,7 +129,14 @@
             </div>
         }
 
-        <button class="register-btn" type="submit">
+        <div class="input-wrapper checkbox-wrapper">
+            <label class="checkbox-label">
+                <input type="checkbox" formControlName="foundation" class="checkbox-input">
+                <span>¿Es una fundación?</span>
+            </label>
+        </div>
+
+        <button class="register-btn" type="submit" [disabled]="registerForm.invalid">
             Crear cuenta
         </button>
 
