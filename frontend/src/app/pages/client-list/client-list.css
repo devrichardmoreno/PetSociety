@@ -101,6 +101,14 @@
   border-top: 1px solid #e0e0e0;
 }
 
+.client-card-pet-actions {
+  display: flex;
+  gap: 0.8rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e0e0e0;
+}
+
 .btn-edit {
   flex: 1;
   padding: 0.7rem 1rem;
@@ -153,6 +161,58 @@
   transform: translateY(0);
 }
 
+.btn-list-pets {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.btn-list-pets:hover {
+  background: linear-gradient(135deg, #45a049 0%, #3d8b40 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+}
+
+.btn-list-pets:active {
+  transform: translateY(0);
+}
+
+.btn-add-pet {
+  flex: 1;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #9c27b0 0%, #7b1fa2 100%);
+  color: #fff;
+  box-shadow: 0 4px 12px rgba(156, 39, 176, 0.3);
+}
+
+.btn-add-pet:hover {
+  background: linear-gradient(135deg, #7b1fa2 0%, #6a1b9a 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(156, 39, 176, 0.4);
+}
+
+.btn-add-pet:active {
+  transform: translateY(0);
+}
+
 .error {
   color: #f57c00;
   font-weight: bold;
@@ -187,7 +247,14 @@
     gap: 0.6rem;
   }
 
-  .btn-edit {
+  .client-card-pet-actions {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .btn-edit,
+  .btn-list-pets,
+  .btn-add-pet {
     width: 100%;
     padding: 0.8rem;
   }

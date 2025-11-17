@@ -1,4 +1,4 @@
-.client-list-container {
+.admin-list-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,9 +8,9 @@
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.client-list-container h2 {
+.admin-list-container h2 {
   font-size: 2rem;
-  color: #6c757d;
+  color: #45aedd;
   margin-bottom: 1.5rem;
   font-weight: 700;
   text-align: center;
@@ -25,24 +25,24 @@
 .search-input {
   width: 100%;
   padding: 12px 20px;
-  border: 2px solid #6c757d;
+  border: 2px solid #45aedd;
   border-radius: 25px;
   font-size: 1rem;
   outline: none;
   transition: all 0.3s ease;
-  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.1);
+  box-shadow: 0 2px 8px rgba(69, 174, 221, 0.1);
 }
 
 .search-input:focus {
-  border-color: #5a6268;
-  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.2);
+  border-color: #3a9bc7;
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.2);
 }
 
 .search-input::placeholder {
   color: #999;
 }
 
-.client-grid {
+.admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -50,65 +50,46 @@
   max-width: 1100px;
 }
 
-.client-card {
+.admin-card {
   background-color: #ffffff;
   border-radius: 18px;
-  padding: 1.2rem 1rem;
-  box-shadow: 0 6px 20px rgba(108, 117, 125, 0.15);
+  padding: 1.8rem 1.5rem;
+  box-shadow: 0 6px 20px rgba(69, 174, 221, 0.15);
   transition: all 0.3s ease;
-  border-top: 5px solid #6c757d;
-  border-bottom: 5px solid #6c757d;
+  border-top: 5px solid #45aedd;
+  border-bottom: 5px solid #45aedd;
 }
 
-.client-card.inactive {
-  opacity: 0.85;
-  border-top: 5px solid #6c757d;
-  border-bottom: 5px solid #6c757d;
-}
-
-.client-card:hover {
+.admin-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
-  opacity: 1;
+  box-shadow: 0 10px 25px rgba(69, 174, 221, 0.3);
 }
 
-.client-card h3 {
-  color: #6c757d;
-  font-size: 1.2rem;
-  margin-bottom: 0.6rem;
+.admin-card h3 {
+  color: #45aedd;
+  font-size: 1.4rem;
+  margin-bottom: 0.8rem;
 }
 
-.client-card p {
-  color: #555;
-  font-size: 0.9rem;
-  margin: 3px 0;
+.admin-card p {
+  color: #333;
+  font-size: 0.95rem;
+  margin: 4px 0;
 }
 
-.client-card strong {
-  color: #6c757d;
+.admin-card strong {
+  color: #45aedd;
 }
 
-.pets-count {
-  background-color: #f5f5f5;
-  padding: 0.5rem;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-  font-weight: 600;
-}
-
-.pets-count strong {
-  color: #6c757d;
-}
-
-.client-card-actions {
+.admin-card-actions {
   display: flex;
   justify-content: center;
-  margin-top: 1rem;
-  padding-top: 0.8rem;
+  margin-top: 1.2rem;
+  padding-top: 1rem;
   border-top: 1px solid #e0e0e0;
 }
 
-.btn-reactivate {
+.btn-delete {
   width: 100%;
   padding: 0.7rem 1rem;
   border: none;
@@ -119,51 +100,58 @@
   transition: all 0.3s ease;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+  background: linear-gradient(135deg, #f57c00 0%, #e66a00 100%);
   color: #fff;
-  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
 }
 
-.btn-reactivate:hover {
-  background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
+.btn-delete:hover {
+  background: linear-gradient(135deg, #e66a00 0%, #d45a00 100%);
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+  box-shadow: 0 6px 16px rgba(245, 124, 0, 0.4);
 }
 
-.btn-reactivate:active {
+.btn-delete:active {
   transform: translateY(0);
 }
 
 .error {
-  color: #6c757d;
+  color: #f57c00;
   font-weight: bold;
   text-align: center;
   margin-top: 1rem;
 }
 
-.client-list-container p {
+.admin-list-container p {
   color: #555;
   text-align: center;
 }
 
 @media (max-width: 768px) {
-  .client-list-container {
+  .admin-list-container {
     padding: 2rem 1rem;
   }
 
-  .client-card {
+  .admin-card {
     padding: 1.2rem;
   }
 
-  .client-card h3 {
+  .admin-card h3 {
     font-size: 1.2rem;
   }
 
-  .client-card p {
+  .admin-card p {
     font-size: 0.9rem;
   }
 
-  .btn-reactivate {
+  .admin-card-actions {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    width: 100%;
     padding: 0.8rem;
   }
 }

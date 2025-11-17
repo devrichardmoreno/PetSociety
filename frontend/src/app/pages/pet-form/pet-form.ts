@@ -1,21 +1,19 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router, ActivatedRoute, RouterLink } from '@angular/router';
 import { PetService } from '../../services/pet.service';
 import { ClientService } from '../../services/client.service';
 import { PetDTO } from '../../models/dto/PetDTO';
 import { PetType, PetTypeLabels } from '../../models/dto/pet-type.enum';
 import { ClientDTO } from '../../models/dto/ClientDTO';
-import { AuthService } from '../../services/auth.service';
 import Swal from 'sweetalert2';
 import { nameValidator } from '../../utils/form-validators';
 
 @Component({
   selector: 'app-pet-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, FormsModule, RouterLink],
+  imports: [ReactiveFormsModule, CommonModule, RouterLink],
   templateUrl: './pet-form.html',
   styleUrls: ['./pet-form.css']
 })
@@ -24,22 +22,18 @@ export class PetFormComponent implements OnInit {
   petForm!: FormGroup;
   isEditMode: boolean = false;
   petId?: number;
-  clients: ClientDTO[] = [];
-  filteredClients: ClientDTO[] = [];
   selectedClient: ClientDTO | null = null;
-  showClientDropdown: boolean = false;
-  clientSearchTerm: string = '';
   petTypes = Object.values(PetType);
   petTypeLabels = PetTypeLabels;
+  clientIdFromQuery: number | null = null; // Para saber si el cliente viene pre-seleccionado
+  clientIdFromPetsList: number | null = null; // Para saber si viene desde el listado de mascotas
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     private petService: PetService,
-    private clientService: ClientService,
-    private authService: AuthService,
-    private cdr: ChangeDetectorRef
+    private clientService: ClientService
   ) {}
 
   ngOnInit(): void {
@@ -50,13 +44,28 @@ export class PetFormComponent implements OnInit {
       this.petId = +id;
     }
 
+    // Verificar si hay un clientId en los query parameters (viene desde el listado de clientes)
+    const clientIdParam = this.route.snapshot.queryParamMap.get('clientId');
+    if (clientIdParam && !this.isEditMode) {
+      this.clientIdFromQuery = +clientIdParam;
+    }
+
+    // Verificar si viene desde el listado de mascotas (para volver ahí después de editar)
+    const fromPetsListParam = this.route.snapshot.queryParamMap.get('fromPetsList');
+    if (fromPetsListParam) {
+      this.clientIdFromPetsList = +fromPetsListParam;
+    }
+
     // Crear formulario
+    // Si viene un clientId desde query params, no es requerido el campo (ya está pre-seleccionado)
+    const clientIdValidators = this.clientIdFromQuery ? [] : [Validators.required];
+    
     this.petForm = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
       age: ['', [Validators.required, Validators.min(1), Validators.max(30)]],
       petType: ['', Validators.required],
       otherType: [''],
-      clientId: ['', Validators.required]
+      clientId: [this.clientIdFromQuery || '', clientIdValidators]
     });
 
     // Validación condicional para otherType
@@ -71,40 +80,33 @@ export class PetFormComponent implements OnInit {
       otherTypeControl?.updateValueAndValidity();
     });
 
-    // Cargar clientes activos primero
-    this.loadClients();
+    // Cargar cliente si viene desde query params o si estamos editando
+    if (this.clientIdFromQuery && !this.isEditMode) {
+      this.loadClientById(this.clientIdFromQuery);
+    } else if (this.isEditMode && this.petId) {
+      this.loadPetData(this.petId);
+    }
   }
 
-  loadClients(): void {
-    this.clientService.getAllActiveClientsWithPetsCount().subscribe({
-      next: (data: any[]) => {
-        this.clients = data.map((client: any) => ({
-          id: client.id,
-          name: client.name,
-          surname: client.surname,
-          dni: client.dni,
-          phone: client.phone,
-          email: client.email,
-          petsCount: client.petsCount || 0
-        }));
-        this.filteredClients = this.clients;
-        
-        // Cargar datos de la mascota si estamos en modo edición
-        // Ahora que los clientes están cargados, podemos cargar el pet
-        if (this.isEditMode && this.petId) {
-          this.loadPetData(this.petId);
-        }
+  loadClientById(clientId: number): void {
+    this.clientService.getClientById(clientId).subscribe({
+      next: (client: ClientDTO) => {
+        this.selectedClient = client;
+        this.petForm.patchValue({ clientId: clientId });
+        this.petForm.get('clientId')?.markAsTouched();
       },
       error: (error) => {
-        console.error('Error al obtener clientes:', error);
+        console.error('Error al obtener el cliente:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudieron cargar los clientes.',
+          text: 'No se pudo cargar la información del cliente.',
           background: '#fff',
           color: '#333',
           confirmButtonColor: '#F47B20',
           iconColor: '#000000'
+        }).then(() => {
+          this.router.navigate(['/client/list']);
         });
       }
     });
@@ -120,12 +122,8 @@ export class PetFormComponent implements OnInit {
           otherType: pet.otherType || '',
           clientId: pet.clientId
         });
-        // Buscar y seleccionar el cliente
-        const client = this.clients.find(c => c.id === pet.clientId);
-        if (client) {
-          this.selectedClient = client;
-          this.clientSearchTerm = `${client.name} ${client.surname}`;
-        }
+        // Cargar el cliente asociado a la mascota
+        this.loadClientById(pet.clientId);
       },
       error: (error) => {
         console.error('Error al cargar datos de la mascota:', error);
@@ -143,117 +141,12 @@ export class PetFormComponent implements OnInit {
     });
   }
 
-  onClientSearchTermChange(value: string): void {
-    // Si hay un cliente seleccionado y el usuario está escribiendo algo diferente, limpiar la selección
-    if (this.selectedClient) {
-      const expectedName = `${this.selectedClient.name} ${this.selectedClient.surname}`;
-      if (value !== expectedName) {
-        // El usuario está modificando el texto, limpiar la selección
-        this.selectedClient = null;
-        this.petForm.patchValue({ clientId: '' });
-      } else {
-        // El valor coincide exactamente con el cliente seleccionado, mantenerlo y no filtrar
-        this.clientSearchTerm = value;
-        this.filteredClients = this.clients;
-        return;
-      }
-    }
-
-    // Actualizar el término de búsqueda
-    this.clientSearchTerm = value;
-
-    // Si el campo está vacío, mostrar todos los clientes
-    if (!value || value.trim() === '') {
-      this.filteredClients = this.clients;
-      return;
-    }
-
-    // Filtrar clientes según el término de búsqueda
-    const search = value.toLowerCase().trim();
-    const searchWords = search.split(/\s+/);
-
-    this.filteredClients = this.clients.filter(client => {
-      const fullName = `${client.name} ${client.surname}`.toLowerCase();
-      const reverseFullName = `${client.surname} ${client.name}`.toLowerCase();
-      const name = client.name?.toLowerCase() || '';
-      const surname = client.surname?.toLowerCase() || '';
-
-      if (searchWords.length === 1) {
-        return name.includes(search) || surname.includes(search);
-      }
-
-      const searchPhrase = searchWords.join(' ');
-      return fullName.includes(searchPhrase) || reverseFullName.includes(searchPhrase);
-    });
-  }
-
-  selectClient(client: ClientDTO): void {
-    // Establecer el cliente seleccionado primero
-    this.selectedClient = client;
-    // Actualizar el formulario con el ID del cliente
-    this.petForm.patchValue({ clientId: client.id });
-    // Establecer el nombre completo en el campo de búsqueda ANTES de cerrar el dropdown
-    const fullName = `${client.name} ${client.surname}`;
-    this.clientSearchTerm = fullName;
-    // Cerrar el dropdown
-    this.showClientDropdown = false;
-    // Resetear la lista filtrada
-    this.filteredClients = this.clients;
-    // Marcar el campo como touched para que muestre validación si es necesario
-    this.petForm.get('clientId')?.markAsTouched();
-    // Forzar la detección de cambios para asegurar que el input se actualice
-    this.cdr.detectChanges();
-  }
-
-  toggleClientDropdown(): void {
-    this.showClientDropdown = !this.showClientDropdown;
-    if (this.showClientDropdown) {
-      // Si hay un cliente seleccionado, mantener su nombre; si no, limpiar para buscar
-      if (this.selectedClient) {
-        this.clientSearchTerm = `${this.selectedClient.name} ${this.selectedClient.surname}`;
-      } else {
-        this.clientSearchTerm = '';
-      }
-      this.filteredClients = this.clients;
-    }
-  }
-
-  onClientInputFocus(): void {
-    this.showClientDropdown = true;
-    // Si hay un cliente seleccionado, mantener su nombre visible
-    // Si no hay cliente seleccionado, limpiar para buscar
-    if (!this.selectedClient) {
-      this.clientSearchTerm = '';
-      this.filteredClients = this.clients;
-    } else {
-      // Mantener el nombre del cliente seleccionado visible
-      this.clientSearchTerm = `${this.selectedClient.name} ${this.selectedClient.surname}`;
-      this.filteredClients = this.clients;
-    }
-  }
-
-  onClientInputBlur(): void {
-    // Usar setTimeout para permitir que el click en el dropdown se procese primero
-    setTimeout(() => {
-      // Solo cerrar el dropdown si no se está seleccionando un cliente
-      if (!this.showClientDropdown) {
-        return;
-      }
-      
-      // Si hay un cliente seleccionado, asegurarse de que el nombre completo esté visible
-      if (this.selectedClient) {
-        const expectedName = `${this.selectedClient.name} ${this.selectedClient.surname}`;
-        // Asegurarse de que el nombre completo esté visible
-        this.clientSearchTerm = expectedName;
-        this.cdr.detectChanges();
-      }
-      
-      this.showClientDropdown = false;
-    }, 300);
-  }
-
   getPetTypeLabel(petType: PetType): string {
     return PetTypeLabels[petType] || petType;
+  }
+
+  goBack(): void {
+    window.history.back();
   }
 
   onSubmit(): void {
@@ -261,7 +154,9 @@ export class PetFormComponent implements OnInit {
       Swal.fire({
         icon: 'warning',
         title: 'Formulario incompleto',
-        text: 'Por favor completá todos los campos requeridos correctamente',
+        text: this.isEditMode 
+          ? 'Por favor completá todos los campos requeridos correctamente para modificar la mascota'
+          : 'Por favor completá todos los campos requeridos correctamente',
         background: '#fff',
         color: '#333',
         confirmButtonColor: '#F47B20',
@@ -283,12 +178,15 @@ export class PetFormComponent implements OnInit {
       formValue.otherType = formValue.otherType.charAt(0).toUpperCase() + formValue.otherType.slice(1).toLowerCase();
     }
 
+    // Asegurarse de usar el clientId correcto (prioridad: query param > form value)
+    const finalClientId = this.clientIdFromQuery || formValue.clientId;
+
     const petDTO: PetDTO = {
       name: formValue.name,
       age: formValue.age,
       petType: formValue.petType,
       otherType: formValue.petType === PetType.OTHER ? formValue.otherType : undefined,
-      clientId: formValue.clientId,
+      clientId: finalClientId,
       active: true
     };
 
@@ -298,19 +196,24 @@ export class PetFormComponent implements OnInit {
         next: () => {
           Swal.fire({
             icon: 'success',
-            title: '✅ Mascota actualizada con éxito',
-            text: 'Los datos de la mascota fueron actualizados correctamente.',
+            title: '✅ Mascota modificada con éxito',
+            text: 'Los datos de la mascota fueron modificados correctamente.',
             background: '#fff',
             color: '#333',
             confirmButtonColor: '#F47B20',
             iconColor: '#7AC143'
           }).then(() => {
-            this.router.navigate(['/admin/home']);
+            // Si viene desde el listado de mascotas, volver ahí; si no, al home del admin
+            if (this.clientIdFromPetsList) {
+              this.router.navigate(['/client', this.clientIdFromPetsList, 'pets']);
+            } else {
+              this.router.navigate(['/admin/home']);
+            }
           });
         },
         error: (error) => {
-          console.error('❌ Error al actualizar la mascota:', error);
-          let errorMessage = 'Ocurrió un problema al actualizar la mascota.';
+          console.error('❌ Error al modificar la mascota:', error);
+          let errorMessage = 'Ocurrió un problema al modificar la mascota.';
           
           if (error.error) {
             if (typeof error.error === 'object' && error.error.detail) {
@@ -326,7 +229,7 @@ export class PetFormComponent implements OnInit {
 
           Swal.fire({
             icon: 'error',
-            title: 'Error al actualizar la mascota',
+            title: 'Error al modificar la mascota',
             text: errorMessage,
             background: '#fff',
             color: '#333',
@@ -347,10 +250,14 @@ export class PetFormComponent implements OnInit {
             color: '#333',
             confirmButtonColor: '#F47B20',
             iconColor: '#7AC143'
+          }).then(() => {
+            // Si viene desde el listado de clientes, volver al listado
+            if (this.clientIdFromQuery) {
+              this.router.navigate(['/client/list']);
+            } else {
+              this.router.navigate(['/admin/home']);
+            }
           });
-          this.petForm.reset();
-          this.selectedClient = null;
-          this.clientSearchTerm = '';
         },
         error: (error) => {
           console.error('❌ Error al registrar la mascota:', error);

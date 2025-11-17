@@ -1,0 +1,40 @@
+<div class="admin-list-container">
+  <h2>Lista de Administradores Dados de Baja</h2>
+
+  @if (loading) {
+    <p>Cargando administradores...</p>
+  } @else if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  } @else {
+    <div class="search-container">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Buscar por nombre, apellido o nombre completo..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      />
+    </div>
+
+    @if (admins.length === 0) {
+      <p>No hay administradores dados de baja.</p>
+    } @else if (filteredAdmins.length === 0) {
+      <p>No se encontraron administradores que coincidan con la búsqueda.</p>
+    } @else {
+      <div class="admin-grid">
+        @for (admin of filteredAdmins; track admin.dni) {
+          <div class="admin-card inactive">
+            <h3>{{ admin.name }} {{ admin.surname }}</h3>
+            <p><strong>DNI:</strong> {{ admin.dni }}</p>
+            <p><strong>Teléfono:</strong> {{ admin.phone }}</p>
+            <p><strong>Email:</strong> {{ admin.email }}</p>
+            <div class="admin-card-actions">
+              <button class="btn-reactivate" (click)="reactivateAdmin(admin)">Reactivar</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+

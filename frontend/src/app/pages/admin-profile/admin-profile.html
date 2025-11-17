@@ -1,0 +1,140 @@
+<section id="admin-profile-container">
+  @if (loading) {
+    <div class="loading-container">
+      <p>Cargando datos...</p>
+    </div>
+  } @else if (currentAdmin) {
+    <div class="profile-wrapper">
+      <!-- Sección de imagen/avatar -->
+      <div class="profile-image-section">
+        <div class="profile-avatar">
+          <div class="avatar-circle">
+            <span class="avatar-initials">{{ currentAdmin.name.charAt(0) }}{{ currentAdmin.surname.charAt(0) }}</span>
+          </div>
+        </div>
+        <h2 class="profile-name">{{ currentAdmin.name }} {{ currentAdmin.surname }}</h2>
+        <p class="profile-role">Administrador</p>
+      </div>
+
+      <!-- Sección de información -->
+      <div class="profile-info-section">
+        <div class="profile-header">
+          <h3>Mi Perfil</h3>
+          @if (!isEditMode) {
+            <button class="btn-edit-profile" (click)="toggleEditMode()">
+              ✏️ Editar Datos
+            </button>
+          }
+        </div>
+
+        <form [formGroup]="adminForm" (ngSubmit)="onSubmit()" class="profile-form">
+          <div class="info-grid">
+            <div class="info-item">
+              <label class="info-label">Nombre</label>
+              @if (isEditMode) {
+                <input type="text" class="info-input" formControlName="name" placeholder="Ingrese el nombre">
+                @if (adminForm.get('name')?.errors && adminForm.get('name')?.touched) {
+                  <div class="error-message">
+                    @if (adminForm.get('name')?.hasError('required')) {
+                      <p class="error-msg">El nombre es obligatorio.</p>
+                    } @else if (adminForm.get('name')?.hasError('invalidName')) {
+                      <p class="error-msg">El nombre solo puede contener letras, espacios, ñ y tildes.</p>
+                    } @else if (adminForm.get('name')?.hasError('minlength') || adminForm.get('name')?.hasError('maxlength')) {
+                      <p class="error-msg">El nombre debe tener entre 2 y 50 caracteres.</p>
+                    }
+                  </div>
+                }
+              } @else {
+                <p class="info-value">{{ currentAdmin.name }}</p>
+              }
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Apellido</label>
+              @if (isEditMode) {
+                <input type="text" class="info-input" formControlName="surname" placeholder="Ingrese el apellido">
+                @if (adminForm.get('surname')?.errors && adminForm.get('surname')?.touched) {
+                  <div class="error-message">
+                    @if (adminForm.get('surname')?.hasError('required')) {
+                      <p class="error-msg">El apellido es obligatorio.</p>
+                    } @else if (adminForm.get('surname')?.hasError('invalidName')) {
+                      <p class="error-msg">El apellido solo puede contener letras, espacios, ñ y tildes.</p>
+                    } @else if (adminForm.get('surname')?.hasError('minlength') || adminForm.get('surname')?.hasError('maxlength')) {
+                      <p class="error-msg">El apellido debe tener entre 2 y 50 caracteres.</p>
+                    }
+                  </div>
+                }
+              } @else {
+                <p class="info-value">{{ currentAdmin.surname }}</p>
+              }
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">DNI</label>
+              <p class="info-value">{{ currentAdmin.dni }}</p>
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Teléfono</label>
+              @if (isEditMode) {
+                <input type="text" class="info-input" formControlName="phone" placeholder="Ingrese el teléfono">
+                @if (adminForm.get('phone')?.errors && adminForm.get('phone')?.touched) {
+                  <div class="error-message">
+                    @if (adminForm.get('phone')?.hasError('required')) {
+                      <p class="error-msg">El teléfono es obligatorio.</p>
+                    } @else if (adminForm.get('phone')?.hasError('invalidPhone')) {
+                      <p class="error-msg">El teléfono solo puede contener números.</p>
+                    } @else if (adminForm.get('phone')?.hasError('invalidPhoneLength')) {
+                      <p class="error-msg">El teléfono debe tener entre 9 y 20 dígitos.</p>
+                    }
+                  </div>
+                }
+              } @else {
+                <p class="info-value">{{ currentAdmin.phone }}</p>
+              }
+            </div>
+
+            <div class="info-item">
+              <label class="info-label">Email</label>
+              @if (isEditMode) {
+                <input type="email" class="info-input" formControlName="email" placeholder="Ingrese el email">
+                @if (adminForm.get('email')?.touched && adminForm.get('email')?.hasError('required')) {
+                  <div class="error-message">
+                    <p class="error-msg">El email es obligatorio.</p>
+                  </div>
+                }
+                @if (adminForm.get('email')?.hasError('email')) {
+                  <div class="error-message">
+                    <p class="error-msg">Debe ingresar un email válido.</p>
+                  </div>
+                }
+              } @else {
+                <p class="info-value">{{ currentAdmin.email }}</p>
+              }
+            </div>
+          </div>
+
+          @if (isEditMode) {
+            <div class="form-actions">
+              <button type="button" class="btn-cancel" (click)="cancelEdit()">Cancelar</button>
+              <button type="submit" class="btn-save" [disabled]="adminForm.invalid">Guardar Cambios</button>
+            </div>
+          }
+        </form>
+
+        @if (!isEditMode) {
+          <div class="danger-zone">
+            <h4>Zona de Peligro</h4>
+            <p>Si deseas darte de baja como administrador, puedes hacerlo aquí. Esta acción no se puede deshacer.</p>
+            <button class="btn-danger" (click)="unsubscribeAdmin()">Darse de Baja</button>
+          </div>
+        }
+      </div>
+
+      <div class="profile-footer">
+        <a routerLink="/admin/home" class="back-link">⬅ Volver al panel</a>
+      </div>
+    </div>
+  }
+</section>
+

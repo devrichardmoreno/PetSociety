@@ -33,6 +33,12 @@
               <button class="btn-edit" (click)="editClient(client)">Editar</button>
               <button class="btn-delete" (click)="unsubscribeClient(client)">Dar de baja</button>
             </div>
+            <div class="client-card-pet-actions">
+              @if (client.petsCount && client.petsCount > 0) {
+                <button class="btn-list-pets" (click)="listClientPets(client)">Listar mascotas</button>
+              }
+              <button class="btn-add-pet" (click)="addPetToClient(client)">Agregar mascota</button>
+            </div>
           </div>
         }
       </div>

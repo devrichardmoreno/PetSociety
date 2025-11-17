@@ -1,0 +1,69 @@
+<div class="pets-list-container">
+  @if (isSchedulingAppointment && schedulingPetId) {
+    <app-schedule-appointment
+      [petId]="schedulingPetId"
+      (appointmentScheduled)="onAppointmentScheduled()"
+      (cancel)="onCancelSchedule()">
+    </app-schedule-appointment>
+  } @else {
+    <div class="header-section">
+      <div class="header-top">
+        <button class="btn-back" (click)="goBack()">← Volver al listado de clientes</button>
+        <button class="btn-inactive-pets" (click)="showInactivePets()">
+          Listar mascotas dadas de baja
+        </button>
+      </div>
+      @if (client) {
+        <h2>Mascotas de {{ client.name }} {{ client.surname }}</h2>
+      } @else {
+        <h2>Listado de Mascotas</h2>
+      }
+    </div>
+
+    @if (loading) {
+      <div class="loading-message">
+        <p>Cargando mascotas...</p>
+      </div>
+    } @else if (errorMessage) {
+      <div class="error-message">
+        <p>{{ errorMessage }}</p>
+      </div>
+    } @else if (pets.length === 0) {
+      <div class="empty-message">
+        <p>Este cliente no tiene mascotas registradas</p>
+      </div>
+    } @else {
+      <div class="pets-grid">
+        @for (pet of pets; track pet.id) {
+          <div class="pet-card">
+            <div class="pet-header">
+              <h3>{{ getPetTypeEmoji(pet.petType) }} {{ pet.name }}</h3>
+            </div>
+            <div class="pet-info">
+              <p><strong>Tipo:</strong> {{ getPetTypeLabel(pet.petType, pet.otherType) }}</p>
+              <p><strong>Edad:</strong> {{ pet.age }} años</p>
+            </div>
+            <div class="pet-actions">
+              @if (hasScheduledAppointment(pet.id!)) {
+                <button class="btn-view-appointment" (click)="viewAppointmentDetails(pet.id!)">
+                  Ver detalles cita
+                </button>
+              } @else {
+                <button class="btn-schedule" (click)="scheduleAppointment(pet.id!)">
+                  Agendar cita
+                </button>
+              }
+              <button class="btn-edit-appointment" (click)="editAppointment(pet.id!)">
+                Editar datos mascota
+              </button>
+              <button class="btn-delete" (click)="deletePet(pet.id!)">
+                Dar de baja mascota
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+

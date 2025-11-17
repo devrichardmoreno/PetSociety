@@ -10,7 +10,7 @@
 
       <div class="input-wrapper">
         <label for="name" class="input-label">Nombre</label>
-        <input id="name" type="text" class="custom-input" formControlName="name" placeholder="Ingrese el nombre de la mascota">
+        <input id="name" type="text" class="custom-input" formControlName="name" [placeholder]="isEditMode ? 'Modifique el nombre de la mascota' : 'Ingrese el nombre de la mascota'">
       </div>
       @if (petForm.get('name')?.errors && petForm.get('name')?.touched) {
         <div class="error-message">
@@ -26,7 +26,7 @@
 
       <div class="input-wrapper">
         <label for="age" class="input-label">Edad</label>
-        <input id="age" type="number" class="custom-input" formControlName="age" placeholder="Ingrese la edad" min="1" max="30">
+        <input id="age" type="number" class="custom-input" formControlName="age" [placeholder]="isEditMode ? 'Modifique la edad' : 'Ingrese la edad'" min="1" max="30">
       </div>
       @if (petForm.get('age')?.errors && petForm.get('age')?.touched) {
         <div class="error-message">
@@ -56,7 +56,7 @@
       @if (petForm.get('petType')?.value === 'OTHER') {
         <div class="input-wrapper">
           <label for="otherType" class="input-label">Especifique el tipo de mascota</label>
-          <input id="otherType" type="text" class="custom-input" formControlName="otherType" placeholder="Ingrese el tipo de mascota" maxlength="50">
+          <input id="otherType" type="text" class="custom-input" formControlName="otherType" [placeholder]="isEditMode ? 'Modifique el tipo de mascota' : 'Ingrese el tipo de mascota'" maxlength="50">
         </div>
         @if (petForm.get('otherType')?.errors && petForm.get('otherType')?.touched) {
           <div class="error-message">
@@ -69,40 +69,12 @@
         }
       }
 
-      <div class="input-wrapper">
-        <label for="clientId" class="input-label">Dueño</label>
-        <div class="client-selector-wrapper">
-          <div class="client-selector-input">
-            <input 
-              id="clientId"
-              type="text" 
-              class="custom-input" 
-              [ngModel]="clientSearchTerm"
-              (ngModelChange)="onClientSearchTermChange($event)"
-              (focus)="onClientInputFocus()"
-              (blur)="onClientInputBlur()"
-              [placeholder]="selectedClient ? '' : 'Buscar cliente por nombre o apellido...'"
-            />
-            <span class="dropdown-arrow" (click)="toggleClientDropdown()">▾</span>
+      @if (selectedClient) {
+        <div class="input-wrapper">
+          <label class="input-label">Dueño</label>
+          <div class="client-info-display">
+            <p class="client-name-display">{{ selectedClient.name }} {{ selectedClient.surname }}</p>
           </div>
-          @if (showClientDropdown) {
-            <div class="client-dropdown" (mousedown)="$event.preventDefault()">
-              @if (filteredClients.length === 0) {
-                <div class="dropdown-item no-results">No se encontraron clientes</div>
-              } @else {
-                @for (client of filteredClients; track client.dni) {
-                  <div class="dropdown-item" (click)="selectClient(client)" (mousedown)="$event.preventDefault()">
-                    {{ client.name }} {{ client.surname }}
-                  </div>
-                }
-              }
-            </div>
-          }
-        </div>
-      </div>
-      @if (petForm.get('clientId')?.errors && petForm.get('clientId')?.touched) {
-        <div class="error-message">
-          <p class="error-msg">Debe seleccionar un cliente.</p>
         </div>
       }
 
@@ -111,7 +83,7 @@
       </button>
 
       <p class="back">
-        <a routerLink="/admin/home">⬅ Volver al panel</a>
+        <a (click)="goBack()" style="cursor: pointer;">⬅ Volver atrás</a>
       </p>
     </form>
   </div>

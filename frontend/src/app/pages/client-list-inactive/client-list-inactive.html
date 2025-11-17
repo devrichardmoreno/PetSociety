@@ -30,7 +30,6 @@
             <p><strong>Email:</strong> {{ client.email }}</p>
             <p class="pets-count"><strong>Mascotas:</strong> {{ client.petsCount || 0 }}</p>
             <div class="client-card-actions">
-              <button class="btn-edit" (click)="editClient(client)">Editar</button>
               <button class="btn-reactivate" (click)="reactivateClient(client)">Reactivar</button>
             </div>
           </div>

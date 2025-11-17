@@ -175,5 +175,57 @@ export class ClientListComponent implements OnInit {
       }
     });
   }
+
+  listClientPets(client: ClientDTO & { id?: number }): void {
+    if (!client.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo encontrar el ID del cliente',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#45AEDD',
+        iconColor: '#000000'
+      });
+      return;
+    }
+
+    // Navegar a la página de listado de mascotas del cliente
+    this.router.navigate(['/client', client.id, 'pets']);
+  }
+
+  addPetToClient(client: ClientDTO & { id?: number }): void {
+    if (!client.id) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo encontrar el ID del cliente',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#45AEDD',
+        iconColor: '#000000'
+      });
+      return;
+    }
+
+    // Validar que el cliente no tenga 5 mascotas
+    if (client.petsCount && client.petsCount >= 5) {
+      Swal.fire({
+        icon: 'warning',
+        title: 'Límite alcanzado',
+        text: 'Un cliente puede tener un máximo de 5 mascotas registradas',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#45AEDD',
+        iconColor: '#f57c00'
+      });
+      return;
+    }
+
+    // Navegar a la página de creación de mascota con el clientId como query parameter
+    this.router.navigate(['/pet/create/admin'], {
+      queryParams: { clientId: client.id }
+    });
+  }
 }
 

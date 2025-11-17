@@ -2,64 +2,52 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { DoctorService } from '../../services/doctor-service';
-import { Doctor } from '../../models/doctor';
-import { Speciality } from '../../models/dto/speciality.enum';
+import { AdminService } from '../../services/admin.service';
+import { Admin } from '../../models/admin';
 import Swal from 'sweetalert2';
 
 @Component({
-  selector: 'app-doctor-list-inactive',
+  selector: 'app-admin-list-inactive',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './doctor-list-inactive.html',
-  styleUrls: ['./doctor-list-inactive.css']
+  templateUrl: './admin-list-inactive.html',
+  styleUrls: ['./admin-list-inactive.css']
 })
-export class DoctorListInactiveComponent implements OnInit {
+export class AdminListInactiveComponent implements OnInit {
 
-  doctors: Doctor[] = [];
-  filteredDoctors: Doctor[] = [];
+  admins: Admin[] = [];
+  filteredAdmins: Admin[] = [];
   loading: boolean = true;
   errorMessage: string = '';
   searchTerm: string = '';
 
   constructor(
-    private doctorService: DoctorService,
+    private adminService: AdminService,
     private router: Router
   ) {}
 
-  getSpecialityLabel(speciality: Speciality): string {
-    const labels: { [key in Speciality]: string } = {
-      [Speciality.GENERAL_MEDICINE]: 'Medicina General',
-      [Speciality.INTERNAL_MEDICINE]: 'Medicina Interna',
-      [Speciality.NUTRITION]: 'Nutrición'
-    };
-    return labels[speciality] || speciality;
-  }
-
   ngOnInit(): void {
-    this.loadDoctors();
+    this.loadAdmins();
   }
 
-  loadDoctors(): void {
-    // Usar getAllInactiveDoctorsEntity para obtener los doctores inactivos con ID
-    this.doctorService.getAllInactiveDoctorsEntity().subscribe({
+  loadAdmins(): void {
+    this.adminService.getAllInactiveAdmins().subscribe({
       next: (data: any[]) => {
-        // Mapear los datos para incluir el ID
-        this.doctors = data.map((doctor: any) => ({
-          id: doctor.id,
-          name: doctor.name,
-          surname: doctor.surname,
-          dni: doctor.dni,
-          phone: doctor.phone,
-          email: doctor.email,
-          speciality: doctor.speciality
+        this.admins = data.map((admin: any) => ({
+          id: admin.id,
+          name: admin.name,
+          surname: admin.surname,
+          dni: admin.dni,
+          phone: admin.phone,
+          email: admin.email,
+          subscribed: admin.subscribed
         }));
-        this.filteredDoctors = this.doctors;
+        this.filteredAdmins = this.admins;
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error al obtener doctores inactivos:', error);
-        this.errorMessage = 'No se pudieron cargar los doctores dados de baja.';
+        console.error('Error al obtener administradores inactivos:', error);
+        this.errorMessage = 'No se pudieron cargar los administradores dados de baja.';
         this.loading = false;
       }
     });
@@ -67,18 +55,18 @@ export class DoctorListInactiveComponent implements OnInit {
 
   onSearchChange(): void {
     if (!this.searchTerm || this.searchTerm.trim() === '') {
-      this.filteredDoctors = this.doctors;
+      this.filteredAdmins = this.admins;
       return;
     }
 
     const search = this.searchTerm.toLowerCase().trim();
     const searchWords = search.split(/\s+/);
 
-    this.filteredDoctors = this.doctors.filter(doctor => {
-      const fullName = `${doctor.name} ${doctor.surname}`.toLowerCase();
-      const reverseFullName = `${doctor.surname} ${doctor.name}`.toLowerCase();
-      const name = doctor.name?.toLowerCase() || '';
-      const surname = doctor.surname?.toLowerCase() || '';
+    this.filteredAdmins = this.admins.filter(admin => {
+      const fullName = `${admin.name} ${admin.surname}`.toLowerCase();
+      const reverseFullName = `${admin.surname} ${admin.name}`.toLowerCase();
+      const name = admin.name?.toLowerCase() || '';
+      const surname = admin.surname?.toLowerCase() || '';
 
       // Si hay una sola palabra, buscar en nombre o apellido
       if (searchWords.length === 1) {
@@ -91,12 +79,12 @@ export class DoctorListInactiveComponent implements OnInit {
     });
   }
 
-  reactivateDoctor(doctor: Doctor): void {
-    if (!doctor.id) {
+  reactivateAdmin(admin: Admin): void {
+    if (!admin.id) {
       Swal.fire({
         icon: 'error',
         title: 'Error',
-        text: 'No se pudo encontrar el ID del doctor',
+        text: 'No se pudo encontrar el ID del administrador',
         background: '#fff',
         color: '#333',
         confirmButtonColor: '#45AEDD',
@@ -105,12 +93,12 @@ export class DoctorListInactiveComponent implements OnInit {
       return;
     }
 
-    const doctorName = `${doctor.name} ${doctor.surname}`;
+    const adminName = `${admin.name} ${admin.surname}`;
 
     // Primera confirmación
     Swal.fire({
       title: '¿Estás seguro?',
-      text: `¿Deseas reactivar al doctor ${doctorName}?`,
+      text: `¿Deseas reactivar al administrador ${adminName}?`,
       icon: 'warning',
       showCancelButton: true,
       confirmButtonText: 'Sí',
@@ -126,7 +114,7 @@ export class DoctorListInactiveComponent implements OnInit {
         // Segunda confirmación con botones invertidos
         Swal.fire({
           title: '¿Realmente estás seguro?',
-          text: `Esta acción reactivará al doctor ${doctorName}. ¿Confirmas esta acción?`,
+          text: `Esta acción reactivará al administrador ${adminName}. ¿Confirmas esta acción?`,
           icon: 'warning',
           showCancelButton: true,
           confirmButtonText: 'Sí',
@@ -139,37 +127,34 @@ export class DoctorListInactiveComponent implements OnInit {
           reverseButtons: true
         }).then((secondResult) => {
           if (secondResult.isConfirmed) {
-            this.performReactivate(doctor.id!);
+            this.performReactivate(admin.id!);
           }
         });
       }
     });
   }
 
-  private performReactivate(doctorId: number): void {
-    // Necesitamos actualizar el doctor para poner subscribed = true
-    // Por ahora usaremos updateDoctor, pero necesitamos un método específico
-    // Por simplicidad, vamos a crear un método en el servicio
-    this.doctorService.reactivateDoctor(doctorId).subscribe({
+  private performReactivate(adminId: number): void {
+    this.adminService.reactivateAdmin(adminId).subscribe({
       next: () => {
         Swal.fire({
           icon: 'success',
-          title: 'Doctor reactivado',
-          text: 'El doctor ha sido reactivado exitosamente',
+          title: 'Administrador reactivado',
+          text: 'El administrador ha sido reactivado exitosamente',
           background: '#fff',
           color: '#333',
           confirmButtonColor: '#45AEDD',
           iconColor: '#000000'
         });
-        // Recargar la lista de doctores
-        this.loadDoctors();
+        // Recargar la lista de administradores
+        this.loadAdmins();
       },
       error: (error) => {
-        console.error('Error al reactivar al doctor:', error);
+        console.error('Error al reactivar al administrador:', error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo reactivar al doctor. Por favor, intenta nuevamente.',
+          text: 'No se pudo reactivar al administrador. Por favor, intenta nuevamente.',
           background: '#fff',
           color: '#333',
           confirmButtonColor: '#45AEDD',

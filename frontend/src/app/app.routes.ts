@@ -17,10 +17,14 @@ import { DoctorListComponent } from './pages/doctor-list/doctor-list';
 import { DoctorListInactiveComponent } from './pages/doctor-list-inactive/doctor-list-inactive';
 import { ClientListComponent } from './pages/client-list/client-list';
 import { ClientListInactiveComponent } from './pages/client-list-inactive/client-list-inactive';
+import { AdminListComponent } from './pages/admin-list/admin-list';
+import { AdminListInactiveComponent } from './pages/admin-list-inactive/admin-list-inactive';
+import { AdminProfileComponent } from './pages/admin-profile/admin-profile';
 import { CreateDoctor } from './pages/create-doctor/create-doctor';
 import { CreateAdmin } from './pages/create-admin/create-admin';
 import { ClientFormComponent } from './pages/client-form/client-form';
 import { PetFormComponent } from './pages/pet-form/pet-form';
+import { ClientPetsListComponent } from './pages/admin/client-pets-list/client-pets-list';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -87,6 +91,27 @@ export const routes: Routes = [
     },
     {path: 'client/list/inactive',
       component:ClientListInactiveComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {path: 'admin/list',
+      component:AdminListComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {path: 'admin/list/inactive',
+      component:AdminListInactiveComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {path: 'admin/profile',
+      component:AdminProfileComponent,
+      data: { headerType: 'admin' },
+      canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
+    },
+    {
+      path: 'client/:clientId/pets',
+      component: ClientPetsListComponent,
       data: { headerType: 'admin' },
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },

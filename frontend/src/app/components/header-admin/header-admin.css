@@ -107,3 +107,60 @@ ul.buttons a:hover {
   opacity: 1;
   transform: translateY(0);
 }
+
+.account-dropdown .dropdown {
+  right: 0;
+  left: auto;
+  min-width: 250px;
+  display: none;
+}
+
+.account-dropdown:hover .dropdown:not(.show) {
+  display: none;
+}
+
+.account-dropdown .dropdown.show {
+  display: flex;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.account-info {
+  padding: 12px 14px;
+  background-color: rgba(255, 255, 255, 0.1);
+  text-align: center;
+}
+
+.account-details {
+  color: white;
+  font-size: 14px;
+  text-align: center;
+}
+
+.account-name {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  color: white;
+  text-align: center;
+}
+
+.account-name strong {
+  color: white;
+  font-weight: 600;
+}
+
+.account-email,
+.account-dni,
+.account-phone {
+  margin: 4px 0;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  text-align: center;
+}
+
+.account-separator {
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 8px 0;
+  border-bottom: none;
+}

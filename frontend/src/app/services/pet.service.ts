@@ -42,6 +42,12 @@ export class PetService {
     });
   }
 
+  getAllPetsByClientIdIncludingInactive(clientId: number): Observable<PetDTO[]> {
+    return this.http.get<PetDTO[]>(`${this.baseUrl}/findAllByClientIdIncludingInactive/${clientId}`, {
+      headers: this.getAuthHeaders()
+    });
+  }
+
   deletePet(petId: number): Observable<string> {
     return this.http.delete(`${this.baseUrl}/deleteActive/${petId}`, { 
       headers: this.getAuthHeaders(),
@@ -53,6 +59,13 @@ export class PetService {
     return this.http.patch<PetDTO>(`${this.baseUrl}/update/${petId}`, petDTO, {
       headers: this.getAuthHeaders()
     });
+  }
+
+  reactivatePet(petId: number): Observable<string> {
+    return this.http.patch(`${this.baseUrl}/reactivate/${petId}`, null, {
+      headers: this.getAuthHeaders(),
+      responseType: 'text'
+    }) as Observable<string>;
   }
 }
 

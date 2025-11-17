@@ -41,10 +41,28 @@
         <a>Administradores ▾</a>
         <ul class="dropdown">
           <li><a routerLink="register/new/admin">Agregar administrador</a></li>
+          <li><a routerLink="/admin/list">Listar administradores activos</a></li>
+          <li><a routerLink="/admin/list/inactive">Listar administradores dados de baja</a></li>
         </ul>
       </li>
 
-      <li><a routerLink="/logout" (click)="logout()">Salir</a></li>
+      <!-- Mi Cuenta -->
+      <li class="dropdown-container account-dropdown">
+        <a (click)="toggleAccountDropdown($event)" style="cursor: pointer;">Mi Cuenta ▾</a>
+        <ul class="dropdown" [class.show]="showAccountDropdown" (click)="$event.stopPropagation()">
+          @if (currentAdmin) {
+            <li class="account-info">
+              <div class="account-details">
+                <p class="account-name"><strong>{{ currentAdmin.name }} {{ currentAdmin.surname }}</strong></p>
+                <p class="account-email">{{ currentAdmin.email }}</p>
+              </div>
+            </li>
+            <li class="account-separator"></li>
+          }
+          <li><a routerLink="/admin/profile" (click)="closeAccountDropdown()">Mi Perfil</a></li>
+          <li><a routerLink="/logout" (click)="logout()">Salir</a></li>
+        </ul>
+      </li>
     </ul>
   </nav>
 </header>

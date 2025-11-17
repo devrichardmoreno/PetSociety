@@ -1,4 +1,4 @@
-.client-list-container {
+.admin-list-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -8,7 +8,7 @@
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-.client-list-container h2 {
+.admin-list-container h2 {
   font-size: 2rem;
   color: #6c757d;
   margin-bottom: 1.5rem;
@@ -42,7 +42,7 @@
   color: #999;
 }
 
-.client-grid {
+.admin-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
@@ -50,7 +50,7 @@
   max-width: 1100px;
 }
 
-.client-card {
+.admin-card {
   background-color: #ffffff;
   border-radius: 18px;
   padding: 1.2rem 1rem;
@@ -60,47 +60,35 @@
   border-bottom: 5px solid #6c757d;
 }
 
-.client-card.inactive {
+.admin-card.inactive {
   opacity: 0.85;
   border-top: 5px solid #6c757d;
   border-bottom: 5px solid #6c757d;
 }
 
-.client-card:hover {
+.admin-card:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 25px rgba(108, 117, 125, 0.3);
   opacity: 1;
 }
 
-.client-card h3 {
+.admin-card h3 {
   color: #6c757d;
   font-size: 1.2rem;
   margin-bottom: 0.6rem;
 }
 
-.client-card p {
+.admin-card p {
   color: #555;
   font-size: 0.9rem;
   margin: 3px 0;
 }
 
-.client-card strong {
+.admin-card strong {
   color: #6c757d;
 }
 
-.pets-count {
-  background-color: #f5f5f5;
-  padding: 0.5rem;
-  border-radius: 8px;
-  margin-top: 0.5rem;
-  font-weight: 600;
-}
-
-.pets-count strong {
-  color: #6c757d;
-}
-
-.client-card-actions {
+.admin-card-actions {
   display: flex;
   justify-content: center;
   margin-top: 1rem;
@@ -141,25 +129,25 @@
   margin-top: 1rem;
 }
 
-.client-list-container p {
+.admin-list-container p {
   color: #555;
   text-align: center;
 }
 
 @media (max-width: 768px) {
-  .client-list-container {
+  .admin-list-container {
     padding: 2rem 1rem;
   }
 
-  .client-card {
+  .admin-card {
     padding: 1.2rem;
   }
 
-  .client-card h3 {
+  .admin-card h3 {
     font-size: 1.2rem;
   }
 
-  .client-card p {
+  .admin-card p {
     font-size: 0.9rem;
   }
 
