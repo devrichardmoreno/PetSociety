@@ -95,6 +95,22 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
         this.petRepository.save(pet);
     }
 
+    @Transactional
+    public void reactivatePet(Long id) {
+        PetEntity pet = petRepository.findById(id)
+                .orElseThrow(() -> new PetNotFoundException("The pet with " + id + " was not found."));
+        
+        ClientEntity client = pet.getClient();
+        List<PetEntity> activePets = petRepository.findAllByClientAndActiveTrue(client);
+        
+        if(activePets.size() >= 5){
+            throw new TooManyPetsException("The client can have a maximum of 5 active pets");
+        }
+        
+        pet.setActive(true);
+        this.petRepository.save(pet);
+    }
+
     //WORKS BUT IT'S NEED ALWAYS THE clientID from petDTO
     public PetEntity takeAttributes(PetEntity origin, PetEntity detination){
 
@@ -164,6 +180,15 @@ public class PetService implements Mapper<PetDTO, PetEntity> {
         if(pets.isEmpty()){
             throw new NoPetsException("The client " + client.getName() + "doesn't have pets");
         }
+
+        return pets.stream().map(this::toDTO).toList();
+    }
+
+    public List<PetDTO> getAllPetsByClientIdIncludingInactive(Long clientId) {
+        ClientEntity client = clientRepository.findById(clientId)
+                .orElseThrow(() -> new UserNotFoundException("Client with id: " + clientId + " was not found."));
+
+        List<PetEntity> pets = petRepository.findAllByClient(client);
 
         return pets.stream().map(this::toDTO).toList();
     }

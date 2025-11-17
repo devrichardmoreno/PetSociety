@@ -63,12 +63,17 @@ public class SecurityConfig {
                         //ACCESS TO APPOINTMENTS
                         .requestMatchers(HttpMethod.POST,"/appointment/uploadAvailability/**").hasRole("ADMIN")
                         .requestMatchers(HttpMethod.POST,"/appointment/create").hasAnyRole("ADMIN")
-                        .requestMatchers(HttpMethod.PATCH,"/appointment/assign/**").hasRole("CLIENT")
+                        .requestMatchers(HttpMethod.PATCH,"/appointment/assign/**").hasAnyRole("CLIENT", "ADMIN")
                         .requestMatchers(HttpMethod.DELETE,"/appointment/delete/**").hasRole("CLIENT")
                         .requestMatchers(HttpMethod.PATCH,"/appointment/**").hasRole("ADMIN")
                         //ACCESS TO DOCTOR
                         .requestMatchers("/doctor/find/**").hasAnyRole("ADMIN", "DOCTOR")
                         .requestMatchers("/doctor/**").hasRole("ADMIN")
+                        //ACCESS TO USER/ADMIN
+                        .requestMatchers("/user/admin/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.GET,"/user/{id}").hasAnyRole("ADMIN", "CLIENT", "DOCTOR")
+                        .requestMatchers(HttpMethod.PATCH,"/user/delete/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PATCH,"/user/resubscribe/**").hasRole("ADMIN")
                         // ACCESS TO DIAGNOSES
                         .requestMatchers("/diagnoses/create").hasRole("DOCTOR")
                         .requestMatchers("/diagnoses/getByPetId/**").hasAnyRole("CLIENT","ADMIN","DOCTOR")

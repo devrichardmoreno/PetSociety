@@ -116,6 +116,40 @@ public class PetController {
         return ResponseEntity.ok("Pet unsubscribed successfully");
     }
 
+    @Operation(
+            summary = "Reactivate a pet",
+            description = "Sets the pet's active status to true. Validates that the client doesn't have more than 5 active pets.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Pet reactivated successfully",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Pet not found",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Client already has 5 active pets",
+                            content = @Content(
+                                    mediaType = "application/json"
+                            )
+                    )
+            }
+    )
+    @PatchMapping("/reactivate/{id}")
+    @PreAuthorize("@ownershipValidator.canAccessPet(#id)")
+    public ResponseEntity<String> reactivatePet(@PathVariable Long id) {
+        this.petService.reactivatePet(id);
+        return ResponseEntity.ok("Pet reactivated successfully");
+    }
+
 
     @Operation(
             summary = "Get pet by ID",
@@ -162,6 +196,26 @@ public class PetController {
     @PreAuthorize("@ownershipValidator.canAccessClient(#id)")
     public ResponseEntity<List<PetDTO>> getAllPetsByClientId(@PathVariable("id") Long id) {
         return new ResponseEntity<>(this.petService.getAllPetsByClientId(id), HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get all pets (including inactive) for a given client",
+            description = "Retrieves all pets (active and inactive) associated with a specific client ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Pets retrieved successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = PetDTO.class)
+                            )
+                    )
+            }
+    )
+    @GetMapping("/findAllByClientIdIncludingInactive/{id}")
+    @PreAuthorize("@ownershipValidator.canAccessClient(#id)")
+    public ResponseEntity<List<PetDTO>> getAllPetsByClientIdIncludingInactive(@PathVariable("id") Long id) {
+        return new ResponseEntity<>(this.petService.getAllPetsByClientIdIncludingInactive(id), HttpStatus.OK);
     }
     @PreAuthorize("@ownershipValidator.canAccessClient(#dni)")
     @GetMapping("/seeMyPets/{dni}")

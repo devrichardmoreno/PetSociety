@@ -61,11 +61,12 @@ public class UserService {
 
 
     public UserEntity takeAttributes(UserEntity origin, UserEntity destination) {
-        if(origin.getName() == null){origin.setPhone(destination.getPhone());}
+        if(origin.getName() == null){origin.setName(destination.getName());}
         if(origin.getSurname() == null){origin.setSurname(destination.getSurname());}
         if(origin.getEmail() == null){origin.setEmail(destination.getEmail());}
         if(origin.getDni() == null){origin.setDni(destination.getDni());}
-        if(origin.getPhone()==null){origin.setPhone(destination.getPhone());}
+        if(origin.getPhone() == null){origin.setPhone(destination.getPhone());}
+        if(origin.getSubscribed() == null){origin.setSubscribed(destination.getSubscribed());}
 
         return origin;
     }
@@ -101,6 +102,30 @@ public class UserService {
                 .stream()
                 .map(CredentialEntity::getUser)
                 .collect(Collectors.toList());
+    }
+
+    /**Find by ROLE ADMIN - Active only*/
+    public List<UserEntity> findActiveAdmins() {
+        return credentialRepository.findByRole(Role.ADMIN)
+                .stream()
+                .map(CredentialEntity::getUser)
+                .filter(user -> user.getSubscribed() != null && user.getSubscribed())
+                .collect(Collectors.toList());
+    }
+
+    /**Find by ROLE ADMIN - Inactive only*/
+    public List<UserEntity> findInactiveAdmins() {
+        return credentialRepository.findByRole(Role.ADMIN)
+                .stream()
+                .map(CredentialEntity::getUser)
+                .filter(user -> user.getSubscribed() == null || !user.getSubscribed())
+                .collect(Collectors.toList());
+    }
+
+    /**Find user by ID*/
+    public UserEntity findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFoundException("User with id: " + id + " was not found."));
     }
 
 }

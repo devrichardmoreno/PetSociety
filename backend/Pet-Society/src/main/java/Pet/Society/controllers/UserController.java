@@ -105,4 +105,55 @@ public class UserController {
         List<UserEntity> admins = userService.findByRole();
         return new ResponseEntity<>(admins, HttpStatus.OK);
     }
+
+    @Operation(
+            summary = "Get all active users with ADMIN role",
+            description = "Returns a list of active users with the ADMIN role.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of active admin users retrieved successfully",
+                            content = @Content(schema = @Schema(implementation = UserEntity.class))
+                    )
+            }
+    )
+    @GetMapping("/admin/active")
+    public ResponseEntity<List<UserEntity>> getActiveAdmins() {
+        List<UserEntity> admins = userService.findActiveAdmins();
+        return new ResponseEntity<>(admins, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get all inactive users with ADMIN role",
+            description = "Returns a list of inactive users with the ADMIN role.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of inactive admin users retrieved successfully",
+                            content = @Content(schema = @Schema(implementation = UserEntity.class))
+                    )
+            }
+    )
+    @GetMapping("/admin/inactive")
+    public ResponseEntity<List<UserEntity>> getInactiveAdmins() {
+        List<UserEntity> admins = userService.findInactiveAdmins();
+        return new ResponseEntity<>(admins, HttpStatus.OK);
+    }
+
+    @Operation(
+            summary = "Get user by ID",
+            description = "Returns a user entity by ID.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "User retrieved successfully",
+                            content = @Content(schema = @Schema(implementation = UserEntity.class))
+                    )
+            }
+    )
+    @GetMapping("/{id}")
+    public ResponseEntity<UserEntity> getUserById(@PathVariable long id) {
+        UserEntity user = userService.findById(id);
+        return new ResponseEntity<>(user, HttpStatus.OK);
+    }
 }

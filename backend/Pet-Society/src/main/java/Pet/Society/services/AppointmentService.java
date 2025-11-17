@@ -100,7 +100,7 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                                         .reason(appointmentDTO.getReason())
                                         .status(Status.AVAILABLE)
                                         .doctor(findDoctor)
-                                        .approved(true)
+                                        .approved(false)
                                         .build();
         if (isOverlapping(appointment)) {
             throw new DuplicatedAppointmentException("The appointment already exists; it has the same hour.");
@@ -119,8 +119,9 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         if (findAppointment.getPet() != null) {
             throw new UnavailableAppointmentException("This appointment is already booked");
         }
-        if(!findAppointment.isApproved()) {
-            throw new UnavailableAppointmentException("The client has an unpaid appointment");
+        // Validar que la cita esté disponible (no cancelada ni completada)
+        if (findAppointment.getStatus() != Status.AVAILABLE) {
+            throw new UnavailableAppointmentException("Esta cita no está disponible para asignar");
         }
 
         Optional<PetEntity> findPet =Optional.ofNullable(this.petService.findById(dto.getPetId())) ;
@@ -202,16 +203,33 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     }
 
     public List<AppointmentResponseDTO>getAllAppointmets(){
-        return this.appointmentRepository.findAll().stream().map(appointmentEntity -> AppointmentResponseDTO.builder()
+        return this.appointmentRepository.findAll().stream().map(appointmentEntity -> {
+            String petName = appointmentEntity.getPet() != null 
+                ? appointmentEntity.getPet().getName() 
+                : "No hay mascota asignada";
+            
+            String clientName = null;
+            if (appointmentEntity.getPet() != null && appointmentEntity.getPet().getClient() != null) {
+                clientName = appointmentEntity.getPet().getClient().getName() + " " + 
+                            appointmentEntity.getPet().getClient().getSurname();
+            }
+            
+            AppointmentResponseDTO.AppointmentResponseDTOBuilder builder = AppointmentResponseDTO.builder()
                         .id(appointmentEntity.getId())
                         .startTime(appointmentEntity.getStartDate())
                         .endTime(appointmentEntity.getEndDate())
                         .reason(appointmentEntity.getReason())
                         .aproved(appointmentEntity.isApproved())
                         .status(appointmentEntity.getStatus())
-                        .petName("No hay mascota asignada")
-                        .doctorName(appointmentEntity.getDoctor().getName()+  " " + appointmentEntity.getDoctor().getSurname())
-                        .build()).collect(Collectors.toList());
+                        .petName(petName)
+                        .doctorName(appointmentEntity.getDoctor().getName()+  " " + appointmentEntity.getDoctor().getSurname());
+            
+            if (clientName != null) {
+                builder.clientName(clientName);
+            }
+            
+            return builder.build();
+        }).collect(Collectors.toList());
     }
 
     @Transactional
@@ -226,10 +244,28 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         LocalDateTime now = getCurrentDateTimeArgentina();
         long hoursUntilAppointment = Duration.between(now, appointment.getStartDate()).toHours();
 
+        // Guardar la referencia a la mascota ANTES de modificar la cita
+        // Esto asegura que la relación se mantiene incluso si hay problemas con lazy loading
+        PetEntity petReference = appointment.getPet();
+        
         // Marcar la cita como cancelada pero mantener la referencia a la mascota para el historial
         appointment.setStatus(Status.CANCELED);
-        // NO borrar el pet - mantenerlo para que aparezca en el historial
-        this.appointmentRepository.save(appointment);
+        
+        // Asegurar explícitamente que el pet se mantiene - NO borrar para mantener el historial
+        // Esto es crítico para mantener la persistencia del registro de citas
+        if (petReference != null) {
+            appointment.setPet(petReference);
+        }
+        
+        // Guardar la cita cancelada con la referencia a la mascota intacta
+        AppointmentEntity savedAppointment = this.appointmentRepository.save(appointment);
+        
+        // Verificar que la referencia se mantuvo después de guardar
+        if (savedAppointment.getPet() == null && petReference != null) {
+            // Si por alguna razón se perdió, restaurarla explícitamente
+            savedAppointment.setPet(petReference);
+            this.appointmentRepository.save(savedAppointment);
+        }
 
         // Si se cancela con más de 24 horas de anticipación, crear una nueva cita disponible
         if (hoursUntilAppointment >= 24) {
