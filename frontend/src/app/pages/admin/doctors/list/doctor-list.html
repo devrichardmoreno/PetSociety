@@ -1,0 +1,42 @@
+<div class="doctor-list-container">
+  <h2>Lista de Doctores Activos</h2>
+
+  @if (loading) {
+    <p>Cargando doctores...</p>
+  } @else if (errorMessage) {
+    <p class="error">{{ errorMessage }}</p>
+  } @else {
+    <div class="search-container">
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder="Buscar por nombre, apellido o nombre completo..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearchChange()"
+      />
+    </div>
+
+    @if (doctors.length === 0) {
+      <p>No hay doctores registrados.</p>
+    } @else if (filteredDoctors.length === 0) {
+      <p>No se encontraron doctores que coincidan con la búsqueda.</p>
+    } @else {
+      <div class="doctor-grid">
+        @for (doctor of filteredDoctors; track doctor.dni) {
+          <div class="doctor-card">
+            <h3>{{ doctor.name }} {{ doctor.surname }}</h3>
+            <p><strong>Especialidad:</strong> {{ getSpecialityLabel(doctor.speciality) }}</p>
+            <p><strong>DNI:</strong> {{ doctor.dni }}</p>
+            <p><strong>Teléfono:</strong> {{ doctor.phone }}</p>
+            <p><strong>Email:</strong> {{ doctor.email }}</p>
+            <div class="doctor-card-actions">
+              <button class="btn-edit" (click)="editDoctor(doctor)">Editar</button>
+              <button class="btn-delete" (click)="deleteDoctor(doctor)">Dar de baja</button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  }
+</div>
+

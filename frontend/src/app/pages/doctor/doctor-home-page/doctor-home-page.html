@@ -1,13 +1,19 @@
 <app-header-doctor role="banner"></app-header-doctor>
 
-<section id="home-doctor-container-all" class="page-doctor">
+<section id="home-doctor-container-all" 
+         class="page-doctor"
+         [style.padding-top.px]="headerHeight + 10">
   <main id="main-content" aria-labelledby="main-title">
-    <h1 id="main-title">Bienvenido, Doctor {{ doctor?.name }}</h1>
+    <h1 id="main-title" [style.margin-top.px]="0">Bienvenido, Doctor {{ doctor?.surname }} {{ doctor?.name }}</h1>
 
     <div class="tabs" role="tablist">
       <nav>
-        <a role="tab" (click)="showDoctorProfile()">Perfil</a>
-        <a role="tab" (click)="showAppointmentsList()">Próximas citas</a>
+        <a role="tab" 
+           [class.active]="showProfile === true"
+           (click)="showDoctorProfile()">Perfil</a>
+        <a role="tab" 
+           [class.active]="showProfile === false"
+           (click)="showAppointmentsList()">Próximas citas</a>
       </nav>
     </div>
     
@@ -19,29 +25,36 @@
       @for (appointment of appointmentArray; track $index) {
         <article class="card" role="article" aria-label="Cita {{ $index + 1 }}">
           <div>
-            <h3>Fecha inicio: {{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</h3>
-            <h3>Fecha cierre: {{ appointment.endTime | date:'dd/MM/yyyy HH:mm' }}</h3>
-            <h3>Cliente : {{ appointment.clientName }}</h3>
-            <p>Mascota : {{ appointment.petName }}</p>
-            <p>Razón : {{appointment.reason}}</p>
-
+            <div class="appointment-dates">
+              <div class="date-start">
+                <span class="date-label">Fecha inicio:</span>
+                <span class="date-value">{{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+              <div class="date-end">
+                <span class="date-label">Fecha cierre:</span>
+                <span class="date-value">{{ appointment.endTime | date:'dd/MM/yyyy HH:mm' }}</span>
+              </div>
+            </div>
+            <p><strong>Cliente:</strong> {{ appointment.clientName }}</p>
+            <p><strong>Mascota:</strong> {{ getFullPetDisplay(appointment) }}</p>
+            <p><strong>Razón:</strong> {{ getReasonLabel(appointment.reason) }}</p>
 
             @if (appointment.clientName === "Sin cliente asignado" && appointment.petName === "Sin mascota asignada") {
               <p class="no-appointments">Esta cita no tiene cliente ni mascota asignados.</p>
             } @else {
-              
-                
-                <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
-                <button class="btn btn-history" type="button" (click)="openDiagnosesHistoryModal(appointment.petId)" >Ver historia clínica</button>
-                @if (appointment.startDate && appointment.startDate <= currentDate && appointment.hasDiagnose != true) {
-                <button mat-flat-button (click)="openDiagnosisModal(appointment.id)" class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
+              <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
+                <button class="btn btn-history" type="button" (click)="openDiagnosesHistoryModal(appointment.petId)">Ver historia clínica</button>
+                @if (canCreateDiagnosis(appointment)) {
+                  <button mat-flat-button (click)="openDiagnosisModal(appointment.id)" class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
                 } @else if (appointment.hasDiagnose == true) {
-                  <p class="no-appointments">Diagnóstico emitido</p>
+                  <div class="diagnosis-created-message">
+                    <span class="success-icon">✓</span>
+                    <span>Diagnóstico creado</span>
+                  </div>
                 } @else {
-              <p class="no-appointments">Cita futura</p>
-            }
+                  <p class="no-appointments">Cita futura</p>
+                }
               </div>
-              
             }
           </div>
         </article>
@@ -50,55 +63,98 @@
         <p class="no-appointments">No hay citas para mostrar.</p>
       }
 
-      @if (appointmentArray.length > 0) {
+      @if (appointmentArray.length > 0 && appointmentsPage.totalPages > 1) {
     <div class="pagination-container">
-      <button class="btn-pagination"
-              (click)="loadPrevAppointmentsPage()"
-              [disabled]="appointmentsPage.page <= 0">
-        ⬅️ Anterior
-      </button>
+      @if (appointmentsPage.page > 0) {
+        <button class="btn-pagination"
+                (click)="loadPrevAppointmentsPage()">
+          ⬅️ Anterior
+        </button>
+      }
 
       <span class="pagination-info">
         Página {{ appointmentsPage.page + 1 }} de {{ appointmentsPage.totalPages }}
       </span>
 
-      <button class="btn-pagination"
-              (click)="loadNextAppointmentsPage()"
-              [disabled]="appointmentsPage.page + 1 >= appointmentsPage.totalPages">
-        Siguiente ➡️
-      </button>
+      @if (appointmentsPage.page + 1 < appointmentsPage.totalPages) {
+        <button class="btn-pagination"
+                (click)="loadNextAppointmentsPage()">
+          Siguiente ➡️
+        </button>
+      }
     </div>
   }
     </section>
     }
     @else {
-      <h2 class="doctor-profile">Perfil</h2>
+      <div class="profile-section">
+        <h2 class="doctor-profile-title">Mi Perfil</h2>
 
-      <div class="doctor-profile-details">
-        <p class="doctor-profile-atribute"><strong>Nombre :</strong> {{doctor?.name}}</p>
-        <p class="doctor-profile-atribute"><strong>Apellido :</strong> {{doctor?.surname}}</p>
-        <p class="doctor-profile-atribute"><strong>Dni :</strong> {{doctor?.dni}}</p>
-        <p class="doctor-profile-atribute"><strong>Especialidad :</strong> {{doctor?.speciality}}</p>
-        <p class="doctor-profile-atribute"><strong>Teléfono :</strong> {{doctor?.phone}}</p>
-        <p class="doctor-profile-atribute"><strong>Correo electrónico :</strong> {{doctor?.email}}</p>
+        <div class="doctor-profile-card">
+          <div class="profile-header">
+            <div class="profile-icon">👨‍⚕️</div>
+            <div class="profile-name-section">
+              <h3 class="profile-name">{{doctor?.surname}} {{doctor?.name}}</h3>
+              <p class="profile-speciality">{{ getSpecialityLabel(doctor?.speciality) }}</p>
+            </div>
+          </div>
+
+          <div class="profile-details">
+            <div class="detail-row">
+              <div class="detail-label">
+                <span class="detail-icon">🆔</span>
+                <span>DNI</span>
+              </div>
+              <div class="detail-value">{{doctor?.dni}}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">
+                <span class="detail-icon">📞</span>
+                <span>Teléfono</span>
+              </div>
+              <div class="detail-value">{{doctor?.phone}}</div>
+            </div>
+
+            <div class="detail-row">
+              <div class="detail-label">
+                <span class="detail-icon">📧</span>
+                <span>Correo electrónico</span>
+              </div>
+              <div class="detail-value">{{doctor?.email}}</div>
+            </div>
+          </div>
+        </div>
       </div>
     }
   </main>
 
-  <aside id="sidebar" role="complementary" aria-labelledby="sidebar-title">
-    <h2 id="sidebar-title" class="sidebar-title">Últimos diagnósticos</h2>
+  <aside id="sidebar" 
+         role="complementary" 
+         aria-labelledby="sidebar-title">
+    <h2 id="sidebar-title" class="sidebar-title" [style.margin-top.px]="0">Últimos 3 diagnósticos</h2>
 
     <div class="diagnostics-box" aria-live="polite">
       @if (lastestDiagnoses.length > 0) {
         <ul class="diagnostics-list" role="list">
           @for (d of lastestDiagnoses; track $index) {
-            <li class="diagnose-item" role="listitem" aria-label="Diagnóstico {{ $index + 1 }}">
+            <li class="diagnose-item" 
+                role="listitem" 
+                aria-label="Diagnóstico {{ $index + 1 }}"
+                (click)="openDiagnoseDetailModal(d)"
+                tabindex="0"
+                (keydown.enter)="openDiagnoseDetailModal(d)"
+                (keydown.space)="openDiagnoseDetailModal(d)">
               <div class="diagnose-main">
-                <div class="diagnose-pet">{{ d.petName || '—' }}</div>
+                <div class="diagnose-pet">
+                  {{ getFullPetDisplayForDiagnose(d) }}
+                </div>
+                @if (d.clientName) {
+                  <div class="diagnose-client">{{ d.clientName }}</div>
+                }
                 <div class="diagnose-summary">{{ d.diagnose || d.reason || 'Sin resumen' }}</div>
               </div>
               <div class="diagnose-meta">
-                <div class="diagnose-doctor">{{ d.doctorName || '—' }}</div>
                 <div class="diagnose-date">{{ d.date | date:'dd/MM/yyyy HH:mm' }}</div>
               </div>
             </li>

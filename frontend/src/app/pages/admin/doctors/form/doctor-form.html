@@ -1,0 +1,163 @@
+<section id="doctor-container-all">
+
+  <div class="doctor-wrapper">
+    <div class="doctor-image">
+      <img src="assets/images/doctor-logo.png" alt="Doctor Logo">
+    </div>
+
+    <form [formGroup]="doctorForm" (ngSubmit)="onSubmit()">
+      <h1>{{ isEditMode ? 'Editar Doctor' : 'Registrar Nuevo Doctor' }}</h1>
+
+      @if (!isEditMode) {
+        <div class="input-wrapper">
+          <label for="username" class="input-label">Usuario</label>
+          <input id="username" type="text" class="custom-input" formControlName="username" placeholder="Ingrese un nombre de usuario">
+        </div>
+        @if (doctorForm.get('username')?.errors && (doctorForm.get('username')?.touched || doctorForm.get('username')?.dirty)) {
+          <div class="error-message">
+            @if (doctorForm.get('username')?.hasError('required')) {
+              <p class="error-msg">El usuario es obligatorio.</p>
+            } @else if (doctorForm.get('username')?.hasError('usernameExists')) {
+              <p class="error-msg">El nombre de usuario ya existe. Por favor, elegí otro.</p>
+            }
+          </div>
+        }
+        @if (doctorForm.get('username')?.pending) {
+          <div class="error-message">
+            <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
+          </div>
+        }
+
+        <div class="input-wrapper">
+          <label for="password" class="input-label">Contraseña</label>
+          <input id="password" type="password" class="custom-input" formControlName="password" placeholder="Ingrese una contraseña segura">
+        </div>
+        @if (doctorForm.get('password')?.touched || doctorForm.get('password')?.value) {
+          <div class="password-requirements">
+            <div class="requirement-item" [class.valid]="hasMinLength()" [class.invalid]="!hasMinLength()">
+              <span class="requirement-icon">{{ hasMinLength() ? '✓' : '✗' }}</span>
+              <span class="requirement-text">Debe tener al menos 8 caracteres</span>
+            </div>
+            <div class="requirement-item" [class.valid]="hasLetter()" [class.invalid]="!hasLetter()">
+              <span class="requirement-icon">{{ hasLetter() ? '✓' : '✗' }}</span>
+              <span class="requirement-text">Debe contener al menos una letra</span>
+            </div>
+            <div class="requirement-item" [class.valid]="hasNumber()" [class.invalid]="!hasNumber()">
+              <span class="requirement-icon">{{ hasNumber() ? '✓' : '✗' }}</span>
+              <span class="requirement-text">Debe contener al menos un número</span>
+            </div>
+            <div class="requirement-item" [class.valid]="hasMaxLength()" [class.invalid]="!hasMaxLength()">
+              <span class="requirement-icon">{{ hasMaxLength() ? '✓' : '✗' }}</span>
+              <span class="requirement-text">No puede exceder 50 caracteres</span>
+            </div>
+          </div>
+        }
+        @if (doctorForm.get('password')?.hasError('required') && doctorForm.get('password')?.touched) {
+          <div class="error-message">
+            <p class="error-msg">La contraseña es obligatoria.</p>
+          </div>
+        }
+      }
+
+      <div class="input-wrapper">
+        <label for="name" class="input-label">Nombre</label>
+        <input id="name" type="text" class="custom-input" formControlName="name" placeholder="Ingrese el nombre">
+      </div>
+      @if (doctorForm.get('name')?.errors && doctorForm.get('name')?.touched) {
+        <div class="error-message">
+          @if (doctorForm.get('name')?.hasError('required')) {
+            <p class="error-msg">El nombre es obligatorio.</p>
+          } @else if (doctorForm.get('name')?.hasError('invalidName')) {
+            <p class="error-msg">El nombre solo puede contener letras, espacios, ñ y tildes.</p>
+          } @else if (doctorForm.get('name')?.hasError('minlength') || doctorForm.get('name')?.hasError('maxlength')) {
+            <p class="error-msg">El nombre debe tener entre 2 y 50 caracteres.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="surname" class="input-label">Apellido</label>
+        <input id="surname" type="text" class="custom-input" formControlName="surname" placeholder="Ingrese el apellido">
+      </div>
+      @if (doctorForm.get('surname')?.errors && doctorForm.get('surname')?.touched) {
+        <div class="error-message">
+          @if (doctorForm.get('surname')?.hasError('required')) {
+            <p class="error-msg">El apellido es obligatorio.</p>
+          } @else if (doctorForm.get('surname')?.hasError('invalidName')) {
+            <p class="error-msg">El apellido solo puede contener letras, espacios, ñ y tildes.</p>
+          } @else if (doctorForm.get('surname')?.hasError('minlength') || doctorForm.get('surname')?.hasError('maxlength')) {
+            <p class="error-msg">El apellido debe tener entre 2 y 50 caracteres.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="phone" class="input-label">Teléfono</label>
+        <input id="phone" type="text" class="custom-input" formControlName="phone" placeholder="Ingrese el teléfono">
+      </div>
+      @if (doctorForm.get('phone')?.errors && doctorForm.get('phone')?.touched) {
+        <div class="error-message">
+          @if (doctorForm.get('phone')?.hasError('required')) {
+            <p class="error-msg">El teléfono es obligatorio.</p>
+          } @else if (doctorForm.get('phone')?.hasError('invalidPhone')) {
+            <p class="error-msg">El teléfono solo puede contener números.</p>
+          } @else if (doctorForm.get('phone')?.hasError('invalidPhoneLength')) {
+            <p class="error-msg">El teléfono debe tener entre 9 y 20 dígitos.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="dni" class="input-label">DNI</label>
+        <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI">
+      </div>
+      @if (doctorForm.get('dni')?.errors && doctorForm.get('dni')?.touched) {
+        <div class="error-message">
+          @if (doctorForm.get('dni')?.hasError('required')) {
+            <p class="error-msg">El DNI es obligatorio.</p>
+          } @else if (doctorForm.get('dni')?.hasError('invalidDni')) {
+            <p class="error-msg">El DNI solo puede contener números.</p>
+          } @else if (doctorForm.get('dni')?.hasError('invalidDniLength')) {
+            <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="email" class="input-label">Email</label>
+        <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email">
+      </div>
+      @if (doctorForm.get('email')?.touched && doctorForm.get('email')?.hasError('required')) {
+        <div class="error-message">
+          <p class="error-msg">El email es obligatorio.</p>
+        </div>
+      }
+      @if (doctorForm.get('email')?.hasError('email')) {
+        <div class="error-message">
+          <p class="error-msg">Debe ingresar un email válido.</p>
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="speciality" class="input-label">Especialidad</label>
+        <select id="speciality" class="custom-input" formControlName="speciality">
+          <option [ngValue]="null" disabled selected>Seleccione una especialidad</option>
+          @for (spec of specialities; track spec) {
+            <option [ngValue]="spec">{{ getSpecialityLabel(spec) }}</option>
+          }
+        </select>
+      </div>
+      @if (doctorForm.get('speciality')?.touched && doctorForm.get('speciality')?.hasError('required')) {
+        <div class="error-message">
+          <p class="error-msg">La especialidad es obligatoria.</p>
+        </div>
+      }
+
+      <button class="register-btn" type="submit" [disabled]="doctorForm.invalid">
+        {{ isEditMode ? 'Guardar Cambios' : 'Registrar Doctor' }}
+      </button>
+    </form>
+  </div>
+
+</section>
+

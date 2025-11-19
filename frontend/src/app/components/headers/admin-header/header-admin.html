@@ -1,0 +1,95 @@
+<header>
+  <div>
+    <img id="logo-background" src="/assets/images/logo.png" alt="Logo">
+  </div>
+
+  <nav>
+    <ul class="buttons">
+      <li><a routerLink="/admin/home" 
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact: true}">Inicio</a></li>
+
+      <!-- Dropdown Citas -->
+      <li class="dropdown-container">
+        <a>Citas ▾</a>
+        <ul class="dropdown">
+          <li><a routerLink="/appointment/create" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Crear cita programada</a></li>
+          <li><a routerLink="/appointment/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Listado de citas</a></li>
+        </ul>
+      </li>
+
+      <!-- Dropdown Doctores -->
+      <li class="dropdown-container">
+        <a>Doctores ▾</a>
+        <ul class="dropdown">
+          <li><a routerLink="/register/new/doctor" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Agregar doctor</a></li>
+          <li><a routerLink="/doctor/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Listar doctores activos</a></li>
+          <li><a routerLink="/doctor/list/inactive" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Listar doctores dados de baja</a></li>
+        </ul>
+      </li>
+
+      <!-- Dropdown Clientes -->
+      <li class="dropdown-container">
+        <a>Clientes ▾</a>
+        <ul class="dropdown">
+          <li><a routerLink="/register/new/client/admin" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Agregar cliente</a></li>
+          <li><a routerLink="/client/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Listar clientes activos</a></li>
+          <li><a routerLink="/client/list/inactive" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Listar clientes dados de baja</a></li>
+        </ul>
+      </li>
+
+      <!-- Dropdown Configuración -->
+      <li class="dropdown-container">
+        <a>Administradores ▾</a>
+        <ul class="dropdown">
+          <li><a routerLink="/register/new/admin" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Agregar administrador</a></li>
+          <li><a routerLink="/admin/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Listar administradores activos</a></li>
+          <li><a routerLink="/admin/list/inactive" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}">Listar administradores dados de baja</a></li>
+        </ul>
+      </li>
+
+      <!-- Mi Cuenta -->
+      <li class="dropdown-container account-dropdown">
+        <a (click)="toggleAccountDropdown($event)" style="cursor: pointer;">Mi Cuenta ▾</a>
+        <ul class="dropdown" [class.show]="showAccountDropdown" (click)="$event.stopPropagation()">
+          @if (currentAdmin) {
+            <li class="account-info">
+              <div class="account-details">
+                <p class="account-name"><strong>{{ currentAdmin.name }} {{ currentAdmin.surname }}</strong></p>
+                <p class="account-email">{{ currentAdmin.email }}</p>
+              </div>
+            </li>
+            <li class="account-separator"></li>
+          }
+          <li><a routerLink="/admin/profile" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="closeAccountDropdown()">Mi Perfil</a></li>
+          <li><a routerLink="/logout" (click)="logout()">Salir</a></li>
+        </ul>
+      </li>
+    </ul>
+  </nav>
+</header>

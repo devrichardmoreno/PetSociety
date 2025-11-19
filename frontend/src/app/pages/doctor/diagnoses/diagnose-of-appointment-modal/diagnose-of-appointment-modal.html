@@ -1,0 +1,53 @@
+<h2 mat-dialog-title class="modal-title">Detalles del Diagnóstico</h2>
+
+<mat-dialog-content class="modal-content">
+  @if (loading) {
+    <div class="loading-state">
+      <p class="loading-text">Cargando diagnóstico...</p>
+    </div>
+  }
+
+  @if (error) {
+    <div class="error-state">
+      <p class="error-text">{{ error }}</p>
+    </div>
+  }
+
+  @if (!loading && !error && diagnoseDetails) {
+    <div class="detail-section">
+      <div class="detail-item">
+        <span class="label">Mascota:</span>
+        <span class="value">{{ getFullPetDisplay(diagnoseDetails) }}</span>
+      </div>
+      @if (diagnoseDetails.clientName) {
+        <div class="detail-item">
+          <span class="label">Cliente:</span>
+          <span class="value">{{ diagnoseDetails.clientName }}</span>
+        </div>
+      }
+      <div class="detail-item">
+        <span class="label">Doctor:</span>
+        <span class="value">{{ diagnoseDetails.doctorName }}</span>
+      </div>
+      <div class="detail-item">
+        <span class="label">Fecha de Diagnóstico:</span>
+        <span class="value">{{ diagnoseDetails.date | date:'dd/MM/yyyy HH:mm' }}</span>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3 class="section-title">Diagnóstico</h3>
+      <p class="detail-text">{{ diagnoseDetails.diagnose }}</p>
+    </div>
+
+    <div class="detail-section">
+      <h3 class="section-title">Tratamiento</h3>
+      <p class="detail-text">{{ diagnoseDetails.treatment }}</p>
+    </div>
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="close()" class="btn-close">Cerrar</button>
+</mat-dialog-actions>
+

@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { DiagnosesService } from '../../../services/diagnoses/diagnoses-service';
-import { AuthService } from '../../../services/auth.service';
-import { PetService } from '../../../services/pet.service';
-import { DiagnosesDTOResponse } from '../../../models/dto/diagnoses-response-dto';
-import { Reason } from '../../../models/dto/reason.enum';
-import { PetType } from '../../../models/dto/pet-type.enum';
-import { HeaderClient } from '../../../components/header-client/header-client';
+import { DiagnosesService } from '../../../services/diagnoses/diagnoses.service';
+import { AuthService } from '../../../services/auth/auth.service';
+import { PetService } from '../../../services/pet/pet.service';
+import { DiagnosesDTOResponse } from '../../../models/dto/diagnose/diagnoses-response-dto';
+import { Reason } from '../../../models/enums/reason.enum';
+import { PetType } from '../../../models/enums/pet-type.enum';
+import { HeaderClient } from '../../../components/headers/client-header/header-client';
 import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
-import { Page } from '../../../models/paging/page';
+import { Page } from '../../../models/shared/page';
 import Swal from 'sweetalert2';
 
 @Component({

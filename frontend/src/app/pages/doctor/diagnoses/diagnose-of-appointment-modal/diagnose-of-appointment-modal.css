@@ -1,0 +1,150 @@
+/* === Diálogo de detalles del diagnóstico === */
+
+.modal-title {
+  color: var(--hospital-blue);
+  font-size: 1.8rem;
+  font-weight: 700;
+  padding: 1.5rem 2rem 1rem;
+  border-bottom: 2px solid var(--hospital-green);
+  margin-bottom: 1.5rem;
+}
+
+.modal-content {
+  padding: 0 2rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  min-width: 500px;
+}
+
+.detail-section {
+  background-color: var(--light-bg);
+  border-radius: 10px;
+  padding: 1.2rem 1.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+}
+
+.section-title {
+  color: var(--hospital-blue);
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0 0 0.8rem 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(69, 174, 221, 0.2);
+}
+
+.detail-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px dashed #e8e8e8;
+}
+
+.detail-item:last-child {
+  border-bottom: none;
+}
+
+.detail-item .label {
+  font-weight: 600;
+  color: var(--secondary-text);
+  font-size: 0.95rem;
+}
+
+.detail-item .value {
+  color: #333;
+  font-size: 0.95rem;
+  text-align: right;
+  font-weight: 500;
+}
+
+.detail-text {
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.loading-state,
+.error-state {
+  padding: 2rem;
+  text-align: center;
+}
+
+.loading-text {
+  color: var(--hospital-blue);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.error-text {
+  color: #dc3545;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+mat-dialog-actions {
+  padding: 1rem 2rem 1.5rem;
+  border-top: 1px solid #e0e0e0;
+  margin: 0;
+}
+
+.btn-close {
+  background-color: var(--hospital-green) !important;
+  color: white !important;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  border: none !important;
+}
+
+.btn-close:hover {
+  background-color: #5a9e2a !important;
+  transform: translateY(-2px);
+  color: white !important;
+}
+
+.btn-close:focus {
+  background-color: var(--hospital-green) !important;
+  color: white !important;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .modal-title {
+    font-size: 1.5rem;
+    padding: 1rem 1.5rem 0.8rem;
+  }
+
+  .modal-content {
+    padding: 0 1.5rem 1rem;
+    gap: 1rem;
+    min-width: auto;
+  }
+
+  .detail-section {
+    padding: 1rem;
+  }
+
+  .detail-section h3 {
+    font-size: 1.1rem;
+    margin-bottom: 0.6rem;
+  }
+
+  .detail-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.2rem;
+    padding: 0.5rem 0;
+  }
+
+  .detail-item .value {
+    text-align: left;
+  }
+
+  mat-dialog-actions {
+    padding: 0.8rem 1.5rem 1rem;
+  }
+}
+

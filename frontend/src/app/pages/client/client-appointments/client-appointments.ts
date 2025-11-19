@@ -1,13 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { AppointmentService } from '../../../services/appointment-service';
-import { AuthService } from '../../../services/auth.service';
-import { AppointmentHistoryDTO } from '../../../models/dto/appointment-history-dto';
-import { Status } from '../../../models/dto/status.enum';
-import { Reason } from '../../../models/dto/reason.enum';
-import { PetType } from '../../../models/dto/pet-type.enum';
-import { HeaderClient } from '../../../components/header-client/header-client';
+import { AppointmentService } from '../../../services/appointment/appointment.service';
+import { AuthService } from '../../../services/auth/auth.service';
+import { DiagnosesService } from '../../../services/diagnoses/diagnoses.service';
+import { AppointmentHistoryDTO } from '../../../models/dto/appointment/appointment-history-dto';
+import { Status } from '../../../models/enums/status.enum';
+import { Reason } from '../../../models/enums/reason.enum';
+import { PetType } from '../../../models/enums/pet-type.enum';
+import { HeaderClient } from '../../../components/headers/client-header/header-client';
 import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
 import Swal from 'sweetalert2';
 
@@ -48,7 +49,8 @@ export class ClientAppointmentsComponent implements OnInit {
 
   constructor(
     private appointmentService: AppointmentService,
-    private authService: AuthService
+    private authService: AuthService,
+    private diagnosesService: DiagnosesService
   ) {}
 
   ngOnInit(): void {
@@ -221,15 +223,75 @@ export class ClientAppointmentsComponent implements OnInit {
     this.selectedAppointment = appointment;
     this.showDiagnosisModal = true;
     this.loadingDiagnosis = true;
+    this.diagnosisData = null;
 
-    // Aquí deberías llamar al servicio para obtener el diagnóstico completo
-    // Por ahora solo mostramos un placeholder
-    // TODO: Implementar servicio de diagnósticos cuando esté disponible
-    this.diagnosisData = {
-      diagnose: 'Diagnóstico no disponible aún',
-      treatment: 'Tratamiento no disponible aún'
-    };
-    this.loadingDiagnosis = false;
+    // Verificar que el diagnosisId sea válido
+    if (!appointment.diagnosisId || appointment.diagnosisId <= 0) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'El ID del diagnóstico no es válido.',
+        confirmButtonColor: '#45AEDD'
+      });
+      this.loadingDiagnosis = false;
+      this.closeDiagnosisModal();
+      return;
+    }
+
+    // Obtener el diagnóstico completo usando el servicio
+    this.diagnosesService.getDiagnoseById(appointment.diagnosisId).subscribe({
+      next: (diagnose) => {
+        if (!diagnose) {
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo obtener el diagnóstico.',
+            confirmButtonColor: '#45AEDD'
+          });
+          this.loadingDiagnosis = false;
+          this.closeDiagnosisModal();
+          return;
+        }
+        
+        this.diagnosisData = {
+          diagnose: diagnose.diagnose || 'Sin diagnóstico registrado',
+          treatment: diagnose.treatment || 'Sin tratamiento registrado'
+        };
+        this.loadingDiagnosis = false;
+      },
+      error: (error) => {
+        console.error('Error al cargar el diagnóstico:', error);
+        console.error('Diagnosis ID:', appointment.diagnosisId);
+        console.error('Appointment ID:', appointment.appointmentId);
+        console.error('Error status:', error.status);
+        console.error('Error completo:', error);
+        
+        let errorMessage = 'No se pudo cargar el diagnóstico. Por favor, intenta nuevamente.';
+        
+        if (error.status === 404) {
+          errorMessage = 'El diagnóstico no fue encontrado. Puede que haya sido eliminado.';
+        } else if (error.status === 403) {
+          errorMessage = 'No tienes permisos para ver este diagnóstico.';
+        } else if (error.status === 401) {
+          errorMessage = 'Debes iniciar sesión para ver el diagnóstico.';
+        } else if (error.status === 500) {
+          errorMessage = 'Error del servidor. Por favor, contacta al administrador.';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.message) {
+          errorMessage = error.message;
+        }
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorMessage,
+          confirmButtonColor: '#45AEDD'
+        });
+        this.loadingDiagnosis = false;
+        this.closeDiagnosisModal();
+      }
+    });
   }
 
   closeDiagnosisModal(): void {

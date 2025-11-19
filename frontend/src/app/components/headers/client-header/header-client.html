@@ -1,0 +1,56 @@
+<header class="header">
+  <div class="container">
+    <!-- Logo -->
+    <div class="logo">
+      <a routerLink="/client/home" class="logo-link" aria-label="Ir al inicio">
+        <img src="assets/images/logo.svg" alt="Pet Society" class="logo-img">
+        <span class="logo-text">Pet Society</span>
+      </a>
+    </div>
+
+    <!-- Navegación móvil -->
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" [class.open]="isMenuOpen">
+      <ul class="nav-list">
+        <li class="nav-auth">
+          <button class="btn btn-action btn-home" 
+                  routerLink="/client/home" 
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{exact: false}"
+                  (click)="toggleMenu()">Inicio</button>
+          <button class="btn btn-action" 
+                  routerLink="/client/citas" 
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{exact: true}"
+                  (click)="toggleMenu()">Mis Citas</button>
+          <button class="btn btn-action" 
+                  routerLink="/client/diagnosticos" 
+                  routerLinkActive="active"
+                  [routerLinkActiveOptions]="{exact: true}"
+                  (click)="toggleMenu()">Diagnosticos</button>
+          <button class="btn btn-logout" (click)="logout(); toggleMenu()">Cerrar sesión</button>
+        </li>
+      </ul>
+    </nav>
+
+    <!-- Botones de acción (solo en escritorio) -->
+    <div class="action-buttons">
+      <button class="btn btn-action btn-home" 
+              routerLink="/client/home" 
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: false}">Inicio</button>
+      <button class="btn btn-action" 
+              routerLink="/client/citas" 
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: true}">Mis Citas</button>
+      <button class="btn btn-action" 
+              routerLink="/client/diagnosticos" 
+              routerLinkActive="active"
+              [routerLinkActiveOptions]="{exact: true}">Diagnosticos</button>
+      <button class="btn btn-logout" (click)="logout()">Cerrar sesión</button>
+    </div>
+  </div>
+</header>

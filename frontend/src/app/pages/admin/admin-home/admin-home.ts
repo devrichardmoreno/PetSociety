@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, Router } from "@angular/router";
 import { CommonModule } from '@angular/common';
-import { AppointmentService } from '../../../services/appointment-service';
-import { AppointmentResponseDTO } from '../../../models/dto/appointment-response-dto';
-import { Status } from '../../../models/dto/status.enum';
+import { AppointmentService } from '../../../services/appointment/appointment.service';
+import { AppointmentResponseDTO } from '../../../models/dto/appointment/appointment-response-dto';
+import { Status } from '../../../models/enums/status.enum';
 import { map, Observable } from 'rxjs';
 
 

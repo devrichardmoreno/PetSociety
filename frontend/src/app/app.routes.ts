@@ -1,30 +1,30 @@
 import { Routes } from '@angular/router';
-import { RegisterComponent } from './pages/register-component/register-component';
-import { LandingComponent } from './pages/landing-component/landing-component';
-import { LoginComponent } from './pages/login-component/login-component';
+import { RegisterComponent } from './pages/auth/register/register-component';
+import { LandingComponent } from './pages/auth/landing/landing-component';
+import { LoginComponent } from './pages/auth/login/login-component';
 import { ClientHomePage } from './pages/client/client-home-page/client-home-page';
 import { ClientAppointmentsComponent } from './pages/client/client-appointments/client-appointments';
 import { ClientDiagnosesComponent } from './pages/client/client-diagnoses/client-diagnoses';
 import { authGuard } from './guards/auth.guard';
 import { roleGuard } from './guards/role.guard';
 import { AdminHome } from './pages/admin/admin-home/admin-home';
-import { CreateAppointment } from './pages/admin/create-appointment/create-appointment';
-import { AppointmentListComponent } from './pages/admin/admin-home/appointment-list/appointment-list';
+import { CreateAppointment } from './pages/admin/appointments/create/create-appointment';
+import { AppointmentListComponent } from './pages/admin/appointments/list/appointment-list';
 import { DoctorHomePage } from './pages/doctor/doctor-home-page/doctor-home-page';
 import { AppointmentDoctorHistory } from './pages/doctor/appointment-doctor-history/appointment-doctor-history';
-import { AppointmentDetail } from './pages/admin/appointment-detail/appointment-detail';
-import { DoctorListComponent } from './pages/doctor-list/doctor-list';
-import { DoctorListInactiveComponent } from './pages/doctor-list-inactive/doctor-list-inactive';
-import { ClientListComponent } from './pages/client-list/client-list';
-import { ClientListInactiveComponent } from './pages/client-list-inactive/client-list-inactive';
-import { AdminListComponent } from './pages/admin-list/admin-list';
-import { AdminListInactiveComponent } from './pages/admin-list-inactive/admin-list-inactive';
-import { AdminProfileComponent } from './pages/admin-profile/admin-profile';
-import { CreateDoctor } from './pages/create-doctor/create-doctor';
-import { CreateAdmin } from './pages/create-admin/create-admin';
-import { ClientFormComponent } from './pages/client-form/client-form';
-import { PetFormComponent } from './pages/pet-form/pet-form';
-import { ClientPetsListComponent } from './pages/admin/client-pets-list/client-pets-list';
+import { AppointmentDetail } from './pages/admin/appointments/detail/appointment-detail';
+import { DoctorListComponent } from './pages/admin/doctors/list/doctor-list';
+import { DoctorListInactiveComponent } from './pages/admin/doctors/list-inactive/doctor-list-inactive';
+import { ClientListComponent } from './pages/admin/clients/list/client-list';
+import { ClientListInactiveComponent } from './pages/admin/clients/list-inactive/client-list-inactive';
+import { AdminListComponent } from './pages/admin/admins/list/admin-list';
+import { AdminListInactiveComponent } from './pages/admin/admins/list-inactive/admin-list-inactive';
+import { AdminProfileComponent } from './pages/admin/profile/admin-profile';
+import { DoctorFormComponent } from './pages/admin/doctors/form/doctor-form';
+import { CreateAdmin } from './pages/admin/admins/create/create-admin';
+import { ClientFormComponent } from './pages/admin/clients/form/client-form';
+import { PetFormComponent } from './pages/admin/clients/pet-form/pet-form';
+import { ClientPetsListComponent } from './pages/admin/clients/pets-list/client-pets-list';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -56,13 +56,13 @@ export const routes: Routes = [
 
     {
       path: 'register/new/doctor',
-      component:CreateDoctor,
+      component:DoctorFormComponent,
       data: { headerType: 'admin'},
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },
     {
       path: 'register/new/doctor/:id',
-      component:CreateDoctor,
+      component:DoctorFormComponent,
       data: { headerType: 'admin'},
       canActivate: [authGuard, roleGuard(['ROLE_ADMIN'])]
     },

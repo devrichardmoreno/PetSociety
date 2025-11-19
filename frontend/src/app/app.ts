@@ -1,11 +1,11 @@
 import { Component, signal, WritableSignal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router, RouterOutlet } from '@angular/router';
-import { Header } from './components/header/header';
-import { HeaderAdmin } from './components/header-admin/header-admin';
+import { Header } from './components/headers/default-header/default-header';
+import { HeaderAdmin } from './components/headers/admin-header/header-admin';
 import { Footer } from './components/footer/footer';
 import { filter, map } from 'rxjs';
 import { CommonModule } from '@angular/common';
-import { HeaderDoctor } from "./components/header-doctor/header-doctor/header-doctor";
+import { HeaderDoctor } from "./components/headers/doctor-header/header-doctor";
 
 @Component({
   selector: 'app-root',

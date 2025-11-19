@@ -1,0 +1,83 @@
+<div class="modal-header-wrapper">
+    @if (petInfo) {
+        <div class="pet-header">
+            <h2 class="modal-title">Historia clínica</h2>
+            <div class="pet-info-card">
+                <div class="pet-main-info">
+                    <h3 class="pet-name">{{ getFullPetDisplay(petInfo) }}</h3>
+                    @if (petInfo.clientName) {
+                        <p class="pet-owner">Dueño: {{ petInfo.clientName }}</p>
+                    }
+                </div>
+            </div>
+        </div>
+    } @else {
+        <h2 class="modal-title">Historia clínica</h2>
+    }
+    <button class="close-button" (click)="close()" aria-label="Cerrar modal" type="button">
+        <span class="close-icon">×</span>
+    </button>
+</div>
+
+@if (loadingDiagnoses) {
+    <div class="loading">Cargando diagnósticos...</div>
+}
+
+@if (diagnosesError) {
+    <div class="error">Error al cargar los diagnósticos: {{ diagnosesError }}</div>
+}
+
+@if (!loadingDiagnoses && !diagnosesError && lastestDiagnoses.length > 0) {
+    <ul class="diagnoses-list" role="list">
+        @for (diagnose of lastestDiagnoses; track $index) {
+            <li class="diagnose-item" role="listitem" aria-label="Diagnóstico {{ $index + 1 }}">
+                <div class="diagnose-header">
+                    <div class="diagnose-doctor-info">
+                        <span class="doctor-label">Atendido por:</span>
+                        <span class="doctor-name">{{ diagnose.doctorName || '—' }}</span>
+                    </div>
+                    <span class="diagnose-date">{{ diagnose.date | date:'dd/MM/yyyy HH:mm' }}</span>
+                </div>
+                <div class="diagnose-body">
+                    <p class="diagnose-summary"><strong>Diagnóstico:</strong> {{ diagnose.diagnose || 'Sin diagnóstico' }}</p>
+                    <p class="diagnose-summary"><strong>Tratamiento:</strong> {{ diagnose.treatment || 'Sin tratamiento' }}</p>
+                </div>
+            </li>
+        }
+    </ul>
+
+    @if (diagnosesPage.totalPages > 1) {
+        <div class="pagination-controls">
+            @if (diagnosesPage.page > 0) {
+                <button 
+                    mat-raised-button
+                    color="primary"
+                    (click)="prevPage()"
+                    [disabled]="loadingDiagnoses"
+                    class="pagination-btn">
+                    ◀ Anterior
+                </button>
+            }
+            
+            <span class="page-info">Página {{ diagnosesPage.page + 1 }} de {{ diagnosesPage.totalPages }}</span>
+
+            @if (diagnosesPage.page + 1 < diagnosesPage.totalPages) {
+                <button 
+                    mat-raised-button
+                    color="primary"
+                    (click)="nextPage()"
+                    [disabled]="loadingDiagnoses"
+                    class="pagination-btn">
+                    Siguiente ▶
+                </button>
+            }
+        </div>
+    }
+
+} @else if (!loadingDiagnoses && !diagnosesError && lastestDiagnoses.length === 0) {
+    <div class="empty-state">
+        <div class="empty-state-icon">📋</div>
+        <h3 class="empty-state-title">Sin diagnósticos registrados</h3>
+        <p class="empty-state-message">Esta mascota aún no tiene diagnósticos en su historia clínica.</p>
+    </div>
+}

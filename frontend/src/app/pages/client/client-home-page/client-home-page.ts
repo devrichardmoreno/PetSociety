@@ -1,23 +1,24 @@
-import { Component, OnInit } from '@angular/core';
-import { HeaderClient } from '../../../components/header-client/header-client';
+import { Component, OnInit, OnDestroy, NgZone, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HeaderClient } from '../../../components/headers/client-header/header-client';
 import { CommonModule } from '@angular/common';
-import { ClientService } from '../../../services/client.service';
-import { AuthService } from '../../../services/auth.service';
-import { PetService } from '../../../services/pet.service';
-import { AppointmentService } from '../../../services/appointment-service';
+import { ClientService } from '../../../services/client/client.service';
+import { AuthService } from '../../../services/auth/auth.service';
+import { PetService } from '../../../services/pet/pet.service';
+import { AppointmentService } from '../../../services/appointment/appointment.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import Swal from 'sweetalert2';
-import { Pet } from '../../../models/Pet';
-import { UserData } from '../../../models/UserData';
-import { Status } from '../../../models/dto/status.enum';
-import { PetType, PetTypeLabels } from '../../../models/dto/pet-type.enum';
-import { ClientProfileSection } from '../components/client-profile-section/client-profile-section';
-import { ClientProfileEdit } from '../components/client-profile-edit/client-profile-edit';
-import { ClientPetsList } from '../components/client-pets-list/client-pets-list';
-import { ClientPetAddForm } from '../components/client-pet-add-form/client-pet-add-form';
-import { ClientPetEditForm } from '../components/client-pet-edit-form/client-pet-edit-form';
-import { ScheduleAppointmentComponent } from '../components/schedule-appointment/schedule-appointment';
+import { Pet } from '../../../models/entities/pet';
+import { UserData } from '../../../models/entities/user-data';
+import { Status } from '../../../models/enums/status.enum';
+import { PetType, PetTypeLabels } from '../../../models/enums/pet-type.enum';
+import { ClientProfileSection } from '../profile/profile-section/client-profile-section';
+import { ClientProfileEdit } from '../profile/profile-edit/client-profile-edit';
+import { ClientPetsList } from '../pets/pets-list/client-pets-list';
+import { ClientPetAddForm } from '../pets/pet-add-form/client-pet-add-form';
+import { ClientPetEditForm } from '../pets/pet-edit-form/client-pet-edit-form';
+import { ScheduleAppointmentComponent } from '../schedule-appointment/schedule-appointment';
 
 @Component({
   selector: 'app-client-home-page',
@@ -35,7 +36,7 @@ import { ScheduleAppointmentComponent } from '../components/schedule-appointment
   templateUrl: './client-home-page.html',
   styleUrl: './client-home-page.css'
 })
-export class ClientHomePage implements OnInit {
+export class ClientHomePage implements OnInit, OnDestroy {
   activeTab: 'mascotas' | 'datos-personales' = 'mascotas';
 
   // Datos del usuario
@@ -67,19 +68,58 @@ export class ClientHomePage implements OnInit {
   // Lista de mascotas del cliente
   pets: Pet[] = [];
 
+  headerHeight: number = 100; // Valor por defecto
+  private resizeListener?: () => void;
+
   constructor(
     private clientService: ClientService,
     private authService: AuthService,
     private petService: PetService,
     private appointmentService: AppointmentService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) {}
 
   ngOnInit(): void {
+    // Calcular altura del header después de que la vista se inicialice
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        this.calculateHeaderHeight();
+        // Recalcular altura del header cuando la ventana cambie de tamaño
+        this.resizeListener = () => this.calculateHeaderHeight();
+        window.addEventListener('resize', this.resizeListener);
+      }, 100);
+    }
+
     this.loadClientData();
     this.initializeForms();
     this.loadPetsData();
+  }
+
+  ngOnDestroy(): void {
+    if (this.resizeListener && isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('resize', this.resizeListener);
+    }
+  }
+
+  calculateHeaderHeight(): void {
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    this.ngZone.runOutsideAngular(() => {
+      setTimeout(() => {
+        const header = document.querySelector('app-header-client .header') as HTMLElement;
+        if (header) {
+          const height = header.offsetHeight;
+          this.ngZone.run(() => {
+            this.headerHeight = height;
+          });
+        }
+      }, 0);
+    });
   }
 
   initializeForms(): void {
@@ -240,7 +280,10 @@ export class ClientHomePage implements OnInit {
   }
 
   get userName(): string {
-    return `${this.userData.nombre} ${this.userData.apellido}`;
+    if (this.userData.nombre && this.userData.apellido) {
+      return `${this.userData.nombre} ${this.userData.apellido}`;
+    }
+    return this.userData.nombre || '';
   }
 
   switchTab(tab: 'mascotas' | 'datos-personales'): void {

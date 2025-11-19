@@ -1,111 +1,242 @@
-:root{
-    /* Paleta: Colores primarios / acentos / neutros / semánticos */
-    --primary: #45aedd;
-    --green-apple: #83b847;
-    --cta-vibrant: #f3ae51;
-    --cta: #f1ae53;
-
-    --bg: #f9fbfd;
-    --card-bg: #ffffff;
-    --border: #e0e0e0;
-    --text-muted: #7F8C8D;
-    --muted-bg: rgba(0,0,0,0.03);
-
-    --success: #2ECC71;
-    --error: #E74C3C;
-    --warning: #F1C40F;
-
-    --header-height: 70px;
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-/* === Historial de citas del doctor === */
+/* Contenedor principal */
 #appointment-doctor-history-container-all {
-  padding-top: var(--header-height);
+  /* padding-top se calcula dinámicamente en el componente */
+  flex: 1;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-bottom: 2rem; /* Espacio mínimo antes del footer */
+  padding-top: 0; /* Se maneja dinámicamente en el HTML */
+  background-color: var(--light-bg);
   display: flex;
   justify-content: center;
   align-items: flex-start;
-  max-width: 1200px;
-  margin: 20px auto;
-  padding-left: 16px;
-  padding-right: 16px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  min-height: calc(100vh - 200px); /* Altura mínima menos header y footer */
 }
 
 /* Main content */
-#appointment-doctor-history-container-all #main-content {
+#main-content {
   flex: 1 1 100%;
+  width: 100%;
 }
 
-/* Contenedor de cards */
-#appointment-doctor-history-container-all .cards-container {
+/* Título principal */
+.page-title {
+  color: var(--hospital-blue);
+  font-size: 2rem;
+  font-weight: 700;
+  margin: 0 0 2rem 0;
+  display: block;
+}
+
+/* Sección de filtros */
+.filters-section {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-  gap: 20px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Card individual */
-#appointment-doctor-history-container-all .appointment-card {
-  background-color: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
-  padding: 16px 18px;
+.filter-group {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  gap: 0.5rem;
 }
 
-#appointment-doctor-history-container-all .appointment-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 26px rgba(0, 0, 0, 0.06);
+.filter-group label {
+  font-weight: 600;
+  color: var(--hospital-blue);
+  font-size: 0.95rem;
+}
+
+.filter-select,
+.filter-input {
+  padding: 0.7rem 1rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  color: #333;
+  background-color: white;
+  transition: all 0.3s ease;
   cursor: pointer;
 }
 
-/* Header */
-#appointment-doctor-history-container-all .appointment-card-header {
+.filter-select:hover,
+.filter-input:hover {
+  border-color: var(--hospital-blue);
+}
+
+.filter-select:focus,
+.filter-input:focus {
+  outline: none;
+  border-color: var(--hospital-blue);
+  box-shadow: 0 0 0 3px rgba(69, 174, 221, 0.1);
+}
+
+.btn-clear-filters {
+  padding: 0.7rem 1.5rem;
+  background: linear-gradient(135deg, #f57c00 0%, #e65100 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 12px rgba(245, 124, 0, 0.3);
+  margin-top: 1.5rem;
+}
+
+.btn-clear-filters:hover {
+  background: linear-gradient(135deg, #e65100 0%, #bf360c 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(245, 124, 0, 0.4);
+}
+
+.btn-clear-filters:active {
+  transform: translateY(0);
+}
+
+.empty-message {
+  text-align: center;
+  padding: 3rem;
+  color: var(--secondary-text);
+  font-size: 1.1rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.load-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.btn-load-more {
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--hospital-blue) 0%, #3a9bc7 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.3);
+}
+
+.btn-load-more:hover {
+  background: linear-gradient(135deg, #3a9bc7 0%, #2d8bb3 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(69, 174, 221, 0.4);
+}
+
+.btn-load-more:active {
+  transform: translateY(0);
+}
+
+.has-diagnosis {
+  color: var(--hospital-green);
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+/* Contenedor de cards */
+.cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Card individual - Estilo consistente con cliente */
+.appointment-card {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.appointment-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Header de la card */
+.appointment-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 8px;
-  margin-bottom: 10px;
+  border-bottom: 2px solid var(--hospital-green);
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
 }
 
-#appointment-doctor-history-container-all .appointment-card-title {
-  font-size: 1.15rem;
-  color: var(--primary);
+.appointment-card-title {
+  font-size: 1.2rem;
+  color: var(--hospital-blue);
   font-weight: 700;
   margin: 0;
 }
 
-#appointment-doctor-history-container-all .appointment-card-date {
-  font-size: 0.9rem;
-  color: var(--text-muted);
+.appointment-card-date {
+  font-size: 0.95rem;
+  color: var(--secondary-text);
+  font-weight: 600;
 }
 
-/* Body */
-#appointment-doctor-history-container-all .appointment-card-body p {
-  margin: 4px 0;
-  font-size: 0.95rem;
+/* Body de la card */
+.appointment-card-body {
+  flex: 1;
+}
+
+.appointment-card-body p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
   color: #333;
 }
 
-#appointment-doctor-history-container-all .appointment-card-body strong {
-  color: var(--text-muted);
-  margin-right: 6px;
+.appointment-card-body strong {
+  color: var(--hospital-blue);
+  font-weight: 700;
+  margin-right: 0.5rem;
 }
 
 /* Estado vacío */
-#appointment-doctor-history-container-all .no-appointments {
-  padding: 20px;
+.no-appointments {
+  padding: 3rem;
   text-align: center;
-  color: var(--text-muted);
-  font-size: 1rem;
+  color: var(--secondary-text);
+  font-size: 1.1rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-top: 2rem;
 }
 
-/* Animación de entrada (opcional pero linda para UX) */
-#appointment-doctor-history-container-all .appointment-card {
-  opacity: 0;
+/* Animación de entrada */
+.appointment-card {
   animation: fadeInUp 0.4s ease forwards;
 }
 
@@ -121,18 +252,50 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .cards-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.25rem;
+  }
+}
+
 @media (max-width: 768px) {
   #appointment-doctor-history-container-all {
-    flex-direction: column;
-    padding: 12px;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    padding-bottom: 1.5rem;
+    /* padding-top se maneja dinámicamente */
   }
 
-  #appointment-doctor-history-container-all .cards-container {
+  .page-title {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .filters-section {
     grid-template-columns: 1fr;
-    gap: 16px;
+    padding: 1rem;
+    gap: 1rem;
   }
 
-  #appointment-doctor-history-container-all .appointment-card-title {
-    font-size: 1.05rem;
+  .btn-clear-filters {
+    margin-top: 0.5rem;
+  }
+
+  .cards-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .appointment-card {
+    padding: 1.25rem;
+  }
+
+  .appointment-card-title {
+    font-size: 1.1rem;
+  }
+
+  .appointment-card-date {
+    font-size: 0.9rem;
   }
 }

@@ -8,7 +8,7 @@ import localeEsAr from '@angular/common/locales/es-AR';
 
 import { routes } from './app.routes';
 import { authInterceptor } from './interceptors/auth.interceptor';
-import { AppointmentService } from './services/appointment-service';
+import { AppointmentService } from './services/appointment/appointment.service';
 
 // Registrar el locale de español Argentina
 registerLocaleData(localeEsAr);

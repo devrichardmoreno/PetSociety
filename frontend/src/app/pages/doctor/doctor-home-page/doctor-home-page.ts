@@ -1,19 +1,25 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { HeaderDoctor } from "../../../components/header-doctor/header-doctor/header-doctor";
-import { AppointmentDto, mapAppointmentDateToDate } from '../../../models/dto/appointment-dto/appointment-dto';
-import { DoctorService } from '../../../services/doctor/doctor-service';
-import { DiagnosesService } from '../../../services/diagnoses/diagnoses-service';
-import { Doctor } from '../../../models/doctor/doctor';
-import { AuthService } from '../../../services/auth.service';
+import { Component, OnInit, OnDestroy, NgZone, Inject, PLATFORM_ID } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { HeaderDoctor } from "../../../components/headers/doctor-header/header-doctor";
+import { AppointmentDto, mapAppointmentDateToDate } from '../../../models/dto/appointment/appointment-dto';
+import { DoctorService } from '../../../services/doctor/doctor.service';
+import { DiagnosesService } from '../../../services/diagnoses/diagnoses.service';
+import { Doctor } from '../../../models/entities/doctor';
+import { AuthService } from '../../../services/auth/auth.service';
 import { Router } from '@angular/router';
-import { DiagnoseDto } from '../../../models/dto/diagnose-dto/diagnose-dto';
+import { DiagnoseDto } from '../../../models/dto/diagnose/diagnose-dto';
 import { CommonModule } from '@angular/common';
-import { AppointmentService } from '../../../services/appointment/appointment-service';
+import { AppointmentService } from '../../../services/appointment/appointment.service';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { DiagnosisFormModal } from '../../diagnoses/diagnosis-form-modal/diagnosis-form-modal';
-import { DiagnosesHistoryModal } from '../../diagnoses/diagnoses-history-modal/diagnoses-history-modal';
-import { Subscription } from 'rxjs';
+import { DiagnosisFormModal } from '../diagnoses/diagnosis-form-modal/diagnosis-form-modal';
+import { DiagnosesHistoryModal } from '../../shared/diagnoses/diagnoses-history-modal/diagnoses-history-modal';
+import { Subscription, interval } from 'rxjs';
+import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
+import { PetType, PetTypeLabels } from '../../../models/enums/pet-type.enum';
+import { DiagnoseDetailModal } from '../diagnoses/diagnose-detail-modal/diagnose-detail-modal';
+import { Reason } from '../../../models/enums/reason.enum';
+import { Speciality } from '../../../models/enums/speciality.enum';
 
 
 @Component({
@@ -30,17 +36,20 @@ export class DoctorHomePage implements OnInit, OnDestroy {
      hasDiagnose?: boolean;
      })[] = [];
   doctor?: Doctor;
-  lastestDiagnoses: DiagnoseDto[] = [];
+  lastestDiagnoses: (DiagnoseDto & { date: Date; appointmentStartDate?: Date | null; appointmentEndDate?: Date | null })[] = [];
   loadingDiagnoses = false;
   diagnosesError: string | null = null;
-  diagnosesPage = { page: 0, size: 5, totalPages: 0, totalElements: 0 };
+  diagnosesPage = { page: 0, size: 3, totalPages: 0, totalElements: 0 };
   appointmentsPage = { page: 0, size: 5, totalPages: 0, totalElements: 0};
   loadingAppointments = false;
   appointmentsError: string | null = null;
 
   currentDate: Date = new Date();
+  headerHeight: number = 100; // Valor por defecto
 
   private subs = new Subscription();
+  private timeCheckInterval?: Subscription;
+  private resizeListener?: () => void;
 
   constructor(
     private doctorService: DoctorService,
@@ -48,11 +57,24 @@ export class DoctorHomePage implements OnInit, OnDestroy {
     private appointmentService: AppointmentService,
     private authService: AuthService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private ngZone: NgZone,
+    @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
   ngOnInit(): void {
     this.currentDate = new Date();
+    
+    // Calcular altura del header después de que la vista se inicialice
+    if (isPlatformBrowser(this.platformId)) {
+      setTimeout(() => {
+        this.calculateHeaderHeight();
+        // Recalcular altura del header cuando la ventana cambie de tamaño
+        this.resizeListener = () => this.calculateHeaderHeight();
+        window.addEventListener('resize', this.resizeListener);
+      }, 100);
+    }
+    
     const userId = this.authService.getUserId();
 
     // 1) Si no hay userId: acción segura 
@@ -73,6 +95,15 @@ export class DoctorHomePage implements OnInit, OnDestroy {
     this.loadScheduledAppointments(userId, 0, 5);
     
     this.loadLatestDiagnostics(userId, 0, this.diagnosesPage.size, false);
+
+    // Verificar tiempo cada minuto para actualizar botones de crear diagnóstico
+    this.timeCheckInterval = interval(60000).subscribe(() => {
+      this.currentDate = new Date();
+      // Recargar citas para actualizar el estado de los botones
+      if (userId) {
+        this.loadScheduledAppointments(userId, this.appointmentsPage.page, this.appointmentsPage.size);
+      }
+    });
   }
 
   loadScheduledAppointments(doctorId: number, page = 0, size = 5) {
@@ -81,7 +112,6 @@ export class DoctorHomePage implements OnInit, OnDestroy {
 
           const mapped = (pageResp?.content ?? []).map(mapAppointmentDateToDate);
           this.appointmentArray = mapped;
-
 
           this.appointmentsPage.page = pageResp.number ?? page;
           this.appointmentsPage.size = pageResp.size ?? size;
@@ -96,6 +126,7 @@ export class DoctorHomePage implements OnInit, OnDestroy {
           this.loadingAppointments = false;
         }
       })
+      this.subs.add(s);
   }
 
   loadNextAppointmentsPage() {
@@ -139,6 +170,13 @@ loadPrevAppointmentsPage() {
 
   ngOnDestroy(): void {
     this.subs.unsubscribe();
+    if (this.timeCheckInterval) {
+      this.timeCheckInterval.unsubscribe();
+    }
+    // Remover listener de resize
+    if (isPlatformBrowser(this.platformId) && this.resizeListener) {
+      window.removeEventListener('resize', this.resizeListener);
+    }
   }
 
   // helpers
@@ -155,6 +193,7 @@ loadPrevAppointmentsPage() {
     if (userId === null) return;
     this.loadLatestDiagnostics(userId, this.diagnosesPage.page - 1, this.diagnosesPage.size, false);
   }
+
   openDiagnosisModal(appointmentId: number) {
     const dialogRef = this.dialog.open(DiagnosisFormModal, {
       width: '600px',
@@ -164,11 +203,13 @@ loadPrevAppointmentsPage() {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) { 
-        console.log('Diagnóstico enviado:', result);
-        
-        const appointment = this.appointmentArray.find(app => app.id === appointmentId);
-        if (appointment) {
-          appointment.hasDiagnose = true;
+        // Recargar citas y diagnósticos para obtener el estado actualizado del backend
+        const userId = this.authService.getUserId();
+        if (userId !== null) {
+          // Recargar citas para actualizar el estado hasDiagnose
+          this.loadScheduledAppointments(userId, this.appointmentsPage.page, this.appointmentsPage.size);
+          // Recargar diagnósticos automáticamente
+          this.loadLatestDiagnostics(userId, 0, this.diagnosesPage.size, false);
         }
       }
   });
@@ -176,10 +217,20 @@ loadPrevAppointmentsPage() {
 
   openDiagnosesHistoryModal(petId : number) {
     const dialogRef = this.dialog.open(DiagnosesHistoryModal, {
-      width: '600px',
+      width: '800px',
+      maxWidth: '90vw',
       data: { petId },
-      panelClass: 'diagnose-history-dialog-panel' 
+      panelClass: 'diagnose-history-dialog-panel',
+      autoFocus: false
     })
+  }
+
+  openDiagnoseDetailModal(diagnose: DiagnoseDto & { date: Date; appointmentStartDate?: Date | null; appointmentEndDate?: Date | null }) {
+    this.dialog.open(DiagnoseDetailModal, {
+      width: '700px',
+      data: { diagnose },
+      panelClass: 'diagnose-detail-dialog-panel'
+    });
   }
 
   showDoctorProfile() {
@@ -188,5 +239,84 @@ loadPrevAppointmentsPage() {
 
   showAppointmentsList() { 
     this.showProfile = false;
+  }
+
+  getPetEmoji(petType?: PetType | string): string {
+    return PetEmojiUtil.getEmoji(petType);
+  }
+
+  getPetTypeLabel(petType?: PetType | string, otherType?: string): string {
+    if (!petType) return '';
+    if (petType === PetType.OTHER && otherType) {
+      return otherType;
+    }
+    return PetTypeLabels[petType as PetType] || '';
+  }
+
+  getFullPetDisplay(appointment: AppointmentDto & { petType?: PetType; otherType?: string }): string {
+    if (!appointment.petType) {
+      return appointment.petName;
+    }
+    const emoji = this.getPetEmoji(appointment.petType);
+    const typeLabel = this.getPetTypeLabel(appointment.petType, appointment.otherType);
+    return `${emoji} ${appointment.petName}${typeLabel ? ` (${typeLabel})` : ''}`;
+  }
+
+  getFullPetDisplayForDiagnose(diagnose: DiagnoseDto & { petType?: PetType; otherType?: string }): string {
+    if (!diagnose.petType) {
+      return diagnose.petName;
+    }
+    const emoji = this.getPetEmoji(diagnose.petType);
+    const typeLabel = this.getPetTypeLabel(diagnose.petType, diagnose.otherType);
+    return `${emoji} ${diagnose.petName}${typeLabel ? ` (${typeLabel})` : ''}`;
+  }
+
+  canCreateDiagnosis(appointment: AppointmentDto & { startDate?: Date | null; hasDiagnose?: boolean }): boolean {
+    if (appointment.hasDiagnose) return false;
+    if (!appointment.startDate) return false;
+    return appointment.startDate <= this.currentDate;
+  }
+
+  getReasonLabel(reason?: Reason | string): string {
+    if (!reason) return 'Sin razón especificada';
+    const reasonLabels: { [key in Reason]: string } = {
+      [Reason.CONTROL]: 'Control',
+      [Reason.VACCINATION]: 'Vacunación',
+      [Reason.EMERGENCY]: 'Urgencia',
+      [Reason.NUTRITION]: 'Nutrición'
+    };
+    if (typeof reason === 'string' && reason in reasonLabels) {
+      return reasonLabels[reason as Reason];
+    }
+    return reason;
+  }
+
+  getSpecialityLabel(speciality?: Speciality | string): string {
+    if (!speciality) return 'Sin especialidad';
+    const specialityLabels: { [key in Speciality]: string } = {
+      [Speciality.GENERAL_MEDICINE]: 'Medicina General',
+      [Speciality.INTERNAL_MEDICINE]: 'Medicina Interna',
+      [Speciality.NUTRITION]: 'Nutrición'
+    };
+    if (typeof speciality === 'string' && speciality in specialityLabels) {
+      return specialityLabels[speciality as Speciality];
+    }
+    return speciality;
+  }
+
+  calculateHeaderHeight(): void {
+    if (isPlatformBrowser(this.platformId)) {
+      this.ngZone.runOutsideAngular(() => {
+        setTimeout(() => {
+          const header = document.querySelector('app-header-doctor .header') as HTMLElement;
+          if (header) {
+            const height = header.offsetHeight;
+            this.ngZone.run(() => {
+              this.headerHeight = height; // Solo la altura del header, el espacio adicional se aplica en el HTML
+            });
+          }
+        }, 0);
+      });
+    }
   }
 }

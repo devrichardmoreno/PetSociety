@@ -1,0 +1,270 @@
+<section id="appointment-container-all">
+
+  <!-- 🔀 Switch para cambiar de modo -->
+  <div id="mode-switch">
+    <label class="switch-label">
+      <input type="checkbox" [(ngModel)]="isMultipleMode" [ngModelOptions]="{standalone: true}">
+      <span class="slider"></span>
+    </label>
+    <span class="mode-text">
+      {{ isMultipleMode ? 'Modo múltiple (crear varias citas)' : 'Modo individual (una sola cita)' }}
+    </span>
+  </div>
+
+  <!-- 🩺 Formulario individual -->
+  @if (!isMultipleMode) {
+    <form [formGroup]="appointmentForm" (ngSubmit)="onSubmit()">
+      <h1>Agendar Nueva Cita</h1>
+
+      <div class="input-wrapper">
+        <label for="doctor" class="input-label">Doctor</label>
+        <select id="doctor" 
+                class="custom-input" 
+                [class.ng-invalid]="appointmentForm.get('doctor')?.invalid && appointmentForm.get('doctor')?.touched"
+                [class.ng-valid]="appointmentForm.get('doctor')?.valid && appointmentForm.get('doctor')?.touched"
+                formControlName="doctor"
+                (blur)="appointmentForm.get('doctor')?.markAsTouched()"
+                (change)="appointmentForm.get('doctor')?.markAsTouched()">
+          <option [ngValue]="null" disabled>Elige un Doctor</option>
+          @for (doctor of doctors; track doctor) {
+            <option [ngValue]="doctor" [title]="doctor.name + ' ' + doctor.surname">
+              {{ doctor.name }} {{ doctor.surname }}
+            </option>
+          }
+        </select>
+      </div>
+      @if (appointmentForm.get('doctor')?.errors && appointmentForm.get('doctor')?.touched) {
+        <div class="error-message">
+          <p class="error-msg">El doctor es obligatorio.</p>
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="reason" class="input-label">Razón</label>
+        <select id="reason" 
+                class="custom-input"
+                [class.ng-invalid]="appointmentForm.get('reason')?.invalid && appointmentForm.get('reason')?.touched"
+                [class.ng-valid]="appointmentForm.get('reason')?.valid && appointmentForm.get('reason')?.touched"
+                formControlName="reason"
+                (blur)="appointmentForm.get('reason')?.markAsTouched()"
+                (change)="appointmentForm.get('reason')?.markAsTouched()">
+          <option [ngValue]="null" disabled>Elige una Razón</option>
+          @for (reason of reasonOptions; track reason) {
+            <option [ngValue]="reason.value">{{ reason.label }}</option>
+          }
+        </select>
+      </div>
+      @if (appointmentForm.get('reason')?.errors && appointmentForm.get('reason')?.touched) {
+        <div class="error-message">
+          <p class="error-msg">La razón es obligatoria.</p>
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="startTime" class="input-label">Hora de inicio</label>
+        <input id="startTime" 
+               type="datetime-local" 
+               class="custom-input"
+               [class.ng-invalid]="appointmentForm.get('startTime')?.invalid && appointmentForm.get('startTime')?.touched"
+               [class.ng-valid]="appointmentForm.get('startTime')?.valid && appointmentForm.get('startTime')?.touched"
+               formControlName="startTime"
+               (blur)="appointmentForm.get('startTime')?.markAsTouched()"
+               (change)="appointmentForm.get('startTime')?.markAsTouched()">
+      </div>
+      @if (appointmentForm.get('startTime')?.touched) {
+        <div class="error-message">
+          @if (appointmentForm.get('startTime')?.hasError('required')) {
+            <p class="error-msg">La hora de inicio es obligatoria.</p>
+          }
+          @if (appointmentForm.get('startTime')?.hasError('pastDate')) {
+            <p class="error-msg">La fecha u hora ingresada son incorrectas.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="endTime" class="input-label">Hora de fin</label>
+        <input id="endTime" 
+               type="datetime-local" 
+               class="custom-input"
+               [class.ng-invalid]="appointmentForm.get('endTime')?.invalid && appointmentForm.get('endTime')?.touched"
+               [class.ng-valid]="appointmentForm.get('endTime')?.valid && appointmentForm.get('endTime')?.touched"
+               formControlName="endTime"
+               (blur)="appointmentForm.get('endTime')?.markAsTouched()"
+               (change)="appointmentForm.get('endTime')?.markAsTouched()">
+      </div>
+      @if (appointmentForm.get('endTime')?.touched) {
+        <div class="error-message">
+          @if (appointmentForm.get('endTime')?.hasError('required')) {
+            <p class="error-msg">La hora de fin es obligatoria.</p>
+          }
+        </div>
+      }
+
+      @if (appointmentForm.errors?.['endBeforeStart'] && (appointmentForm.get('startTime')?.touched || appointmentForm.get('endTime')?.touched)) {
+        <div class="error-message">
+          <p class="error-msg">La hora de fin debe ser posterior a la hora de inicio.</p>
+        </div>
+      }
+
+      <button class="register-btn" 
+              type="submit" 
+              [disabled]="appointmentForm.invalid || appointmentForm.pending">
+        Agendar Cita
+      </button>
+    </form>
+  }
+
+  <!-- 📅 Formulario múltiple -->
+  @if (isMultipleMode) {
+    <form [formGroup]="appointmentBulkForm" (ngSubmit)="onSubmitBulk()">
+      <h1>Agendar Varias Citas</h1>
+
+      <div class="input-wrapper">
+        <label for="doctor-bulk" class="input-label">Doctor</label>
+        <select id="doctor-bulk" 
+                class="custom-input"
+                [class.ng-invalid]="appointmentBulkForm.get('doctor')?.invalid && appointmentBulkForm.get('doctor')?.touched"
+                [class.ng-valid]="appointmentBulkForm.get('doctor')?.valid && appointmentBulkForm.get('doctor')?.touched"
+                formControlName="doctor"
+                (blur)="appointmentBulkForm.get('doctor')?.markAsTouched()"
+                (change)="appointmentBulkForm.get('doctor')?.markAsTouched()">
+          <option [ngValue]="null" disabled>Elige un Doctor</option>
+          @for (doctor of doctors; track doctor) {
+            <option [ngValue]="doctor" [title]="doctor.name + ' ' + doctor.surname">
+              {{ doctor.name }} {{ doctor.surname }}
+            </option>
+          }
+        </select>
+      </div>
+      @if (appointmentBulkForm.get('doctor')?.errors && appointmentBulkForm.get('doctor')?.touched) {
+        <div class="error-message">
+          <p class="error-msg">El doctor es obligatorio.</p>
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="reason-bulk" class="input-label">Razón</label>
+        <select id="reason-bulk" 
+                class="custom-input"
+                [class.ng-invalid]="appointmentBulkForm.get('reason')?.invalid && appointmentBulkForm.get('reason')?.touched"
+                [class.ng-valid]="appointmentBulkForm.get('reason')?.valid && appointmentBulkForm.get('reason')?.touched"
+                formControlName="reason"
+                (blur)="appointmentBulkForm.get('reason')?.markAsTouched()"
+                (change)="appointmentBulkForm.get('reason')?.markAsTouched()">
+          <option [ngValue]="null" disabled>Elige una Razón</option>
+          @for (reason of reasonOptions; track reason) {
+            <option [ngValue]="reason.value">{{ reason.label }}</option>
+          }
+        </select>
+      </div>
+      @if (appointmentBulkForm.get('reason')?.errors && appointmentBulkForm.get('reason')?.touched) {
+        <div class="error-message">
+          <p class="error-msg">La razón es obligatoria.</p>
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="startDate" class="input-label">Fecha de inicio</label>
+        <input id="startDate" 
+               type="datetime-local" 
+               class="custom-input"
+               [class.ng-invalid]="appointmentBulkForm.get('startDate')?.invalid && appointmentBulkForm.get('startDate')?.touched"
+               [class.ng-valid]="appointmentBulkForm.get('startDate')?.valid && appointmentBulkForm.get('startDate')?.touched"
+               formControlName="startDate"
+               (blur)="appointmentBulkForm.get('startDate')?.markAsTouched()"
+               (change)="appointmentBulkForm.get('startDate')?.markAsTouched()">
+      </div>
+      @if (appointmentBulkForm.get('startDate')?.touched) {
+        <div class="error-message">
+          @if (appointmentBulkForm.get('startDate')?.hasError('required')) {
+            <p class="error-msg">La fecha de inicio es obligatoria.</p>
+          }
+          @if (appointmentBulkForm.get('startDate')?.hasError('pastDate')) {
+            <p class="error-msg">La fecha u hora ingresada son incorrectas.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="endDate" class="input-label">Fecha de fin</label>
+        <input id="endDate" 
+               type="datetime-local" 
+               class="custom-input"
+               [class.ng-invalid]="appointmentBulkForm.get('endDate')?.invalid && appointmentBulkForm.get('endDate')?.touched"
+               [class.ng-valid]="appointmentBulkForm.get('endDate')?.valid && appointmentBulkForm.get('endDate')?.touched"
+               formControlName="endDate"
+               (blur)="appointmentBulkForm.get('endDate')?.markAsTouched()"
+               (change)="appointmentBulkForm.get('endDate')?.markAsTouched()">
+      </div>
+      @if (appointmentBulkForm.get('endDate')?.touched) {
+        <div class="error-message">
+          @if (appointmentBulkForm.get('endDate')?.hasError('required')) {
+            <p class="error-msg">La fecha de fin es obligatoria.</p>
+          }
+        </div>
+      }
+
+      @if (appointmentBulkForm.errors?.['endBeforeStart'] && (appointmentBulkForm.get('startDate')?.touched || appointmentBulkForm.get('endDate')?.touched)) {
+        <div class="error-message">
+          <p class="error-msg">La fecha de fin debe ser posterior a la fecha de inicio.</p>
+        </div>
+      }
+
+      <div class="time-range-section">
+        <h3 class="time-range-title">Franja Horaria</h3>
+        <p class="time-range-description">Las citas solo se crearán dentro de esta franja horaria (evita crear citas en horarios no deseados)</p>
+        
+        <div class="time-range-inputs">
+          <div class="input-wrapper">
+            <label for="minHour" class="input-label">Hora mínima</label>
+            <input id="minHour" 
+                   type="time" 
+                   class="custom-input time-input"
+                   [class.ng-invalid]="appointmentBulkForm.get('minHour')?.invalid && appointmentBulkForm.get('minHour')?.touched"
+                   [class.ng-valid]="appointmentBulkForm.get('minHour')?.valid && appointmentBulkForm.get('minHour')?.touched"
+                   formControlName="minHour"
+                   (blur)="appointmentBulkForm.get('minHour')?.markAsTouched()"
+                   (change)="appointmentBulkForm.get('minHour')?.markAsTouched()">
+          </div>
+
+          <div class="input-wrapper">
+            <label for="maxHour" class="input-label">Hora máxima</label>
+            <input id="maxHour" 
+                   type="time" 
+                   class="custom-input time-input"
+                   [class.ng-invalid]="appointmentBulkForm.get('maxHour')?.invalid && appointmentBulkForm.get('maxHour')?.touched"
+                   [class.ng-valid]="appointmentBulkForm.get('maxHour')?.valid && appointmentBulkForm.get('maxHour')?.touched"
+                   formControlName="maxHour"
+                   (blur)="appointmentBulkForm.get('maxHour')?.markAsTouched()"
+                   (change)="appointmentBulkForm.get('maxHour')?.markAsTouched()">
+          </div>
+        </div>
+
+        @if (appointmentBulkForm.get('minHour')?.touched && appointmentBulkForm.get('minHour')?.hasError('required')) {
+          <div class="error-message">
+            <p class="error-msg">La hora mínima es obligatoria.</p>
+          </div>
+        }
+
+        @if (appointmentBulkForm.get('maxHour')?.touched && appointmentBulkForm.get('maxHour')?.hasError('required')) {
+          <div class="error-message">
+            <p class="error-msg">La hora máxima es obligatoria.</p>
+          </div>
+        }
+
+        @if (appointmentBulkForm.errors?.['invalidTimeRange'] && (appointmentBulkForm.get('minHour')?.touched || appointmentBulkForm.get('maxHour')?.touched)) {
+          <div class="error-message">
+            <p class="error-msg">La hora máxima debe ser posterior a la hora mínima.</p>
+          </div>
+        }
+      </div>
+
+      <button class="register-btn" 
+              type="submit" 
+              [disabled]="appointmentBulkForm.invalid || appointmentBulkForm.pending">
+        Crear Citas
+      </button>
+    </form>
+  }
+</section>

@@ -1,4 +1,4 @@
-import { PetType } from '../models/dto/pet-type.enum';
+import { PetType } from '../models/enums/pet-type.enum';
 
 /**
  * Utilidad para obtener emojis según el tipo de animal

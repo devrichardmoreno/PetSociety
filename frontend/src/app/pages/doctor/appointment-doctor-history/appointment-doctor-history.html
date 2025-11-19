@@ -1,23 +1,84 @@
-<section id="appointment-doctor-history-container-all">
+<section id="appointment-doctor-history-container-all"
+         [style.padding-top.px]="headerHeight + 10">
     <main id="main-content">
-        @if (appointementArray.length>0) {
+        <h1 class="page-title">Historial de Citas</h1>
+
+        <!-- Filtros -->
+        <div class="filters-section">
+            <div class="filter-group">
+                <label for="pet-filter">Mascota:</label>
+                <select id="pet-filter" [(ngModel)]="selectedPetId" (change)="onPetFilterChange(selectedPetId)" class="filter-select">
+                    <option value="ALL">Todas</option>
+                    @for (pet of uniquePets; track pet.id) {
+                        <option [value]="pet.id">{{ pet.name }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="client-filter">Cliente:</label>
+                <select id="client-filter" [(ngModel)]="selectedClientName" (change)="onClientFilterChange(selectedClientName)" class="filter-select">
+                    <option value="ALL">Todos</option>
+                    @for (client of uniqueClients; track client) {
+                        <option [value]="client">{{ client }}</option>
+                    }
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="date-filter">Fecha:</label>
+                <input id="date-filter" 
+                       type="date" 
+                       [(ngModel)]="selectedDate" 
+                       (change)="onDateFilterChange()" 
+                       class="filter-input">
+            </div>
+
+            <div class="filter-group">
+                <label for="reason-filter">Motivo:</label>
+                <select id="reason-filter" [(ngModel)]="selectedReason" (change)="onReasonFilterChange(selectedReason)" class="filter-select">
+                    <option value="ALL">Todos</option>
+                    <option [value]="Reason.CONTROL">Control</option>
+                    <option [value]="Reason.EMERGENCY">Emergencia</option>
+                    <option [value]="Reason.VACCINATION">Vacunación</option>
+                    <option [value]="Reason.NUTRITION">Nutrición</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <button class="btn-clear-filters" (click)="clearFilters()">Limpiar filtros</button>
+            </div>
+        </div>
+
+        <!-- Listado de citas -->
+        @if (displayedAppointments.length === 0) {
+            <div class="empty-message">
+                <p>No se encontraron citas con los filtros seleccionados</p>
+            </div>
+        } @else {
             <div class="cards-container">
-                @for (appointment of appointementArray; track $index) {
-                    <article class="appointment-card" role="article" aria-label="Cita {{ $index + 1 }}" (click)="goToDiagnose(appointment.diagnosisId)">
+                @for (appointment of displayedAppointments; track appointment.appointmentId) {
+                    <article class="appointment-card" role="article" aria-label="Cita {{ appointment.appointmentId }}" (click)="goToDiagnose(appointment.diagnosisId)">
                         <div class="appointment-card-header">
-                            <h3 class="appointment-card-title">Cita con {{ appointment.petName || '—' }}</h3>
+                            <h3 class="appointment-card-title">{{ getFullPetDisplay(appointment) }}</h3>
                             <div class="appointment-card-date">{{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</div>
                         </div>
                         <div class="appointment-card-body">
-                            <p><strong>Motivo:</strong> {{ appointment.reason || 'No especificado' }}</p>
+                            <p><strong>Motivo:</strong> {{ getReasonLabel(appointment.reason) }}</p>
                             <p><strong>Cliente:</strong> {{ appointment.clientName || 'No especificado' }}</p>
-                            <p><strong>Mascota:</strong> {{ appointment.petName || '—' }}</p>
                         </div>
                     </article>
                 }
             </div>
-        } @else {
-            <p class="no-appointments">No hay citas para mostrar.</p>
+
+            <!-- Botón Ver más -->
+            @if (hasMoreItems) {
+                <div class="load-more-container">
+                    <button class="btn-load-more" (click)="loadMore()">
+                        Ver más
+                    </button>
+                </div>
+            }
         }
     </main>
 </section>

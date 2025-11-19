@@ -1,0 +1,116 @@
+.diagnose-detail-container {
+  padding: 1.5rem;
+  max-width: 700px;
+  width: 100%;
+}
+
+.modal-title {
+  color: var(--hospital-blue);
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 1.5rem 0;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid var(--hospital-green);
+}
+
+.detail-section {
+  margin-bottom: 1.5rem;
+}
+
+.detail-section:last-of-type {
+  margin-bottom: 0;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #e8e8e8;
+  gap: 1rem;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  color: var(--hospital-blue);
+  font-weight: 700;
+  font-size: 0.95rem;
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.detail-value {
+  color: #333;
+  font-size: 0.95rem;
+  text-align: right;
+  flex: 1;
+}
+
+.pet-type {
+  color: var(--secondary-text);
+  font-size: 0.9rem;
+}
+
+.section-title {
+  color: var(--hospital-blue);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 0.75rem 0;
+}
+
+.detail-content {
+  background-color: var(--light-bg);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--hospital-green);
+  color: #333;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e8e8e8;
+}
+
+.modal-actions button {
+  background: linear-gradient(135deg, var(--hospital-blue), #2a8bc4);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.modal-actions button:hover {
+  background: linear-gradient(135deg, #2a8bc4, var(--hospital-blue));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(69, 174, 221, 0.3);
+}
+
+@media (max-width: 768px) {
+  .diagnose-detail-container {
+    padding: 1rem;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .detail-value {
+    text-align: left;
+  }
+}
+
