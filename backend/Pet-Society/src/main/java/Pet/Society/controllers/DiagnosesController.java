@@ -90,7 +90,7 @@ public class DiagnosesController {
         return ResponseEntity.ok(diagnosis);
     }
 
-    @PreAuthorize("@ownershipValidator.canAccessDiagnosis(#id")
+    @PreAuthorize("@ownershipValidator.canAccessDiagnosis(#id)")
     @GetMapping("/{id}/pdf")
     public ResponseEntity<byte[]> downloadDiagnosisPdf(@PathVariable Long id){
         byte[] pdf = diagnosesService.generateDiagnosisPdf(id);
