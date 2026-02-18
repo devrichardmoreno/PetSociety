@@ -23,15 +23,18 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
 
     private final DiagnosesRepository diagnosesRepository;
     private final AppointmentRepository appointmentRepository;
+    private final DiagnosesPdfGeneratorService diagnosesPdfGeneratorService;
 
     @Autowired
     public DiagnosesService(DiagnosesRepository diagnosesRepository,
                             PetRepository petRepository,
                             DoctorRepository doctorRepository,
                             AppointmentRepository appointmentRepository,
-                            AppointmentService appointmentService) {
+                            AppointmentService appointmentService,
+                            DiagnosesPdfGeneratorService diagnosesPdfGeneratorService) {
         this.diagnosesRepository = diagnosesRepository;
         this.appointmentRepository = appointmentRepository;
+        this.diagnosesPdfGeneratorService = diagnosesPdfGeneratorService;
 
     }
 
@@ -67,6 +70,11 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
     public DiagnosesDTOResponse findById(Long id) {
         return toDTO(diagnosesRepository.findById(id)
                 .orElseThrow(() -> new DiagnosesNotFoundException("Diagnosis " + id + " not found")));
+    }
+
+    public DiagnosesEntity getEntity(Long id) {
+        return this.diagnosesRepository.findById(id)
+                .orElseThrow(() -> new DiagnosesNotFoundException("Diagnosis " + id + " not found"));
     }
 
 
@@ -105,6 +113,16 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
             throw new DiagnosesNotFoundException("Diagnoses of Doctor id : " + id + " not found");
         }
         return diagnosesRepository.findByDoctorId(id, pageable).map(this::toDTO);
+    }
+
+    public byte[] generateDiagnosisPdf(Long id){
+
+        DiagnosesEntity diagnosis = this.diagnosesRepository.findById(id)
+                .orElseThrow(() -> new DiagnosesNotFoundException("No se encuentra diagnóstico"));
+
+        DiagnosesDTOResponse dto = toDTO(diagnosis);
+
+        return diagnosesPdfGeneratorService.generate(dto);
     }
 
     @Override

@@ -9,9 +9,11 @@ import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.UnitValue;
+import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 
+@Service
 public class DiagnosesPdfGeneratorService implements PdfGenerator<DiagnosesDTOResponse> {
     @Override
     public byte[] generate(DiagnosesDTOResponse dto) {
