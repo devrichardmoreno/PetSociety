@@ -159,5 +159,12 @@ export class DiagnosesService {
       }
     );
   }
+
+  downloadDiagnosisPdf(diagnoseId: number): Observable<Blob> {
+    return this.http.get(`${this.url}/${diagnoseId}/pdf`, {
+      headers: this.getAuthHeaders(),
+      responseType: 'blob'
+    });
+  }
 }
 

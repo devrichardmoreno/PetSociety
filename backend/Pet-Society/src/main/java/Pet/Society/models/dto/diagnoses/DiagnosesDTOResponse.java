@@ -20,6 +20,7 @@ import java.time.LocalDateTime;
 @SuperBuilder
 public class DiagnosesDTOResponse {
 
+    private Long id;
 
     @NotBlank
     private String diagnose;

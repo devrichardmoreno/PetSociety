@@ -2,6 +2,7 @@ import { Reason } from '../../enums/reason.enum';
 import { PetType } from '../../enums/pet-type.enum';
 
 export interface DiagnosesDTOResponse {
+  id: number;
   diagnose: string;
   treatment: string;
   doctorName: string;

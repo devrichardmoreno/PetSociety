@@ -17,7 +17,7 @@ import Swal from 'sweetalert2';
   standalone: true,
   imports: [CommonModule, FormsModule, HeaderClient],
   templateUrl: './client-diagnoses.html',
-  styleUrl: './client-diagnoses.css'
+  styleUrls: ['./client-diagnoses.css']
 })
 export class ClientDiagnosesComponent implements OnInit {
   // Exponer enum para uso en template
@@ -180,6 +180,29 @@ export class ClientDiagnosesComponent implements OnInit {
       return diagnosis;
     }
     return diagnosis.substring(0, maxLength) + '...';
+  }
+
+  downloadDiagnosisPdf(diagnoseId: number): void {
+    this.diagnosesService.downloadDiagnosisPdf(diagnoseId).subscribe({
+      next: (blob: Blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `diagnosis-${diagnoseId}.pdf`;
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      },
+      error: (error) => {
+        console.error('Error al descargar PDF:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo descargar el PDF del diagnóstico'
+        });
+      }
+    });
   }
 
   openDetailsModal(diagnosis: DiagnosesDTOResponse): void {

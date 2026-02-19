@@ -133,6 +133,7 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
     @Override
     public DiagnosesDTOResponse toDTO(DiagnosesEntity entity) {
         return DiagnosesDTOResponse.builder()
+                .id(entity.getId())
                 .diagnose(entity.getDiagnose())
                 .treatment(entity.getTreatment())
                 .doctorName(entity.getDoctor().getName() + " " + entity.getDoctor().getSurname())
