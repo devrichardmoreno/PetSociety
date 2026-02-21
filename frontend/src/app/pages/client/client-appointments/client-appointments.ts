@@ -11,6 +11,7 @@ import { PetType } from '../../../models/enums/pet-type.enum';
 import { HeaderClient } from '../../../components/headers/client-header/header-client';
 import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../utils/error-handler';
 
 @Component({
   selector: 'app-client-appointments',
@@ -32,6 +33,8 @@ export class ClientAppointmentsComponent implements OnInit {
   selectedStatus: Status | 'ALL' = 'ALL';
   selectedPetId: number | 'ALL' = 'ALL';
   selectedReason: Reason | 'ALL' = 'ALL';
+  startDate: string = '';
+  endDate: string = '';
   
   // Paginación
   itemsPerPage = 12;
@@ -101,7 +104,31 @@ export class ClientAppointmentsComponent implements OnInit {
       // Convertir selectedPetId a número si no es 'ALL' para comparar correctamente
       const petMatch = this.selectedPetId === 'ALL' || appointment.petId === Number(this.selectedPetId);
       const reasonMatch = this.selectedReason === 'ALL' || appointment.reason === this.selectedReason;
-      return statusMatch && petMatch && reasonMatch;
+      
+      // Filtro de fecha
+      let dateMatch = true;
+      if (this.startDate || this.endDate) {
+        const appointmentDate = new Date(appointment.startTime);
+        appointmentDate.setHours(0, 0, 0, 0);
+        
+        if (this.startDate) {
+          const startDateFilter = new Date(this.startDate);
+          startDateFilter.setHours(0, 0, 0, 0);
+          if (appointmentDate < startDateFilter) {
+            dateMatch = false;
+          }
+        }
+        
+        if (this.endDate && dateMatch) {
+          const endDateFilter = new Date(this.endDate);
+          endDateFilter.setHours(23, 59, 59, 999);
+          if (appointmentDate > endDateFilter) {
+            dateMatch = false;
+          }
+        }
+      }
+      
+      return statusMatch && petMatch && reasonMatch && dateMatch;
     });
 
     this.displayedCount = 0;
@@ -132,6 +159,22 @@ export class ClientAppointmentsComponent implements OnInit {
 
   onReasonFilterChange(reason: Reason | 'ALL'): void {
     this.selectedReason = reason;
+    this.applyFilters();
+  }
+
+  onStartDateChange(date: string): void {
+    this.startDate = date;
+    this.applyFilters();
+  }
+
+  onEndDateChange(date: string): void {
+    this.endDate = date;
+    this.applyFilters();
+  }
+
+  clearDateFilters(): void {
+    this.startDate = '';
+    this.endDate = '';
     this.applyFilters();
   }
 
@@ -260,27 +303,7 @@ export class ClientAppointmentsComponent implements OnInit {
         this.loadingDiagnosis = false;
       },
       error: (error) => {
-        console.error('Error al cargar el diagnóstico:', error);
-        console.error('Diagnosis ID:', appointment.diagnosisId);
-        console.error('Appointment ID:', appointment.appointmentId);
-        console.error('Error status:', error.status);
-        console.error('Error completo:', error);
-        
-        let errorMessage = 'No se pudo cargar el diagnóstico. Por favor, intenta nuevamente.';
-        
-        if (error.status === 404) {
-          errorMessage = 'El diagnóstico no fue encontrado. Puede que haya sido eliminado.';
-        } else if (error.status === 403) {
-          errorMessage = 'No tienes permisos para ver este diagnóstico.';
-        } else if (error.status === 401) {
-          errorMessage = 'Debes iniciar sesión para ver el diagnóstico.';
-        } else if (error.status === 500) {
-          errorMessage = 'Error del servidor. Por favor, contacta al administrador.';
-        } else if (error.error?.message) {
-          errorMessage = error.error.message;
-        } else if (error.message) {
-          errorMessage = error.message;
-        }
+        const errorMessage = getFriendlyErrorMessage(error);
         
         Swal.fire({
           icon: 'error',

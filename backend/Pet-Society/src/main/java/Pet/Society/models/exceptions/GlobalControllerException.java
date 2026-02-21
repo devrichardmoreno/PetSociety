@@ -46,6 +46,14 @@ public class GlobalControllerException {
         return createProblemDetail(HttpStatus.CONFLICT, "User Unsubscribed", "The user is unsubscribed", request);
     }
 
+    @ExceptionHandler(LastAdminException.class)
+    public ProblemDetail HandlerLastAdminException(LastAdminException ex, HttpServletRequest request) {
+        String detail = ex.getMessage() != null && !ex.getMessage().isEmpty()
+            ? ex.getMessage()
+            : "No se puede dar de baja al último administrador activo. Debe quedar al menos un administrador en el sistema.";
+        return createProblemDetail(HttpStatus.CONFLICT, "Last Admin Exception", detail, request);
+    }
+
     @ExceptionHandler(PetNotFoundException.class)
     public ProblemDetail HandlerPetNotFoundException(PetNotFoundException ex, HttpServletRequest request) {
         return createProblemDetail(HttpStatus.NOT_FOUND, "Pet Not Found", "The pet does not exist", request);
@@ -101,7 +109,10 @@ public class GlobalControllerException {
 
     @ExceptionHandler(BeforeAppointmentException.class)
     public ProblemDetail handlerBeforeAppointmentException(BeforeAppointmentException ex, HttpServletRequest request) {
-        return createProblemDetail(HttpStatus.CONFLICT, "Before Appointment Exception", "You can't make a diagnoses before appointment starts" + ex.getMessage(), request);
+        String detail = ex.getMessage() != null && !ex.getMessage().isEmpty()
+            ? ex.getMessage()
+            : "No se puede crear un diagnóstico fuera del tiempo permitido.";
+        return createProblemDetail(HttpStatus.CONFLICT, "Appointment Time Exception", detail, request);
     }
 
 

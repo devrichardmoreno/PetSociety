@@ -5,8 +5,9 @@ import { RegisterService } from '../../../services/auth/register.service';
 import { AuthService } from '../../../services/auth/auth.service';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
-import { nameValidator, phoneValidator, dniValidator, usernameExistsValidator } from '../../../utils/form-validators';
+import { nameValidator, phoneValidator, dniValidator, usernameExistsValidator, dniExistsValidator, emailExistsValidator, phoneExistsValidator } from '../../../utils/form-validators';
 import { capitalizeProperNames } from '../../../utils/text';
+import { getFriendlyErrorMessage } from '../../../utils/error-handler';
 
 @Component({
   selector: 'app-register-component',
@@ -37,9 +38,18 @@ export class RegisterComponent implements OnInit {
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordValidator]],
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
       surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
-      phone: ['', [Validators.required, phoneValidator()]],
-      dni: ['', [Validators.required, dniValidator()]],
-      email: ['', [Validators.required, Validators.email]],
+      phone: ['', 
+        [Validators.required, phoneValidator()],
+        [phoneExistsValidator((phone: string) => this.authService.checkPhoneExists(phone))]
+      ],
+      dni: ['', 
+        [Validators.required, dniValidator()],
+        [dniExistsValidator((dni: string) => this.authService.checkDniExists(dni))]
+      ],
+      email: ['', 
+        [Validators.required, Validators.email],
+        [emailExistsValidator((email: string) => this.authService.checkEmailExists(email))]
+      ],
       foundation: [false]
     });
 
@@ -196,34 +206,7 @@ onSubmit() {
         });
       },
       error: (error) => {
-        let errorMessage = 'Ocurrió un problema al crear la cuenta.';
-        
-        // Manejo específico para username duplicado (409 CONFLICT)
-        if (error.status === 409) {
-          if (error.error) {
-            if (typeof error.error === 'object' && error.error.detail) {
-              errorMessage = error.error.detail;
-            } else if (typeof error.error === 'string') {
-              errorMessage = error.error;
-            } else {
-              errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
-            }
-          } else {
-            errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
-          }
-        } else if (error.error) {
-          if (typeof error.error === 'object' && error.error.detail) {
-            errorMessage = error.error.detail;
-          } else if (typeof error.error === 'string') {
-            errorMessage = error.error;
-          } else if (error.error.message) {
-            errorMessage = error.error.message;
-          }
-        } else if (error.message) {
-          errorMessage = error.message;
-        } else if (error.statusText) {
-          errorMessage = error.statusText;
-        }
+        const errorMessage = getFriendlyErrorMessage(error);
 
         Swal.fire({
           icon: 'error',

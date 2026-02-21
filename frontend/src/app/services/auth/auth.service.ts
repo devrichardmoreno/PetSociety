@@ -167,5 +167,55 @@ export class AuthService {
       map(response => response.exists)
     );
   }
+
+  /**
+   * Verifica si un DNI ya existe
+   */
+  checkDniExists(dni: string): Observable<boolean> {
+    return this.http.get<{ exists: boolean }>(`${this.API_URL}/check-dni`, {
+      params: { dni }
+    }).pipe(
+      map(response => response.exists)
+    );
+  }
+
+  /**
+   * Verifica si un email ya existe
+   */
+  checkEmailExists(email: string): Observable<boolean> {
+    return this.http.get<{ exists: boolean }>(`${this.API_URL}/check-email`, {
+      params: { email }
+    }).pipe(
+      map(response => response.exists)
+    );
+  }
+
+  /**
+   * Verifica si un teléfono ya existe
+   */
+  checkPhoneExists(phone: string): Observable<boolean> {
+    return this.http.get<{ exists: boolean }>(`${this.API_URL}/check-phone`, {
+      params: { phone }
+    }).pipe(
+      map(response => response.exists)
+    );
+  }
+
+  /**
+   * Solicita un token de recuperación de contraseña
+   */
+  forgotPassword(email: string): Observable<{ resetToken: string; message: string }> {
+    return this.http.post<{ resetToken: string; message: string }>(`${this.API_URL}/forgot-password`, { email });
+  }
+
+  /**
+   * Restablece la contraseña usando el token
+   */
+  resetPassword(token: string, newPassword: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/reset-password`, { 
+      token, 
+      newPassword 
+    });
+  }
 }
 

@@ -1,8 +1,19 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: var(--light-bg, #f8f9fa);
+  padding-top: 100px; /* Espacio para el header fijo */
+}
+
 #numbers-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr); /* Crea una matriz de 2x2 */
   gap: 50px; /* Espacio entre las tarjetas */
   padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
 /* Estilos básicos para las tarjetas */
@@ -20,6 +31,8 @@
   margin-bottom: 40px;
   font-size: 2.5em; /* Título más grande */
   margin-top: 20px;
+  color: var(--hospital-blue, #45aedd);
+  padding: 0 20px;
 }
 
 /* Asignación de colores a cada tarjeta */
@@ -46,15 +59,18 @@
   color: #333;
 }
 
-#card-information-5.clickable {
+.appointment-item.clickable {
   cursor: pointer;
   transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: 6px;
+  margin: 5px 0;
 }
 
-#card-information-5.clickable:hover {
-  background-color: #e0e0e0;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.appointment-item.clickable:hover {
+  background-color: #e8e8e8;
+  transform: translateX(5px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 #card-information-5 h3 {
@@ -71,10 +87,85 @@
   font-weight: normal;
 }
 
+.appointment-time {
+  font-weight: 600;
+  margin-bottom: 15px !important;
+  font-size: 0.9em !important;
+}
+
+.appointment-item {
+  margin-bottom: 10px;
+}
+
+.appointment-divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 15px 0;
+  opacity: 0.5;
+}
+
 .no-appointment-message {
   text-align: center !important;
   font-style: italic;
   color: #666;
   margin-top: 20px !important;
   font-size: 1em !important;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  #numbers-container {
+    gap: 30px;
+    padding: 15px;
+  }
+
+  [id^="card-information-"] {
+    padding: 30px;
+    font-size: 1.3em;
+  }
+
+  #main-title {
+    font-size: 2em;
+  }
+}
+
+@media (max-width: 768px) {
+  :host {
+    padding-top: 80px;
+  }
+
+  #numbers-container {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 15px;
+  }
+
+  [id^="card-information-"] {
+    padding: 25px;
+    font-size: 1.2em;
+  }
+
+  #card-information-5 {
+    grid-column: 1;
+  }
+
+  #main-title {
+    font-size: 1.5em;
+    margin-bottom: 30px;
+  }
+
+  #card-information-5 p {
+    font-size: 0.9em;
+  }
+}
+
+@media (max-width: 480px) {
+  [id^="card-information-"] {
+    padding: 20px;
+    font-size: 1.1em;
+  }
+
+  #main-title {
+    font-size: 1.3em;
+  }
 }

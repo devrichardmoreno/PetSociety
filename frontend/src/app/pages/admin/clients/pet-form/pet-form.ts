@@ -9,6 +9,7 @@ import { PetType, PetTypeLabels } from '../../../../models/enums/pet-type.enum';
 import { ClientDTO } from '../../../../models/dto/client/client-dto';
 import Swal from 'sweetalert2';
 import { nameValidator } from '../../../../utils/form-validators';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
 
 @Component({
   selector: 'app-pet-form',
@@ -212,20 +213,7 @@ export class PetFormComponent implements OnInit {
           });
         },
         error: (error) => {
-          console.error('❌ Error al modificar la mascota:', error);
-          let errorMessage = 'Ocurrió un problema al modificar la mascota.';
-          
-          if (error.error) {
-            if (typeof error.error === 'object' && error.error.detail) {
-              errorMessage = error.error.detail;
-            } else if (typeof error.error === 'string') {
-              errorMessage = error.error;
-            } else if (error.error.message) {
-              errorMessage = error.error.message;
-            }
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
+          const errorMessage = getFriendlyErrorMessage(error);
 
           Swal.fire({
             icon: 'error',
@@ -260,20 +248,7 @@ export class PetFormComponent implements OnInit {
           });
         },
         error: (error) => {
-          console.error('❌ Error al registrar la mascota:', error);
-          let errorMessage = 'Ocurrió un problema al registrar la mascota.';
-          
-          if (error.error) {
-            if (typeof error.error === 'object' && error.error.detail) {
-              errorMessage = error.error.detail;
-            } else if (typeof error.error === 'string') {
-              errorMessage = error.error;
-            } else if (error.error.message) {
-              errorMessage = error.error.message;
-            }
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
+          const errorMessage = getFriendlyErrorMessage(error);
 
           Swal.fire({
             icon: 'error',

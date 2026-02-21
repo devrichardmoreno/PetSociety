@@ -54,6 +54,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST,"/register/new/client").permitAll()
                         .requestMatchers(HttpMethod.POST,"/auth/login").permitAll()
                         .requestMatchers(HttpMethod.GET,"/auth/check-username").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/auth/check-dni").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/auth/check-email").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/auth/check-phone").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/forgot-password").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/auth/reset-password").permitAll()
                         .requestMatchers(HttpMethod.POST,"/register/new/admin").permitAll()
                         .requestMatchers(HttpMethod.POST,"/register/new/client/admin").hasRole("ADMIN")
                         //ACCESS TO PETS

@@ -268,9 +268,20 @@
   color: #3a9bc7;
 }
 
+@media (max-width: 1024px) {
+  .profile-wrapper {
+    max-width: 95%;
+  }
+
+  .info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
 @media (max-width: 768px) {
   #admin-profile-container {
     padding: 1rem;
+    padding-top: 100px; /* Espacio para el header fijo */
   }
 
   .profile-image-section {
@@ -291,6 +302,10 @@
     gap: 1rem;
   }
 
+  .btn-edit-profile {
+    width: 100%;
+  }
+
   .form-actions {
     flex-direction: column;
   }
@@ -298,6 +313,51 @@
   .btn-cancel,
   .btn-save {
     width: 100%;
+  }
+
+  .avatar-circle {
+    width: 100px;
+    height: 100px;
+  }
+
+  .avatar-initials {
+    font-size: 2.5rem;
+  }
+
+  .profile-name {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  #admin-profile-container {
+    padding: 0.5rem;
+    padding-top: 80px;
+  }
+
+  .profile-image-section {
+    padding: 1.5rem 1rem;
+  }
+
+  .profile-info-section {
+    padding: 1rem;
+  }
+
+  .avatar-circle {
+    width: 80px;
+    height: 80px;
+  }
+
+  .avatar-initials {
+    font-size: 2rem;
+  }
+
+  .profile-name {
+    font-size: 1.3rem;
+  }
+
+  .profile-header h3 {
+    font-size: 1.5rem;
   }
 }
 

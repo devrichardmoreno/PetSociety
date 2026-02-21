@@ -58,7 +58,7 @@
         } @else {
             <div class="cards-container">
                 @for (appointment of displayedAppointments; track appointment.appointmentId) {
-                    <article class="appointment-card" role="article" aria-label="Cita {{ appointment.appointmentId }}" (click)="goToDiagnose(appointment.diagnosisId)">
+                    <article class="appointment-card" role="article" aria-label="Cita {{ appointment.appointmentId }}" (click)="openAppointmentDetails(appointment)">
                         <div class="appointment-card-header">
                             <h3 class="appointment-card-title">{{ getFullPetDisplay(appointment) }}</h3>
                             <div class="appointment-card-date">{{ appointment.startTime | date:'dd/MM/yyyy HH:mm' }}</div>
@@ -66,6 +66,9 @@
                         <div class="appointment-card-body">
                             <p><strong>Motivo:</strong> {{ getReasonLabel(appointment.reason) }}</p>
                             <p><strong>Cliente:</strong> {{ appointment.clientName || 'No especificado' }}</p>
+                            @if (appointment.hasDiagnosis) {
+                                <p class="has-diagnosis">✓ Tiene diagnóstico</p>
+                            }
                         </div>
                     </article>
                 }
@@ -82,3 +85,102 @@
         }
     </main>
 </section>
+
+<!-- Modal de detalles -->
+@if (showDetailsModal && selectedAppointment) {
+  <div class="modal-overlay" (click)="closeDetailsModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>Detalles de la Cita</h2>
+        <button class="btn-close" (click)="closeDetailsModal()">×</button>
+      </div>
+
+      <div class="modal-body">
+        <div class="appointment-details-section">
+          <h3>Información de la Cita</h3>
+          <div class="detail-row">
+            <span class="detail-label">Mascota:</span>
+            <span class="detail-value">{{ getFullPetDisplay(selectedAppointment) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Cliente:</span>
+            <span class="detail-value">{{ selectedAppointment.clientName || 'No especificado' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Fecha:</span>
+            <span class="detail-value">{{ formatDate(selectedAppointment.startTime) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Horario:</span>
+            <span class="detail-value">{{ formatTime(selectedAppointment.startTime) }} - {{ formatTime(selectedAppointment.endTime) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Doctor:</span>
+            <span class="detail-value">{{ selectedAppointment.doctorName }} - {{ getSpecialityLabel(selectedAppointment.doctorSpeciality) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Motivo:</span>
+            <span class="detail-value">{{ getReasonLabel(selectedAppointment.reason) }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Estado:</span>
+            <span class="detail-value status-badge" [style.background-color]="getStatusColor(selectedAppointment.status)">
+              {{ getStatusLabel(selectedAppointment.status) }}
+            </span>
+          </div>
+        </div>
+
+        @if (selectedAppointment.hasDiagnosis) {
+          @if (loadingDiagnosis) {
+            <div class="loading-message">Cargando diagnóstico...</div>
+          } @else if (diagnosisData) {
+            <div class="diagnosis-section">
+              <h3>Diagnóstico</h3>
+              <div class="diagnosis-content">
+                <p>{{ diagnosisData.diagnose }}</p>
+              </div>
+
+              <h3>Tratamiento</h3>
+              <div class="treatment-content">
+                <p>{{ diagnosisData.treatment }}</p>
+              </div>
+
+              <div class="diagnosis-footer">
+                <button class="btn-view-diagnosis" (click)="openDiagnosisModal(selectedAppointment.diagnosisId)">
+                  Ver diagnóstico completo
+                </button>
+              </div>
+            </div>
+          }
+        } @else {
+          <div class="no-diagnosis-section">
+            @if (canCreateDiagnosis(selectedAppointment)) {
+              <div class="no-diagnosis-message">
+                <p>Esta cita no tiene diagnóstico registrado.</p>
+                <p class="time-info">Puedes crear un diagnóstico hasta 1 hora después de que termine la cita.</p>
+              </div>
+              <div class="diagnosis-footer">
+                <button class="btn-create-diagnosis" (click)="openCreateDiagnosisModal(selectedAppointment?.appointmentId ?? null)">
+                  Crear diagnóstico
+                </button>
+              </div>
+            } @else {
+              <div class="no-diagnosis-message">
+                <p>Esta cita no tiene diagnóstico registrado.</p>
+                @if (selectedAppointment.hasDiagnosis) {
+                  <p class="time-info">Esta cita ya tiene un diagnóstico registrado.</p>
+                } @else {
+                  <p class="time-info">Ya no es posible crear un diagnóstico para esta cita (el tiempo permitido ha expirado o la cita aún no ha comenzado).</p>
+                }
+              </div>
+            }
+          </div>
+        }
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-close-modal" (click)="closeDetailsModal()">Cerrar</button>
+      </div>
+    </div>
+  </div>
+}

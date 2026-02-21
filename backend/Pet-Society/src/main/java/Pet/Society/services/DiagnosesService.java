@@ -17,9 +17,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Service
 public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesEntity> {
+
+    private static final ZoneId ARGENTINA_ZONE = ZoneId.of("America/Argentina/Buenos_Aires");
 
     private final DiagnosesRepository diagnosesRepository;
     private final AppointmentRepository appointmentRepository;
@@ -35,6 +39,14 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
 
     }
 
+    /**
+     * Obtiene la fecha y hora actual en la zona horaria de Argentina
+     * @return LocalDateTime con la hora actual de Argentina
+     */
+    private LocalDateTime getCurrentDateTimeArgentina() {
+        return ZonedDateTime.now(ARGENTINA_ZONE).toLocalDateTime();
+    }
+
 
     public DiagnosesDTOResponse save(DiagnosesDTO dto) {
 
@@ -45,6 +57,23 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
             throw new AppointmentWithoutPetException("There is not pets in this appointment");
         }
 
+        // Validar que el diagnóstico se pueda crear hasta 1 hora después de que termine la cita
+        // Usar la misma zona horaria que AppointmentService (Argentina)
+        LocalDateTime now = getCurrentDateTimeArgentina();
+        LocalDateTime appointmentStartTime = appointment.getStartDate();
+        LocalDateTime appointmentEndTime = appointment.getEndDate();
+        LocalDateTime maxAllowedTime = appointmentEndTime.plusHours(1);
+
+        // No se puede crear antes de que comience la cita
+        if (now.isBefore(appointmentStartTime)) {
+            throw new BeforeAppointmentException("No se puede crear un diagnóstico antes de que comience la cita.");
+        }
+
+        // Se puede crear hasta 1 hora después de que termine la cita (inclusive)
+        // Usamos isAfter con exclusión estricta, por lo que si now es igual a maxAllowedTime, aún se permite
+        if (now.isAfter(maxAllowedTime)) {
+            throw new BeforeAppointmentException("No se puede crear un diagnóstico después de 1 hora de haber terminado la cita.");
+        }
 
         DiagnosesEntity diagnosis = DiagnosesEntity.builder()
                 .diagnose(dto.getDiagnose())

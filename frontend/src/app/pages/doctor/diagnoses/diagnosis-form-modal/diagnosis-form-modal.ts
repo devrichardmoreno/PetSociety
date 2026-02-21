@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { DiagnosesService } from '../../../../services/diagnoses/diagnoses.service';
 import { DiagnoseRequest } from '../../../../models/dto/diagnose/diagnose-request';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
 
 @Component({
   selector: 'app-diagnosis-form-modal',
@@ -64,15 +65,19 @@ export class DiagnosisFormModal {
           
         },
         error: (err) => {
+          console.error('Error completo al crear diagnóstico:', err);
+          const errorMessage = getFriendlyErrorMessage(err);
+          console.log('Mensaje de error procesado:', errorMessage);
+          
           Swal.fire({
-                    icon: 'error',
-                    title: 'Error al crear el diagnóstico',
-                    text: `Ocurrió un problema: ${err.message || err.statusText || 'Error desconocido'}`,
-                    background: '#fff',
-                    color: '#333',
-                    confirmButtonColor: '#F47B20', 
-                    iconColor: '#000000'
-                  });
+            icon: 'error',
+            title: 'Error al crear el diagnóstico',
+            text: errorMessage,
+            background: '#fff',
+            color: '#333',
+            confirmButtonColor: '#F47B20', 
+            iconColor: '#000000'
+          });
         }
       })
       

@@ -14,6 +14,7 @@ import { Reason } from '../../../../models/enums/reason.enum';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { DiagnosesHistoryModal } from '../../../shared/diagnoses/diagnoses-history-modal/diagnoses-history-modal';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
 
 @Component({
   selector: 'app-client-pets-list',
@@ -714,31 +715,12 @@ export class ClientPetsListComponent implements OnInit {
         });
       },
       error: (error) => {
-        console.error('Error al reactivar la mascota:', error);
-        console.error('Error completo:', JSON.stringify(error, null, 2));
-        console.error('Status:', error.status);
-        console.error('Error message:', error.error);
+        let errorMessage = getFriendlyErrorMessage(error);
         
-        let errorMessage = 'No se pudo reactivar la mascota. Por favor, intenta nuevamente.';
-        
-        // Si el error es por límite de mascotas
-        if (error.status === 400 || error.status === 409) {
+        // Si el error es específico de "Too Many Pets", usar mensaje personalizado
+        if (error.error?.title === 'Too Many Pets' || 
+            (error.status === 409 && errorMessage.includes('máximo'))) {
           errorMessage = 'Un cliente puede tener un máximo de 5 mascotas activas. No se puede reactivar esta mascota.';
-        } else if (error.status === 404) {
-          errorMessage = 'No se encontró la mascota. Por favor, verifica que la mascota exista.';
-        } else if (error.status === 403) {
-          errorMessage = 'No tienes permisos para reactivar esta mascota.';
-        } else if (error.error) {
-          // Intentar extraer el mensaje del error
-          if (typeof error.error === 'string') {
-            errorMessage = error.error;
-          } else if (error.error.detail) {
-            errorMessage = error.error.detail;
-          } else if (error.error.message) {
-            errorMessage = error.error.message;
-          } else if (error.error.title && error.error.title === 'Too Many Pets') {
-            errorMessage = 'Un cliente puede tener un máximo de 5 mascotas activas. No se puede reactivar esta mascota.';
-          }
         }
         
         Swal.fire({

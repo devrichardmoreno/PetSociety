@@ -5,9 +5,10 @@ import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
 import { RegisterService } from '../../../../services/auth/register.service';
 import { RegisterDTO } from '../../../../models/dto/auth/register-dto';
-import { nameValidator, phoneValidator, dniValidator, usernameExistsValidator } from '../../../../utils/form-validators';
+import { nameValidator, phoneValidator, dniValidator, usernameExistsValidator, dniExistsValidator, emailExistsValidator, phoneExistsValidator } from '../../../../utils/form-validators';
 import { capitalizeProperNames } from '../../../../utils/text';
 import { AuthService } from '../../../../services/auth/auth.service';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
 
 @Component({
   selector: 'app-create-admin',
@@ -37,9 +38,18 @@ export class CreateAdmin implements OnInit {
       password: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordValidator]],
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
       surname: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
-      phone: ['', [Validators.required, phoneValidator()]],
-      dni: ['', [Validators.required, dniValidator()]],
-      email: ['', [Validators.required, Validators.email]]
+      phone: ['', 
+        [Validators.required, phoneValidator()],
+        [phoneExistsValidator((phone: string) => this.authService.checkPhoneExists(phone))]
+      ],
+      dni: ['', 
+        [Validators.required, dniValidator()],
+        [dniExistsValidator((dni: string) => this.authService.checkDniExists(dni))]
+      ],
+      email: ['', 
+        [Validators.required, Validators.email],
+        [emailExistsValidator((email: string) => this.authService.checkEmailExists(email))]
+      ]
     });
   }
 
@@ -124,50 +134,7 @@ export class CreateAdmin implements OnInit {
         });
       },
       error: (error) => {
-        console.error('Error completo:', error); // Para debugging
-        
-        let errorMessage = 'Error desconocido';
-        
-        // Cuando hay un error HTTP, Angular intenta parsear el error como JSON
-        // El backend devuelve ProblemDetail en formato JSON con estructura:
-        // { type: "...", title: "...", status: 409, detail: "...", instance: "..." }
-        if (error.error) {
-          // Si error.error es un objeto (ProblemDetail)
-          if (typeof error.error === 'object') {
-            // Intentar leer el campo 'detail' del ProblemDetail
-            if (error.error.detail) {
-              errorMessage = error.error.detail;
-            } 
-            // Si no tiene 'detail', intentar leer 'title'
-            else if (error.error.title) {
-              errorMessage = error.error.title;
-            }
-            // Si es un objeto pero no tiene campos conocidos, convertir a string
-            else {
-              errorMessage = JSON.stringify(error.error);
-            }
-          } 
-          // Si error.error es un string
-          else if (typeof error.error === 'string') {
-            errorMessage = error.error;
-          }
-        }
-        
-        // Si es un error 409 (Conflict), probablemente es porque el usuario ya existe
-        if (error.status === 409) {
-          if (errorMessage === 'Error desconocido' || errorMessage.includes('409')) {
-            errorMessage = 'El nombre de usuario ya existe. Por favor, elegí otro.';
-          }
-        }
-        
-        // Fallback a otros campos del error solo si no tenemos un mensaje útil
-        if (errorMessage === 'Error desconocido' || errorMessage.includes('Http failure')) {
-          if (error.message && !error.message.includes('Http failure')) {
-            errorMessage = error.message;
-          } else if (error.statusText && error.statusText !== 'OK') {
-            errorMessage = error.statusText;
-          }
-        }
+        const errorMessage = getFriendlyErrorMessage(error);
 
         Swal.fire({
           icon: 'error',

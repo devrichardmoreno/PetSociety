@@ -95,7 +95,7 @@
         <label for="phone" class="input-label">Teléfono</label>
         <input id="phone" type="text" class="custom-input" formControlName="phone" placeholder="Ingrese el teléfono">
       </div>
-      @if (clientForm.get('phone')?.errors && clientForm.get('phone')?.touched) {
+      @if (clientForm.get('phone')?.errors && (clientForm.get('phone')?.touched || clientForm.get('phone')?.dirty)) {
         <div class="error-message">
           @if (clientForm.get('phone')?.hasError('required')) {
             <p class="error-msg">El teléfono es obligatorio.</p>
@@ -103,7 +103,14 @@
             <p class="error-msg">El teléfono solo puede contener números.</p>
           } @else if (clientForm.get('phone')?.hasError('invalidPhoneLength')) {
             <p class="error-msg">El teléfono debe tener entre 9 y 20 dígitos.</p>
+          } @else if (!isEditMode && clientForm.get('phone')?.hasError('phoneExists')) {
+            <p class="error-msg">Este teléfono ya está registrado. Por favor, usá otro.</p>
           }
+        </div>
+      }
+      @if (!isEditMode && clientForm.get('phone')?.pending) {
+        <div class="error-message">
+          <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
         </div>
       }
 
@@ -111,7 +118,7 @@
         <label for="dni" class="input-label">DNI</label>
         <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI">
       </div>
-      @if (clientForm.get('dni')?.errors && clientForm.get('dni')?.touched) {
+      @if (clientForm.get('dni')?.errors && (clientForm.get('dni')?.touched || clientForm.get('dni')?.dirty)) {
         <div class="error-message">
           @if (clientForm.get('dni')?.hasError('required')) {
             <p class="error-msg">El DNI es obligatorio.</p>
@@ -119,7 +126,14 @@
             <p class="error-msg">El DNI solo puede contener números.</p>
           } @else if (clientForm.get('dni')?.hasError('invalidDniLength')) {
             <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
+          } @else if (!isEditMode && clientForm.get('dni')?.hasError('dniExists')) {
+            <p class="error-msg">Este DNI ya está registrado. Por favor, verificá los datos ingresados.</p>
           }
+        </div>
+      }
+      @if (!isEditMode && clientForm.get('dni')?.pending) {
+        <div class="error-message">
+          <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
         </div>
       }
 
@@ -127,14 +141,20 @@
         <label for="email" class="input-label">Email</label>
         <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email">
       </div>
-      @if (clientForm.get('email')?.touched && clientForm.get('email')?.hasError('required')) {
+      @if (clientForm.get('email')?.errors && (clientForm.get('email')?.touched || clientForm.get('email')?.dirty)) {
         <div class="error-message">
-          <p class="error-msg">El email es obligatorio.</p>
+          @if (clientForm.get('email')?.hasError('required')) {
+            <p class="error-msg">El email es obligatorio.</p>
+          } @else if (clientForm.get('email')?.hasError('email')) {
+            <p class="error-msg">Debe ingresar un email válido.</p>
+          } @else if (!isEditMode && clientForm.get('email')?.hasError('emailExists')) {
+            <p class="error-msg">Este email ya está registrado. Por favor, usá otro email.</p>
+          }
         </div>
       }
-      @if (clientForm.get('email')?.hasError('email')) {
+      @if (!isEditMode && clientForm.get('email')?.pending) {
         <div class="error-message">
-          <p class="error-msg">Debe ingresar un email válido.</p>
+          <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
         </div>
       }
 

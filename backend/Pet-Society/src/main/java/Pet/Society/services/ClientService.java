@@ -3,13 +3,19 @@ package Pet.Society.services;
 
 import Pet.Society.models.dto.client.ClientDTO;
 import Pet.Society.models.dto.client.ClientListDTO;
+import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.models.entities.ClientEntity;
+import Pet.Society.models.entities.DoctorEntity;
+import Pet.Society.models.enums.Reason;
+import Pet.Society.models.enums.Status;
 import Pet.Society.models.exceptions.UserExistsException;
 import Pet.Society.models.exceptions.UserNotFoundException;
 import Pet.Society.models.interfaces.Mapper;
+import Pet.Society.repositories.AppointmentRepository;
 import Pet.Society.repositories.ClientRepository;
 import Pet.Society.repositories.PetRepository;
 import com.mysql.cj.xdevapi.Client;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
@@ -17,7 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -27,11 +33,13 @@ public class ClientService implements Mapper <ClientDTO, ClientEntity> {
 
     private final ClientRepository clientRepository;
     private final PetRepository petRepository;
+    private final AppointmentRepository appointmentRepository;
 
     @Autowired
-    public ClientService(ClientRepository clientRepository, PetRepository petRepository) {
+    public ClientService(ClientRepository clientRepository, PetRepository petRepository, AppointmentRepository appointmentRepository) {
         this.clientRepository = clientRepository;
         this.petRepository = petRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
     public ClientEntity save(ClientDTO clientDTO) {
@@ -74,12 +82,66 @@ public class ClientService implements Mapper <ClientDTO, ClientEntity> {
         return clientToModify;
     }
 
+    @Transactional
     public void unSubscribe(Long id){
         Optional<ClientEntity> existingClient = this.clientRepository.findById(id);
         if (existingClient.isEmpty()){
             throw new UserNotFoundException("User does not exist");
         }
         ClientEntity clientToUnsubscribe = existingClient.get();
+        
+        // Obtener todas las citas futuras del cliente (a través de sus mascotas)
+        LocalDateTime now = LocalDateTime.now();
+        List<AppointmentEntity> futureAppointments = appointmentRepository.findAllByPetClientId(id)
+                .stream()
+                .filter(appointment -> {
+                    // Solo citas futuras que no estén canceladas ni completadas
+                    LocalDateTime startDate = appointment.getStartDate();
+                    return startDate.isAfter(now) && 
+                           appointment.getStatus() != Status.CANCELED && 
+                           appointment.getStatus() != Status.SUCCESSFULLY;
+                })
+                .collect(Collectors.toList());
+        
+        // Procesar cada cita futura
+        for (AppointmentEntity appointment : futureAppointments) {
+            // Guardar referencia a los datos de la cita antes de modificarla
+            DoctorEntity doctor = appointment.getDoctor();
+            LocalDateTime startDate = appointment.getStartDate();
+            LocalDateTime endDate = appointment.getEndDate();
+            Reason reason = appointment.getReason();
+            
+            // Marcar la cita original como cancelada
+            appointment.setStatus(Status.CANCELED);
+            appointmentRepository.save(appointment);
+            
+            // Crear una nueva cita disponible con los mismos datos pero sin mascota
+            AppointmentEntity newAvailableAppointment = AppointmentEntity.builder()
+                    .startDate(startDate)
+                    .endDate(endDate)
+                    .reason(reason)
+                    .status(Status.AVAILABLE)
+                    .doctor(doctor)
+                    .pet(null) // Sin mascota asignada
+                    .approved(false)
+                    .build();
+            
+            // Verificar que no haya solapamiento antes de crear la nueva cita
+            // (evitar duplicados si ya existe una cita disponible en ese horario)
+            boolean hasOverlap = appointmentRepository.findAppointmentByStartDateAndEndDate(startDate, endDate)
+                    .stream()
+                    .anyMatch(existing -> 
+                        existing.getDoctor().getId() == doctor.getId() &&
+                        existing.getStatus() == Status.AVAILABLE &&
+                        existing.getId() != appointment.getId()
+                    );
+            
+            if (!hasOverlap) {
+                appointmentRepository.save(newAvailableAppointment);
+            }
+        }
+        
+        // Finalmente, marcar al cliente como dado de baja
         clientToUnsubscribe.setSubscribed(false);
         this.clientRepository.save(clientToUnsubscribe);
     }

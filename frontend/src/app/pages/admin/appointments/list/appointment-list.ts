@@ -7,6 +7,8 @@ import { AppointmentResponseDTO } from '../../../../models/dto/appointment/appoi
 import { OnInit } from '@angular/core';
 import { Reason } from '../../../../models/enums/reason.enum';
 import { Status } from '../../../../models/enums/status.enum';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-appointment-list',
@@ -85,9 +87,19 @@ export class AppointmentListComponent implements OnInit {
         this.loading = false;
       },
       error: (err: any) => {
-        console.error('Error al cargar las citas', err);
-        this.error = `No se pudieron cargar las citas. Error: ${err.message}`;
         this.loading = false;
+        const errorMessage = getFriendlyErrorMessage(err);
+        this.error = errorMessage;
+        
+        Swal.fire({
+          icon: 'error',
+          title: 'Error al cargar las citas',
+          text: errorMessage,
+          background: '#fff',
+          color: '#333',
+          confirmButtonColor: '#F47B20',
+          iconColor: '#000000'
+        });
       }
     });
   }

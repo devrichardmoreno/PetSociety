@@ -11,6 +11,7 @@ import { HeaderClient } from '../../../components/headers/client-header/header-c
 import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
 import { Page } from '../../../models/shared/page';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../utils/error-handler';
 
 @Component({
   selector: 'app-client-diagnoses',
@@ -37,6 +38,8 @@ export class ClientDiagnosesComponent implements OnInit {
   selectedPetName: string | 'ALL' = 'ALL';
   selectedDoctorName: string | 'ALL' = 'ALL';
   selectedReason: Reason | 'ALL' = 'ALL';
+  startDate: string = '';
+  endDate: string = '';
   
   // Listas únicas para filtros
   uniquePets: string[] = [];
@@ -80,14 +83,17 @@ export class ClientDiagnosesComponent implements OnInit {
         this.loading = false;
       },
       error: (error) => {
-        console.error('Error al cargar diagnósticos:', error);
         this.loading = false;
-        const errorMessage = error?.error?.message || error?.message || 'No se pudieron cargar los diagnósticos';
+        const errorMessage = getFriendlyErrorMessage(error);
+        
         Swal.fire({
           icon: 'error',
           title: 'Error',
           text: errorMessage,
-          footer: `Status: ${error?.status || 'Unknown'}`
+          background: '#fff',
+          color: '#333',
+          confirmButtonColor: '#F47B20',
+          iconColor: '#000000'
         });
       }
     });
@@ -112,7 +118,31 @@ export class ClientDiagnosesComponent implements OnInit {
       const petMatch = this.selectedPetName === 'ALL' || diagnosis.petName === this.selectedPetName;
       const doctorMatch = this.selectedDoctorName === 'ALL' || diagnosis.doctorName === this.selectedDoctorName;
       const reasonMatch = this.selectedReason === 'ALL' || diagnosis.appointmentReason === this.selectedReason;
-      return petMatch && doctorMatch && reasonMatch;
+      
+      // Filtro de fecha
+      let dateMatch = true;
+      if (this.startDate || this.endDate) {
+        const diagnosisDate = new Date(diagnosis.date);
+        diagnosisDate.setHours(0, 0, 0, 0);
+        
+        if (this.startDate) {
+          const startDateFilter = new Date(this.startDate);
+          startDateFilter.setHours(0, 0, 0, 0);
+          if (diagnosisDate < startDateFilter) {
+            dateMatch = false;
+          }
+        }
+        
+        if (this.endDate && dateMatch) {
+          const endDateFilter = new Date(this.endDate);
+          endDateFilter.setHours(23, 59, 59, 999);
+          if (diagnosisDate > endDateFilter) {
+            dateMatch = false;
+          }
+        }
+      }
+      
+      return petMatch && doctorMatch && reasonMatch && dateMatch;
     });
 
     // Ordenar por fecha descendente (más recientes primero)
@@ -139,6 +169,25 @@ export class ClientDiagnosesComponent implements OnInit {
 
   onReasonFilterChange(reason: Reason | 'ALL'): void {
     this.selectedReason = reason;
+    this.currentPage = 0;
+    this.applyFilters();
+  }
+
+  onStartDateChange(date: string): void {
+    this.startDate = date;
+    this.currentPage = 0;
+    this.applyFilters();
+  }
+
+  onEndDateChange(date: string): void {
+    this.endDate = date;
+    this.currentPage = 0;
+    this.applyFilters();
+  }
+
+  clearDateFilters(): void {
+    this.startDate = '';
+    this.endDate = '';
     this.currentPage = 0;
     this.applyFilters();
   }

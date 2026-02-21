@@ -25,6 +25,8 @@ import { CreateAdmin } from './pages/admin/admins/create/create-admin';
 import { ClientFormComponent } from './pages/admin/clients/form/client-form';
 import { PetFormComponent } from './pages/admin/clients/pet-form/pet-form';
 import { ClientPetsListComponent } from './pages/admin/clients/pets-list/client-pets-list';
+import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password-component';
+import { ResetPasswordComponent } from './pages/auth/reset-password/reset-password-component';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -146,6 +148,8 @@ export const routes: Routes = [
     { path: 'login', component: LoginComponent, data: { headerType: 'none' } },
     { path: 'register', component: RegisterComponent, data: { headerType: 'none' } },
     { path: 'register/new/client', component: RegisterComponent, data: { headerType: 'none' } },
+    { path: 'forgot-password', component: ForgotPasswordComponent, data: { headerType: 'none' } },
+    { path: 'reset-password', component: ResetPasswordComponent, data: { headerType: 'none' } },
     
     // Rutas del CLIENT (protegidas con AuthGuard + RoleGuard)
     { 

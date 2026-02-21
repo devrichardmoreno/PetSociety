@@ -15,6 +15,8 @@ import { Admin } from '../../../models/entities/admin';
 export class HeaderAdmin implements OnInit {
   currentAdmin: Admin | null = null;
   showAccountDropdown: boolean = false;
+  isMenuOpen: boolean = false;
+  openDropdowns: { [key: string]: boolean } = {};
 
   constructor(
     private authService: AuthService,
@@ -33,6 +35,19 @@ export class HeaderAdmin implements OnInit {
     if (!accountDropdown && this.showAccountDropdown) {
       this.closeAccountDropdown();
     }
+  }
+
+  toggleMenu(): void {
+    this.isMenuOpen = !this.isMenuOpen;
+    if (!this.isMenuOpen) {
+      // Cerrar todos los dropdowns cuando se cierra el menú
+      this.openDropdowns = {};
+    }
+  }
+
+  toggleMobileDropdown(event: Event, dropdownName: string): void {
+    event.stopPropagation();
+    this.openDropdowns[dropdownName] = !this.openDropdowns[dropdownName];
   }
 
   loadCurrentAdmin(): void {

@@ -17,6 +17,7 @@ export interface AppointmentDto {
     otherType?: string;
     reason: string;
     hasDiagnose?: boolean;
+    diagnosisId?: number;
 }
 
 export function mapAppointmentDateToDate(dto: AppointmentDto) {

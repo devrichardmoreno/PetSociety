@@ -34,6 +34,7 @@ export class DoctorHomePage implements OnInit, OnDestroy {
      startDate?: Date | null;
      endDate?: Date | null;
      hasDiagnose?: boolean;
+     diagnosisId?: number;
      })[] = [];
   doctor?: Doctor;
   lastestDiagnoses: (DiagnoseDto & { date: Date; appointmentStartDate?: Date | null; appointmentEndDate?: Date | null })[] = [];
@@ -233,6 +234,27 @@ loadPrevAppointmentsPage() {
     });
   }
 
+  openDiagnoseDetailModalFromAppointment(appointment: AppointmentDto & { startDate?: Date | null; endDate?: Date | null; hasDiagnose?: boolean; diagnosisId?: number }) {
+    if (!appointment.diagnosisId) {
+      console.error('No diagnosisId found for appointment:', appointment.id);
+      return;
+    }
+
+    this.diagnosesService.getDiagnoseById(appointment.diagnosisId).subscribe({
+      next: (diagnose) => {
+        const diagnoseWithDates = {
+          ...diagnose,
+          appointmentStartDate: appointment.startDate || null,
+          appointmentEndDate: appointment.endDate || null
+        };
+        this.openDiagnoseDetailModal(diagnoseWithDates);
+      },
+      error: (error) => {
+        console.error('Error loading diagnosis:', error);
+      }
+    });
+  }
+
   showDoctorProfile() {
     this.showProfile = true;
   }
@@ -271,10 +293,31 @@ loadPrevAppointmentsPage() {
     return `${emoji} ${diagnose.petName}${typeLabel ? ` (${typeLabel})` : ''}`;
   }
 
-  canCreateDiagnosis(appointment: AppointmentDto & { startDate?: Date | null; hasDiagnose?: boolean }): boolean {
+  canCreateDiagnosis(appointment: AppointmentDto & { startDate?: Date | null; endDate?: Date | null; hasDiagnose?: boolean }): boolean {
     if (appointment.hasDiagnose) return false;
-    if (!appointment.startDate) return false;
-    return appointment.startDate <= this.currentDate;
+    if (!appointment.startDate || !appointment.endDate) return false;
+    
+    // Convertir las fechas a timestamps para comparación precisa
+    const now = this.currentDate.getTime();
+    const start = appointment.startDate.getTime();
+    const end = appointment.endDate.getTime();
+    
+    // No se puede crear antes de que comience la cita
+    if (now < start) {
+      return false;
+    }
+    
+    // Para la validación de tiempo después de la cita, dejamos que el backend haga la validación
+    // El frontend solo bloquea casos obviamente fuera de rango (más de 2 horas después)
+    // Esto evita problemas de desincronización de zona horaria
+    const obviouslyTooLate = end + (2 * 60 * 60 * 1000); // Más de 2 horas después
+    if (now > obviouslyTooLate) {
+      return false;
+    }
+    
+    // Si estamos dentro del rango razonable (desde el inicio hasta 2 horas después del fin),
+    // permitimos que el usuario intente crear el diagnóstico y dejamos que el backend valide
+    return true;
   }
 
   getReasonLabel(reason?: Reason | string): string {

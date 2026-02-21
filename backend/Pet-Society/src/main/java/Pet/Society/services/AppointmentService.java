@@ -15,6 +15,7 @@ import Pet.Society.models.entities.ClientEntity;
 import Pet.Society.models.entities.DiagnosesEntity;
 import Pet.Society.models.entities.DoctorEntity;
 import Pet.Society.models.entities.PetEntity;
+import Pet.Society.models.enums.PetType;
 import Pet.Society.models.enums.Reason;
 import Pet.Society.models.dto.appointment.AppointmentDTORequest;
 import Pet.Society.models.enums.Status;
@@ -461,23 +462,42 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
             throw new DoctorNotFoundException("Doctor does not exist");
         }
 
+        LocalDateTime now = getCurrentDateTimeArgentina();
+
         return this.appointmentRepository.findAllByDoctorId(doctorId).stream()
-                .filter(appointment -> appointment.getStatus().equals(Status.SUCCESSFULLY))
-                .map(appointmentEntity -> AppointmentHistoryDTO.builder()
-                        .startTime(appointmentEntity.getStartDate())
-                        .endTime(appointmentEntity.getEndDate())
-                        .doctorName(appointmentEntity.getDoctor().getName())
-                        .doctorId(appointmentEntity.getDoctor().getId())
-                        .doctorSpeciality(appointmentEntity.getDoctor().getSpeciality())
-                        .clientName(appointmentEntity.getPet().getClient().getName())
-                        .petName(appointmentEntity.getPet().getName())
-                        .petId(appointmentEntity.getPet().getId())
-                        .reason(appointmentEntity.getReason())
-                        .status(appointmentEntity.getStatus())
-                        .hasDiagnosis(appointmentEntity.getDiagnoses() != null)
-                        .diagnosisId(appointmentEntity.getDiagnoses() != null ? appointmentEntity.getDiagnoses().getId() : null)
-                        .build()
-                )
+                .filter(appointment -> {
+                    // Filtrar solo citas pasadas (fecha de inicio anterior a ahora)
+                    // Incluir todas las citas pasadas independientemente del estado
+                    // (SUCCESSFULLY, CANCELED, etc.) para tener un historial completo
+                    return appointment.getStartDate().isBefore(now) && 
+                           appointment.getPet() != null; // Solo citas con mascota asignada
+                })
+                .map(appointmentEntity -> {
+                    // Manejar casos donde el cliente puede ser null
+                    String clientName = appointmentEntity.getPet() != null && 
+                                      appointmentEntity.getPet().getClient() != null
+                                      ? appointmentEntity.getPet().getClient().getName() + " " + 
+                                        appointmentEntity.getPet().getClient().getSurname()
+                                      : "Sin cliente asignado";
+                    
+                    return AppointmentHistoryDTO.builder()
+                            .appointmentId(appointmentEntity.getId())
+                            .startTime(appointmentEntity.getStartDate())
+                            .endTime(appointmentEntity.getEndDate())
+                            .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
+                            .doctorId(appointmentEntity.getDoctor().getId())
+                            .doctorSpeciality(appointmentEntity.getDoctor().getSpeciality())
+                            .clientName(clientName)
+                            .petName(appointmentEntity.getPet() != null ? appointmentEntity.getPet().getName() : "Sin mascota asignada")
+                            .petId(appointmentEntity.getPet() != null ? appointmentEntity.getPet().getId() : 0)
+                            .petType(appointmentEntity.getPet() != null ? appointmentEntity.getPet().getPetType() : null)
+                            .otherType(appointmentEntity.getPet() != null ? appointmentEntity.getPet().getOtherType() : null)
+                            .reason(appointmentEntity.getReason())
+                            .status(appointmentEntity.getStatus())
+                            .hasDiagnosis(appointmentEntity.getDiagnoses() != null)
+                            .diagnosisId(appointmentEntity.getDiagnoses() != null ? appointmentEntity.getDiagnoses().getId() : null)
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
 
@@ -538,6 +558,8 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
                     .petId(petId)
                     .petName(petName)
                     .doctorName(appointmentEntity.getDoctor().getName() + " " + appointmentEntity.getDoctor().getSurname())
+                    .hasDiagnose(appointmentEntity.getDiagnoses() != null)
+                    .diagnosisId(appointmentEntity.getDiagnoses() != null ? appointmentEntity.getDiagnoses().getId() : null)
                     .build();
         });
     }
@@ -553,9 +575,55 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
        return false;
     }
 
+    /**
+     * Marca automáticamente las citas AVAILABLE pasadas como CANCELED
+     * Una cita disponible se cancela si ya pasó su hora de inicio y nadie la reservó
+     * Esto evita que aparezcan citas disponibles que ya pasaron
+     */
+    @Transactional
+    public void cancelExpiredAvailableAppointments() {
+        try {
+            LocalDateTime now = getCurrentDateTimeArgentina();
+            // Buscar solo citas AVAILABLE para optimizar la consulta
+            List<AppointmentEntity> allAvailable = this.appointmentRepository.findAll().stream()
+                    .filter(appointment -> appointment.getStatus() != null && appointment.getStatus().equals(Status.AVAILABLE))
+                    .collect(Collectors.toList());
+            
+            // Filtrar las que ya pasó su hora de inicio y no tienen cliente asignado
+            List<AppointmentEntity> expiredAppointments = allAvailable.stream()
+                    .filter(appointment -> 
+                        appointment.getStartDate() != null &&
+                        appointment.getStartDate().isBefore(now) && // Ya pasó la hora de inicio
+                        appointment.getPet() == null // Solo citas sin cliente asignado
+                    )
+                    .collect(Collectors.toList());
+            
+            // Actualizar en batch si hay muchas, o individualmente si son pocas
+            if (!expiredAppointments.isEmpty()) {
+                for (AppointmentEntity appointment : expiredAppointments) {
+                    appointment.setStatus(Status.CANCELED);
+                    this.appointmentRepository.save(appointment);
+                }
+            }
+        } catch (Exception e) {
+            // Si hay algún error, simplemente no cancelar las citas para no romper el flujo
+            // El filtro por fecha en los métodos de consulta seguirá funcionando
+            System.err.println("Error al cancelar citas expiradas: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public List<AppointmentResponseDTO> getAvailableAppointments() {
+        // Primero cancelar citas disponibles que ya pasaron
+        cancelExpiredAvailableAppointments();
+        
+        // Luego obtener solo las citas disponibles futuras (que aún no comenzaron)
+        LocalDateTime now = getCurrentDateTimeArgentina();
         return this.appointmentRepository.findAll().stream()
-                .filter(appointment -> appointment.getStatus().equals(Status.AVAILABLE))
+                .filter(appointment -> 
+                    appointment.getStatus().equals(Status.AVAILABLE) &&
+                    appointment.getStartDate().isAfter(now) // Solo citas que aún no comenzaron
+                )
                 .map(appointmentEntity -> AppointmentResponseDTO.builder()
                         .startTime(appointmentEntity.getStartDate())
                         .endTime(appointmentEntity.getEndDate())
@@ -648,6 +716,9 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
      * Útil para mostrar días disponibles en el calendario
      */
     public List<AvailableAppointmentDTO> getAvailableAppointmentsByReason(Reason reason) {
+        // Primero cancelar citas disponibles que ya pasaron
+        cancelExpiredAvailableAppointments();
+        
         LocalDateTime now = getCurrentDateTimeArgentina();
         List<AppointmentEntity> appointments = this.appointmentRepository
                 .findAllByReasonAndStatusAndPetIsNullAndStartDateAfter(reason, Status.AVAILABLE, now);
@@ -671,12 +742,19 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
      * Útil para mostrar horarios disponibles cuando el usuario selecciona un día
      */
     public List<AvailableAppointmentDTO> getAvailableAppointmentsByReasonAndDate(Reason reason, LocalDate date) {
+        // Primero cancelar citas disponibles que ya pasaron
+        cancelExpiredAvailableAppointments();
+        
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
+        LocalDateTime now = getCurrentDateTimeArgentina();
         
         List<AppointmentEntity> appointments = this.appointmentRepository
                 .findAllByReasonAndStatusAndPetIsNullAndStartDateBetween(
-                        reason, Status.AVAILABLE, startOfDay, endOfDay);
+                        reason, Status.AVAILABLE, startOfDay, endOfDay)
+                .stream()
+                .filter(appointment -> appointment.getStartDate().isAfter(now)) // Solo citas que aún no comenzaron
+                .collect(Collectors.toList());
         
         return appointments.stream()
                 .map(appointment -> AvailableAppointmentDTO.builder()
@@ -697,9 +775,23 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
      * Útil para resaltar días en el calendario
      */
     public List<LocalDate> getAvailableDaysByReason(Reason reason) {
-        List<AvailableAppointmentDTO> appointments = getAvailableAppointmentsByReason(reason);
+        try {
+            // Primero cancelar citas disponibles que ya pasaron (solo una vez)
+            cancelExpiredAvailableAppointments();
+        } catch (Exception e) {
+            // Si falla la cancelación, continuar de todas formas
+            System.err.println("Advertencia: No se pudieron cancelar citas expiradas: " + e.getMessage());
+        }
+        
+        // Obtener las citas disponibles futuras directamente
+        LocalDateTime now = getCurrentDateTimeArgentina();
+        List<AppointmentEntity> appointments = this.appointmentRepository
+                .findAllByReasonAndStatusAndPetIsNullAndStartDateAfter(reason, Status.AVAILABLE, now);
+        
         return appointments.stream()
-                .map(appointment -> appointment.getStartTime().toLocalDate())
+                .filter(appointment -> appointment.getStartDate() != null)
+                .filter(appointment -> appointment.getStartDate().isAfter(now)) // Asegurar que aún no comenzaron
+                .map(appointment -> appointment.getStartDate().toLocalDate())
                 .distinct()
                 .sorted()
                 .collect(Collectors.toList());
