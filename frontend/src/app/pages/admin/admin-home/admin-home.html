@@ -1,33 +1,60 @@
 <h1 id="main-title">PANEL DE CONTROL</h1>
 
-<div id="numbers-container">
-    <div id="card-information-1">
-           <h1>{{this.canceledAppointments}}</h1>
-    <h3>Cancelaciones de citas</h3>
-    </div>
+<div class="chart-controls">
+  <button class="control-button" (click)="toggleCharts()">
+    {{ showCharts ? 'Ver Tarjetas' : 'Ver Gráficos' }}
+  </button>
+  
+  @if (showCharts) {
+    <button class="control-button" (click)="chartType = 'bar'; renderChart()">Barras</button>
+    <button class="control-button" (click)="chartType = 'line'; renderChart()">Líneas</button>
 
-    <div id="card-information-2">
-        <h1>{{this.appointmentsForToday}}</h1>
-        <h3>Citas programadas para hoy</h3>
-    </div>
-
-    <div id="card-information-3">
-           <h1>{{this.petsTreated}}</h1>
-        <h3>Mascotas atendidas</h3>
-    </div>
-    <div id="card-information-4">
-           <h1>{{this.paidAppointments}}</h1>
-        <h3>Citas programadas pagadas</h3>
-    </div>
+      
     
-    <div id="card-information-5" [class.clickable]="nextAppointment" (click)="goToAppointmentDetail()">
-        <h3>Próxima cita</h3>
-        @if (nextAppointment) {
-            <p>Doctor: <span>{{nextAppointment.doctorName}}</span></p>
-            <p>Hora: <span>{{nextAppointment.startTime | date:'dd/MM/yyyy HH:mm'}}</span></p>
-            <p>Mascota: <span>{{nextAppointment.petName || 'Sin asignar'}}</span></p>
-        } @else {
-            <p class="no-appointment-message">No hay citas programadas a futuro</p>
-        }
-    </div>
+  }
+
+  
 </div>
+
+
+@if (showCharts) {
+  <div class="chart-container">
+    <canvas #barChart [hidden]="chartType !== 'bar'"></canvas>
+    <canvas #lineChart [hidden]="chartType !== 'line'"></canvas>
+  </div>
+}@else {
+  <div>
+    <div id="numbers-container">
+        <div id="card-information-1">
+              <h1>{{this.canceledAppointments}}</h1>
+        <h3>Cancelaciones de citas</h3>
+        </div>
+
+        <div id="card-information-2">
+            <h1>{{this.appointmentsForToday}}</h1>
+            <h3>Citas programadas para hoy</h3>
+        </div>
+
+        <div id="card-information-3">
+              <h1>{{this.petsTreated}}</h1>
+            <h3>Mascotas atendidas</h3>
+        </div>
+        <div id="card-information-4">
+              <h1>{{this.paidAppointments}}</h1>
+            <h3>Citas programadas pagadas</h3>
+        </div>
+        
+        <div id="card-information-5" [class.clickable]="nextAppointment" (click)="goToAppointmentDetail()">
+            <h3>Próxima cita</h3>
+            @if (nextAppointment) {
+                <p>Doctor: <span>{{nextAppointment.doctorName}}</span></p>
+                <p>Hora: <span>{{nextAppointment.startTime | date:'dd/MM/yyyy HH:mm'}}</span></p>
+                <p>Mascota: <span>{{nextAppointment.petName || 'Sin asignar'}}</span></p>
+            } @else {
+                <p class="no-appointment-message">No hay citas programadas a futuro</p>
+            }
+        </div>
+      
+    </div>
+  </div>
+}

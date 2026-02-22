@@ -1,11 +1,13 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit,ElementRef, viewChild,ViewChild, Component, OnInit } from '@angular/core';
 import { RouterLink, Router } from "@angular/router";
 import { CommonModule } from '@angular/common';
+import { Chart, registerables } from 'chart.js';
 import { AppointmentService } from '../../../services/appointment/appointment.service';
 import { AppointmentResponseDTO } from '../../../models/dto/appointment/appointment-response-dto';
 import { Status } from '../../../models/enums/status.enum';
 import { map, Observable } from 'rxjs';
 
+Chart.register(...registerables);
 
 @Component({
   selector: 'app-admin-home',
@@ -21,6 +23,14 @@ export class AdminHome implements OnInit {
     petsTreated! : Number
     nextAppointment!: AppointmentResponseDTO | null;
     paidAppointments! :Number
+    showCharts: boolean = false;
+    chartType: 'bar' | 'line' = 'bar';
+    
+     @ViewChild('barChart') barChartRef!: ElementRef<HTMLCanvasElement>;
+  @ViewChild('lineChart') lineChartRef!: ElementRef<HTMLCanvasElement>;
+
+    barChart!: Chart;
+    lineChart!: Chart;
 
     constructor(
       private appointmentService : AppointmentService,
@@ -28,6 +38,8 @@ export class AdminHome implements OnInit {
     ){
         
     }
+
+  
 
     ngOnInit(): void {
         this.getAllCanceledAppointmentsByMonth();
@@ -37,6 +49,43 @@ export class AdminHome implements OnInit {
         this.getPaidAppointments();
     }
 
+toggleCharts(): void {
+  this.showCharts = !this.showCharts;
+
+  if (this.showCharts) {
+    setTimeout(() => this.renderChart());
+  } else {
+    this.barChart?.destroy();
+    this.lineChart?.destroy();
+  }
+}
+createBarChart() {
+
+  if (this.barChart) {
+    this.barChart.destroy();
+  }
+
+  this.barChart = new Chart(this.barChartRef.nativeElement, {
+    type: 'bar',
+    data: {
+      labels: ['Canceladas', 'Exitosas'],
+      datasets: [{
+        label: 'Citas',
+        data: [
+          this.canceledAppointments.valueOf() || 0,
+          this.petsTreated.valueOf()  || 0,
+        ]
+      }]
+    }
+  });
+}
+
+
+
+toggleChartType() {
+  this.chartType = this.chartType === 'bar' ? 'line' : 'bar';
+  this.createBarChart();
+}
     
    getAllCanceledAppointmentsByMonth(): void {
     this.appointmentService.getAllAppointments().subscribe({
@@ -55,6 +104,50 @@ export class AdminHome implements OnInit {
     }
   });
   }
+
+createLineChart() {
+
+  this.lineChart?.destroy();
+
+  const canceled = this.canceledAppointments.valueOf() || 0;
+  const treated = this.petsTreated.valueOf()  || 0;
+  const paid = this.appointmentsForToday.valueOf()  || 0;
+
+  this.lineChart = new Chart(this.lineChartRef.nativeElement, {
+    type: 'line',
+    data: {
+      labels: ['Inicio', 'Actual'],
+      datasets: [
+        {
+          label: 'Canceladas',
+          data: [0, canceled],
+          tension: 0.4
+        },
+        {
+          label: 'Exitosas',
+          data: [0, treated],
+          tension: 0.4
+        },
+        {
+          label: 'Pagadas',
+          data: [0, paid],
+          tension: 0.4
+        }
+      ]
+    },
+    options: {
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            precision: 0
+          }
+        }
+      }
+    }
+  });
+}
+  
 
  getAllAppointmentsForToday(): void {
   this.appointmentService.getAvailableAppointments().subscribe({
@@ -153,6 +246,20 @@ getPaidAppointments(): void {
       this.paidAppointments = 0;
     }
   });
+}
+
+renderChart() {
+
+  if (!this.showCharts) return;
+
+  if (this.chartType === 'bar') {
+    this.lineChart?.destroy();
+    setTimeout(() => this.createBarChart());
+  } else {
+    this.barChart?.destroy();
+    setTimeout(() => this.createLineChart());
+  }
+
 }
 
   }
