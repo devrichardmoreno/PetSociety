@@ -44,13 +44,10 @@
             } @else {
               <div class="card-actions" role="group" aria-label="Acciones cita {{ $index + 1 }}">
                 <button class="btn btn-history" type="button" (click)="openDiagnosesHistoryModal(appointment.petId)">Ver historia clínica</button>
-                @if (canCreateDiagnosis(appointment)) {
+                @if (appointment.hasDiagnose == true && appointment.diagnosisId) {
+                  <button mat-flat-button (click)="openDiagnoseDetailModalFromAppointment(appointment)" class="btn btn-view-diagnose" type="button">Ver diagnóstico</button>
+                } @else if (canCreateDiagnosis(appointment)) {
                   <button mat-flat-button (click)="openDiagnosisModal(appointment.id)" class="btn btn-create-diagnose" type="button">Crear diagnóstico</button>
-                } @else if (appointment.hasDiagnose == true) {
-                  <div class="diagnosis-created-message">
-                    <span class="success-icon">✓</span>
-                    <span>Diagnóstico creado</span>
-                  </div>
                 } @else {
                   <p class="no-appointments">Cita futura</p>
                 }

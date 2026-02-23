@@ -156,8 +156,9 @@ select.custom-input {
   font-weight: 500;
 }
 
-@media (max-width: 768px) {
-  #pet-container-all {
+/* Responsive */
+@media (max-width: 1024px) {
+  .pet-wrapper {
     flex-direction: column;
   }
 
@@ -165,6 +166,29 @@ select.custom-input {
     position: relative;
     min-height: 200px;
     height: auto;
+    padding: 2rem;
+  }
+
+  .pet-image img {
+    width: 250px;
+  }
+
+  form {
+    border-radius: 20px 20px 0 0;
+    padding: 40px 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  #pet-container-all {
+    flex-direction: column;
+  }
+
+  .pet-image {
+    position: relative;
+    min-height: 150px;
+    height: auto;
+    padding: 1.5rem;
   }
 
   .pet-image img {
@@ -173,8 +197,25 @@ select.custom-input {
 
   form {
     border-radius: 20px 20px 0 0;
-    padding: 40px 20px;
+    padding: 30px 20px;
   }
 
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  form {
+    padding: 20px 15px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  .custom-input {
+    font-size: 16px; /* Evita zoom en iOS */
+  }
 }
 

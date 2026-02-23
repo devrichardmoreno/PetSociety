@@ -8,6 +8,7 @@ import { AdminService } from '../../../services/admin/admin.service';
 import { Admin } from '../../../models/entities/admin';
 import { nameValidator, phoneValidator, dniValidator } from '../../../utils/form-validators';
 import { capitalizeName } from '../../../utils/text';
+import { getFriendlyErrorMessage } from '../../../utils/error-handler';
 
 @Component({
   selector: 'app-admin-profile',
@@ -238,10 +239,11 @@ export class AdminProfileComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al dar de baja la cuenta:', error);
+        const errorMessage = getFriendlyErrorMessage(error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo dar de baja la cuenta. Por favor, intenta nuevamente.',
+          text: errorMessage,
           background: '#fff',
           color: '#333',
           confirmButtonColor: '#45AEDD',

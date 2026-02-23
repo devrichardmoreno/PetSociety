@@ -5,6 +5,7 @@ import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage, isEmailNotVerifiedError } from '../../../utils/error-handler';
 
 @Component({
   selector: 'app-login-component',
@@ -153,15 +154,36 @@ export class LoginComponent implements OnInit {
         },
         error: (e) => {
           console.error('Error en el login:', e);
-          Swal.fire({
-            icon: 'error',
-            title: 'Error al iniciar sesión',
-            text: 'Verificá tus credenciales e intentá nuevamente',
-            background: '#fff',
-            color: '#333',
-            confirmButtonColor: '#d33',
-            iconColor: '#d33'
-          });
+          const message = getFriendlyErrorMessage(e);
+          if (isEmailNotVerifiedError(e)) {
+            Swal.fire({
+              icon: 'warning',
+              title: 'Email no verificado',
+              text: message,
+              background: '#fff',
+              color: '#333',
+              confirmButtonText: 'Corregir mi email',
+              cancelButtonText: 'Entendido',
+              showCancelButton: true,
+              confirmButtonColor: '#45AEDD',
+              cancelButtonColor: '#666',
+              iconColor: '#45AEDD'
+            }).then((result) => {
+              if (result.isConfirmed) {
+                this.router.navigate(['/change-email']);
+              }
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error al iniciar sesión',
+              text: message,
+              background: '#fff',
+              color: '#333',
+              confirmButtonColor: '#d33',
+              iconColor: '#d33'
+            });
+          }
         }
       })
     }

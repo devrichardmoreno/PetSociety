@@ -4,7 +4,10 @@
   align-items: flex-start;
   min-height: 100vh;
   background: linear-gradient(135deg, #e1f5fe, #f8f9fa);
-  padding: 3rem 1rem;
+  padding-top: 120px !important;
+  padding-bottom: 3rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
@@ -29,6 +32,7 @@
 }
 
 h1 {
+  margin-top: 0 !important;
   margin-bottom: 1.5rem;
   font-size: 2rem;
   color: #45aedd;

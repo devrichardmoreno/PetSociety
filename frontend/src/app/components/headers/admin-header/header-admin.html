@@ -1,10 +1,12 @@
 <header>
-  <div>
-    <img id="logo-background" src="/assets/images/logo.png" alt="Logo">
-  </div>
+  <div class="header-container">
+    <div class="logo-container">
+      <img id="logo-background" src="/assets/images/logo.png" alt="Logo">
+    </div>
 
-  <nav>
-    <ul class="buttons">
+    <!-- Menú de escritorio -->
+    <nav class="nav-desktop">
+      <ul class="buttons">
       <li><a routerLink="/admin/home" 
              routerLinkActive="active"
              [routerLinkActiveOptions]="{exact: true}">Inicio</a></li>
@@ -88,6 +90,125 @@
                  [routerLinkActiveOptions]="{exact: true}"
                  (click)="closeAccountDropdown()">Mi Perfil</a></li>
           <li><a routerLink="/logout" (click)="logout()">Salir</a></li>
+        </ul>
+      </li>
+    </ul>
+    </nav>
+
+    <!-- Botón hamburguesa para móvil -->
+    <button class="menu-toggle" (click)="toggleMenu()" aria-label="Abrir menú">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+
+  <!-- Menú móvil -->
+  <nav class="nav-mobile" [class.open]="isMenuOpen">
+    <ul class="buttons-mobile">
+      <li><a routerLink="/admin/home" 
+             routerLinkActive="active"
+             [routerLinkActiveOptions]="{exact: true}"
+             (click)="toggleMenu()">Inicio</a></li>
+
+      <!-- Dropdown Citas -->
+      <li class="mobile-dropdown">
+        <a (click)="toggleMobileDropdown($event, 'citas')" class="mobile-dropdown-toggle">
+          Citas ▾
+        </a>
+        <ul class="mobile-dropdown-menu" [class.open]="openDropdowns['citas']">
+          <li><a routerLink="/appointment/create" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Crear cita programada</a></li>
+          <li><a routerLink="/appointment/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Listado de citas</a></li>
+        </ul>
+      </li>
+
+      <!-- Dropdown Doctores -->
+      <li class="mobile-dropdown">
+        <a (click)="toggleMobileDropdown($event, 'doctores')" class="mobile-dropdown-toggle">
+          Doctores ▾
+        </a>
+        <ul class="mobile-dropdown-menu" [class.open]="openDropdowns['doctores']">
+          <li><a routerLink="/register/new/doctor" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Agregar doctor</a></li>
+          <li><a routerLink="/doctor/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Listar doctores activos</a></li>
+          <li><a routerLink="/doctor/list/inactive" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Listar doctores dados de baja</a></li>
+        </ul>
+      </li>
+
+      <!-- Dropdown Clientes -->
+      <li class="mobile-dropdown">
+        <a (click)="toggleMobileDropdown($event, 'clientes')" class="mobile-dropdown-toggle">
+          Clientes ▾
+        </a>
+        <ul class="mobile-dropdown-menu" [class.open]="openDropdowns['clientes']">
+          <li><a routerLink="/register/new/client/admin" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Agregar cliente</a></li>
+          <li><a routerLink="/client/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Listar clientes activos</a></li>
+          <li><a routerLink="/client/list/inactive" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Listar clientes dados de baja</a></li>
+        </ul>
+      </li>
+
+      <!-- Dropdown Administradores -->
+      <li class="mobile-dropdown">
+        <a (click)="toggleMobileDropdown($event, 'administradores')" class="mobile-dropdown-toggle">
+          Administradores ▾
+        </a>
+        <ul class="mobile-dropdown-menu" [class.open]="openDropdowns['administradores']">
+          <li><a routerLink="/register/new/admin" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Agregar administrador</a></li>
+          <li><a routerLink="/admin/list" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Listar administradores activos</a></li>
+          <li><a routerLink="/admin/list/inactive" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Listar administradores dados de baja</a></li>
+        </ul>
+      </li>
+
+      <!-- Mi Cuenta -->
+      <li class="mobile-dropdown">
+        <a (click)="toggleMobileDropdown($event, 'cuenta')" class="mobile-dropdown-toggle">
+          Mi Cuenta ▾
+        </a>
+        <ul class="mobile-dropdown-menu" [class.open]="openDropdowns['cuenta']">
+          @if (currentAdmin) {
+            <li class="account-info">
+              <div class="account-details">
+                <p class="account-name"><strong>{{ currentAdmin.name }} {{ currentAdmin.surname }}</strong></p>
+                <p class="account-email">{{ currentAdmin.email }}</p>
+              </div>
+            </li>
+            <li class="account-separator"></li>
+          }
+          <li><a routerLink="/admin/profile" 
+                 routerLinkActive="active"
+                 [routerLinkActiveOptions]="{exact: true}"
+                 (click)="toggleMenu()">Mi Perfil</a></li>
+          <li><a routerLink="/logout" (click)="logout(); toggleMenu()">Salir</a></li>
         </ul>
       </li>
     </ul>

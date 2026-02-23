@@ -22,4 +22,6 @@ public class AppointmentScheduleDTO {
     private Long petId;
     private String petName;
     private Reason reason;
+    private boolean hasDiagnose;
+    private Long diagnosisId;
 }

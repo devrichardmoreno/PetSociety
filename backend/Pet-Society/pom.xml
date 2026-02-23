@@ -74,6 +74,12 @@
 			<artifactId>spring-boot-starter-validation</artifactId>
 		</dependency>
 
+		<!-- Spring Mail para envío de emails -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
 		<!-- Swagger/OpenAPI -->
 
 		<!-- MySQL Connector - usar versión explícita porque no está gestionada por Spring Boot -->

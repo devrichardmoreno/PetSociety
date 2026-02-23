@@ -169,8 +169,9 @@ h1 {
   color: #4eb5ff;
 }
 
-@media (max-width: 768px) {
-  #admin-container-all {
+/* Responsive */
+@media (max-width: 1024px) {
+  .admin-wrapper {
     flex-direction: column;
   }
 
@@ -178,6 +179,29 @@ h1 {
     position: relative;
     min-height: 200px;
     height: auto;
+    padding: 2rem;
+  }
+
+  .admin-image img {
+    width: 250px;
+  }
+
+  form {
+    border-radius: 20px 20px 0 0;
+    padding: 40px 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  #admin-container-all {
+    flex-direction: column;
+  }
+
+  .admin-image {
+    position: relative;
+    min-height: 150px;
+    height: auto;
+    padding: 1.5rem;
   }
 
   .admin-image img {
@@ -186,6 +210,24 @@ h1 {
 
   form {
     border-radius: 20px 20px 0 0;
-    padding: 40px 20px;
+    padding: 30px 20px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  form {
+    padding: 20px 15px;
+  }
+
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  .custom-input {
+    font-size: 16px; /* Evita zoom en iOS */
   }
 }

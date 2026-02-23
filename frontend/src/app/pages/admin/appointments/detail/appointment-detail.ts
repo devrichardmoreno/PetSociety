@@ -7,6 +7,7 @@ import { CommonModule } from '@angular/common';
 import { Status } from '../../../../models/enums/status.enum';
 import { Reason } from '../../../../models/enums/reason.enum';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
 
 @Component({
   selector: 'app-appointment-detail',
@@ -62,28 +63,7 @@ export class AppointmentDetail implements OnInit {
           });
         },
         error: (error: any) => {
-          console.error('Error completo:', error);
-          console.error('Status:', error.status);
-          console.error('Status Text:', error.statusText);
-          console.error('Error object:', JSON.stringify(error, null, 2));
-          
-          let errorMessage = 'No se pudo actualizar el estado de pago. Por favor, intentá nuevamente.';
-          
-          if (error.status === 404) {
-            errorMessage = 'La cita no fue encontrada.';
-          } else if (error.status === 403) {
-            errorMessage = 'No tenés permisos para realizar esta acción.';
-          } else if (error.status === 401) {
-            errorMessage = 'Tu sesión expiró. Por favor, iniciá sesión nuevamente.';
-          } else if (error.error) {
-            if (typeof error.error === 'object' && error.error.detail) {
-              errorMessage = error.error.detail;
-            } else if (typeof error.error === 'string') {
-              errorMessage = error.error;
-            }
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
+          const errorMessage = getFriendlyErrorMessage(error);
           
           Swal.fire({
             icon: 'error',
@@ -121,28 +101,7 @@ export class AppointmentDetail implements OnInit {
           });
         },
         error: (error: any) => {
-          console.error('Error completo:', error);
-          console.error('Status:', error.status);
-          console.error('Status Text:', error.statusText);
-          console.error('Error object:', JSON.stringify(error, null, 2));
-          
-          let errorMessage = 'No se pudo actualizar el estado de pago. Por favor, intentá nuevamente.';
-          
-          if (error.status === 404) {
-            errorMessage = 'La cita no fue encontrada.';
-          } else if (error.status === 403) {
-            errorMessage = 'No tenés permisos para realizar esta acción.';
-          } else if (error.status === 401) {
-            errorMessage = 'Tu sesión expiró. Por favor, iniciá sesión nuevamente.';
-          } else if (error.error) {
-            if (typeof error.error === 'object' && error.error.detail) {
-              errorMessage = error.error.detail;
-            } else if (typeof error.error === 'string') {
-              errorMessage = error.error;
-            }
-          } else if (error.message) {
-            errorMessage = error.message;
-          }
+          const errorMessage = getFriendlyErrorMessage(error);
           
           Swal.fire({
             icon: 'error',

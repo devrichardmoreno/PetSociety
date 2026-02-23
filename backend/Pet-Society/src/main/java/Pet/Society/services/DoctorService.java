@@ -2,10 +2,13 @@ package Pet.Society.services;
 
 import Pet.Society.models.dto.doctor.DoctorDTO;
 import Pet.Society.models.dto.doctor.DoctorRequest;
+import Pet.Society.models.entities.AppointmentEntity;
 import Pet.Society.models.entities.DoctorEntity;
+import Pet.Society.models.enums.Status;
 import Pet.Society.models.exceptions.UserExistsException;
 import Pet.Society.models.exceptions.UserNotFoundException;
 import Pet.Society.models.interfaces.Mapper;
+import Pet.Society.repositories.AppointmentRepository;
 import Pet.Society.repositories.DoctorRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,17 +18,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 @Service
 public class DoctorService implements Mapper<DoctorDTO, DoctorEntity> {
 
 
     private final DoctorRepository doctorRepository;
+    private final AppointmentRepository appointmentRepository;
 
     @Autowired
-    public DoctorService(DoctorRepository doctorRepository) {
+    public DoctorService(DoctorRepository doctorRepository, AppointmentRepository appointmentRepository) {
         this.doctorRepository = doctorRepository;
+        this.appointmentRepository = appointmentRepository;
     }
 
     @Transactional
@@ -96,12 +103,35 @@ public class DoctorService implements Mapper<DoctorDTO, DoctorEntity> {
         return existingDoctor;
     }
 
+    @Transactional
     public void unSubscribe(Long id){
         Optional<DoctorEntity> existingDoctor = this.doctorRepository.findById(id);
         if (existingDoctor.isEmpty()){
             throw new UserNotFoundException("Doctor does not exist");
         }
         DoctorEntity doctorToUnsubscribe = existingDoctor.get();
+        
+        // Obtener todas las citas futuras del doctor
+        LocalDateTime now = LocalDateTime.now();
+        List<AppointmentEntity> futureAppointments = appointmentRepository.findAllByDoctorId(id)
+                .stream()
+                .filter(appointment -> {
+                    // Solo citas futuras que no estén canceladas ni completadas
+                    LocalDateTime startDate = appointment.getStartDate();
+                    return startDate.isAfter(now) && 
+                           appointment.getStatus() != Status.CANCELED && 
+                           appointment.getStatus() != Status.SUCCESSFULLY;
+                })
+                .collect(Collectors.toList());
+        
+        // Cancelar todas las citas futuras del doctor
+        // Las citas pasadas se mantienen para el registro histórico
+        for (AppointmentEntity appointment : futureAppointments) {
+            appointment.setStatus(Status.CANCELED);
+            appointmentRepository.save(appointment);
+        }
+        
+        // Finalmente, marcar al doctor como dado de baja
         doctorToUnsubscribe.setSubscribed(false);
         this.doctorRepository.save(doctorToUnsubscribe);
     }

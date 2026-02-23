@@ -35,6 +35,36 @@
         <option [value]="Reason.NUTRITION">Nutrición</option>
       </select>
     </div>
+
+    <div class="filter-group">
+      <label for="start-date-filter">Fecha desde:</label>
+      <input 
+        type="date" 
+        id="start-date-filter" 
+        [(ngModel)]="startDate" 
+        (change)="onStartDateChange(startDate)" 
+        class="filter-date-input"
+        [max]="endDate || ''">
+    </div>
+
+    <div class="filter-group">
+      <label for="end-date-filter">Fecha hasta:</label>
+      <input 
+        type="date" 
+        id="end-date-filter" 
+        [(ngModel)]="endDate" 
+        (change)="onEndDateChange(endDate)" 
+        class="filter-date-input"
+        [min]="startDate || ''">
+    </div>
+
+    @if (startDate || endDate) {
+      <div class="filter-group filter-group-button">
+        <button class="btn-clear-filters" (click)="clearDateFilters()" type="button">
+          Limpiar fechas
+        </button>
+      </div>
+    }
   </div>
 
   <!-- Listado de diagnósticos -->

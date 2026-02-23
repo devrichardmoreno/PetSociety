@@ -1,0 +1,60 @@
+<section id="verify-email-container-all">
+    <div id="logo-background">
+        <a routerLink="/login" class="back-home-link">
+            <span class="back-icon">←</span> Volver al login
+        </a>
+        <img src="/assets/images/logo.svg" alt="">
+    </div>
+
+    <div class="content-wrapper">
+        @if (isVerified) {
+            <div class="success-message">
+                <div class="success-icon">✓</div>
+                <h1>¡Email verificado exitosamente!</h1>
+                <p class="description">Tu cuenta ha sido verificada. Ya podés usar todas las funcionalidades de Pet Society.</p>
+                <button class="submit-btn" (click)="goToLogin()">
+                    Ir al login
+                </button>
+            </div>
+        } @else if (isLoading) {
+            <div class="loading-message">
+                <div class="loading-spinner"></div>
+                <h1>Verificando email...</h1>
+                <p class="description">Por favor esperá un momento mientras verificamos tu email.</p>
+            </div>
+        } @else if (errorMessage) {
+            <div class="error-message-container">
+                <div class="error-icon">✗</div>
+                <h1>Error al verificar email</h1>
+                <p class="description">{{ errorMessage }}</p>
+                @if (token) {
+                    <button class="submit-btn" (click)="verifyEmail()">
+                        Reintentar
+                    </button>
+                } @else {
+                    <p class="help-text">
+                        No se encontró un token de verificación en la URL. 
+                        Por favor, hacé clic en el enlace que recibiste por email.
+                    </p>
+                }
+                <p class="back-link">
+                    <a routerLink="/login">Volver al login</a>
+                </p>
+            </div>
+        } @else {
+            <div class="initial-message">
+                <h1>Verificar email</h1>
+                <p class="description">Hacé clic en el botón de abajo para verificar tu email.</p>
+                <button class="submit-btn" (click)="verifyEmail()" [disabled]="!token">
+                    Verificar email
+                </button>
+                @if (!token) {
+                    <p class="help-text">
+                        No se encontró un token de verificación. 
+                        Por favor, hacé clic en el enlace que recibiste por email.
+                    </p>
+                }
+            </div>
+        }
+    </div>
+</section>

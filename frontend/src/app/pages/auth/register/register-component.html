@@ -42,7 +42,7 @@
         <div class="input-wrapper">
             <input type="text" class="custom-input" placeholder="Teléfono" formControlName="phone">
         </div>
-        @if (registerForm.get('phone')?.errors && registerForm.get('phone')?.touched) {
+        @if (registerForm.get('phone')?.errors && (registerForm.get('phone')?.touched || registerForm.get('phone')?.dirty)) {
             <div class="error-message">
                 @if (registerForm.get('phone')?.hasError('required')) {
                     <p class="error-msg">El teléfono es obligatorio.</p>
@@ -50,14 +50,21 @@
                     <p class="error-msg">El teléfono solo puede contener números.</p>
                 } @else if (registerForm.get('phone')?.hasError('invalidPhoneLength')) {
                     <p class="error-msg">El teléfono debe tener entre 9 y 20 dígitos.</p>
+                } @else if (registerForm.get('phone')?.hasError('phoneExists')) {
+                    <p class="error-msg">Este teléfono ya está registrado. Por favor, usá otro.</p>
                 }
+            </div>
+        }
+        @if (registerForm.get('phone')?.pending) {
+            <div class="error-message">
+                <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
             </div>
         }
 
         <div class="input-wrapper">
             <input type="text" class="custom-input" placeholder="DNI" formControlName="dni">
         </div>
-        @if (registerForm.get('dni')?.errors && registerForm.get('dni')?.touched) {
+        @if (registerForm.get('dni')?.errors && (registerForm.get('dni')?.touched || registerForm.get('dni')?.dirty)) {
             <div class="error-message">
                 @if (registerForm.get('dni')?.hasError('required')) {
                     <p class="error-msg">El DNI es obligatorio.</p>
@@ -65,20 +72,34 @@
                     <p class="error-msg">El DNI solo puede contener números.</p>
                 } @else if (registerForm.get('dni')?.hasError('invalidDniLength')) {
                     <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
+                } @else if (registerForm.get('dni')?.hasError('dniExists')) {
+                    <p class="error-msg">Este DNI ya está registrado. Por favor, verificá los datos ingresados.</p>
                 }
+            </div>
+        }
+        @if (registerForm.get('dni')?.pending) {
+            <div class="error-message">
+                <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
             </div>
         }
 
         <div class="input-wrapper">
             <input type="email" class="custom-input" placeholder="Email" formControlName="email">
         </div>
-        @if (registerForm.get('email')?.errors && registerForm.get('email')?.touched) {
+        @if (registerForm.get('email')?.errors && (registerForm.get('email')?.touched || registerForm.get('email')?.dirty)) {
             <div class="error-message">
                 @if (registerForm.get('email')?.hasError('required')) {
                     <p class="error-msg">El email es obligatorio.</p>
                 } @else if (registerForm.get('email')?.hasError('email')) {
                     <p class="error-msg">El formato del email es incorrecto.</p>
+                } @else if (registerForm.get('email')?.hasError('emailExists')) {
+                    <p class="error-msg">Este email ya está registrado. Por favor, usá otro email.</p>
                 }
+            </div>
+        }
+        @if (registerForm.get('email')?.pending) {
+            <div class="error-message">
+                <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
             </div>
         }
 

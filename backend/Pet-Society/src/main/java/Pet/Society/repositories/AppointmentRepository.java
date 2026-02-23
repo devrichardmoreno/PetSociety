@@ -1,6 +1,7 @@
 package Pet.Society.repositories;
 
 import Pet.Society.models.entities.AppointmentEntity;
+import Pet.Society.models.entities.DiagnosesEntity;
 import Pet.Society.models.entities.DoctorEntity;
 import Pet.Society.models.entities.PetEntity;
 import Pet.Society.models.enums.Reason;
@@ -43,6 +44,10 @@ public interface AppointmentRepository extends JpaRepository<AppointmentEntity, 
     @Modifying
     @Query("UPDATE AppointmentEntity a SET a.approved = :approved WHERE a.id = :id")
     void updateApprovedStatus(@Param("id") Long id, @Param("approved") boolean approved);
+    
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query(value = "UPDATE appointments SET status = :status WHERE id = :id", nativeQuery = true)
+    void updateAppointmentStatusNative(@Param("id") Long id, @Param("status") String status);
     
     @Query("SELECT a FROM AppointmentEntity a LEFT JOIN FETCH a.diagnoses LEFT JOIN FETCH a.pet p LEFT JOIN FETCH p.client WHERE a.id = :id")
     Optional<AppointmentEntity> findByIdWithDiagnoses(@Param("id") Long id);

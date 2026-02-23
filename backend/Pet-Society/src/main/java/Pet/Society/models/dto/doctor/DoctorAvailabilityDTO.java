@@ -6,7 +6,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -18,4 +17,6 @@ public class DoctorAvailabilityDTO {
     private LocalDateTime start;
     private LocalDateTime end;
     private Reason reason;
+    private String minHour; // Formato "HH:mm"
+    private String maxHour; // Formato "HH:mm"
 }

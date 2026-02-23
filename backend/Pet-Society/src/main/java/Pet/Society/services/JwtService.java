@@ -42,6 +42,60 @@ public class JwtService {
         return extractAllClaims(token).getSubject();
     }
 
+    /**
+     * Genera un token especial para reset de contraseña
+     * Expira en 30 minutos y tiene un claim especial "resetPassword: true"
+     */
+    public String generatePasswordResetToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("resetPassword", true)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 30)) // 30 minutos
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * Valida si un token es válido para reset de contraseña
+     */
+    public boolean isPasswordResetTokenValid(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            Boolean isResetToken = claims.get("resetPassword", Boolean.class);
+            return isResetToken != null && isResetToken && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    /**
+     * Genera un token especial para verificación de email
+     * Expira en 24 horas y tiene un claim especial "verifyEmail: true"
+     */
+    public String generateEmailVerificationToken(String username) {
+        return Jwts.builder()
+                .setSubject(username)
+                .claim("verifyEmail", true)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60 * 24)) // 24 horas
+                .signWith(getKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    /**
+     * Valida si un token es válido para verificación de email
+     */
+    public boolean isEmailVerificationTokenValid(String token) {
+        try {
+            Claims claims = extractAllClaims(token);
+            Boolean isVerifyToken = claims.get("verifyEmail", Boolean.class);
+            return isVerifyToken != null && isVerifyToken && !isTokenExpired(token);
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     private Claims extractAllClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getKey())

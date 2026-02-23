@@ -21,7 +21,7 @@ export class AdminHome implements OnInit {
     canceledAppointments! : Number
     appointmentsForToday! : Number
     petsTreated! : Number
-    nextAppointment!: AppointmentResponseDTO | null;
+    nextAppointments: AppointmentResponseDTO[] = [];
     paidAppointments! :Number
     showCharts: boolean = false;
     chartType: 'bar' | 'line' = 'bar';
@@ -215,19 +215,42 @@ getNextAppointmentToBegin(): void {
             new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
         );
 
-      this.nextAppointment =
-        upcomingAppointments.length > 0 ? upcomingAppointments[0] : null;
+      if (upcomingAppointments.length === 0) {
+        this.nextAppointments = [];
+        return;
+      }
+
+      // Obtener la primera cita (la más próxima)
+      const firstAppointment = upcomingAppointments[0];
+      const firstAppointmentTime = new Date(firstAppointment.startTime);
+      
+      // Normalizar la hora para comparar solo fecha y hora (sin segundos/milisegundos)
+      const normalizeTime = (date: Date): string => {
+        return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')} ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+      };
+
+      const firstAppointmentNormalized = normalizeTime(firstAppointmentTime);
+
+      // Agrupar todas las citas que tienen la misma hora de inicio
+      this.nextAppointments = upcomingAppointments.filter(appointment => {
+        const appointmentTime = new Date(appointment.startTime);
+        const appointmentNormalized = normalizeTime(appointmentTime);
+        return appointmentNormalized === firstAppointmentNormalized;
+      });
     },
     error: (err) => {
       console.error('Error al cargar la próxima cita', err);
-      this.nextAppointment = null;
+      this.nextAppointments = [];
     },
   });
 }
 
-goToAppointmentDetail(): void {
-  if (this.nextAppointment) {
-    this.router.navigate(['/admin/appointment', this.nextAppointment.id]);
+goToAppointmentDetail(appointmentId?: number): void {
+  if (appointmentId) {
+    this.router.navigate(['/admin/appointment', appointmentId]);
+  } else if (this.nextAppointments.length > 0) {
+    // Redirigir a la primera cita si no se especifica ID (fallback)
+    this.router.navigate(['/admin/appointment', this.nextAppointments[0].id]);
   }
 }
 

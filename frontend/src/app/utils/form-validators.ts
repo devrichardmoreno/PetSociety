@@ -26,6 +26,75 @@ export function usernameExistsValidator(checkUsernameFn: (username: string) => O
 }
 
 /**
+ * Validador asíncrono para verificar si el DNI ya existe
+ */
+export function dniExistsValidator(checkDniFn: (dni: string) => Observable<boolean>): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (!control.value || control.value.toString().trim() === '') {
+      return of(null);
+    }
+
+    const dni = control.value.toString().trim();
+    
+    // Esperar 500ms antes de hacer la validación (debounce)
+    return timer(500).pipe(
+      switchMap(() => 
+        checkDniFn(dni).pipe(
+          map(exists => exists ? { dniExists: true } : null),
+          catchError(() => of(null)) // En caso de error, no bloquear el formulario
+        )
+      )
+    );
+  };
+}
+
+/**
+ * Validador asíncrono para verificar si el email ya existe
+ */
+export function emailExistsValidator(checkEmailFn: (email: string) => Observable<boolean>): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (!control.value || control.value.trim() === '') {
+      return of(null);
+    }
+
+    const email = control.value.trim();
+    
+    // Esperar 500ms antes de hacer la validación (debounce)
+    return timer(500).pipe(
+      switchMap(() => 
+        checkEmailFn(email).pipe(
+          map(exists => exists ? { emailExists: true } : null),
+          catchError(() => of(null)) // En caso de error, no bloquear el formulario
+        )
+      )
+    );
+  };
+}
+
+/**
+ * Validador asíncrono para verificar si el teléfono ya existe
+ */
+export function phoneExistsValidator(checkPhoneFn: (phone: string) => Observable<boolean>): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (!control.value || control.value.toString().trim() === '') {
+      return of(null);
+    }
+
+    const phone = control.value.toString().trim();
+    
+    // Esperar 500ms antes de hacer la validación (debounce)
+    return timer(500).pipe(
+      switchMap(() => 
+        checkPhoneFn(phone).pipe(
+          map(exists => exists ? { phoneExists: true } : null),
+          catchError(() => of(null)) // En caso de error, no bloquear el formulario
+        )
+      )
+    );
+  };
+}
+
+/**
  * Validador para nombres y apellidos: solo letras, espacios, ñ y tildes
  */
 export function nameValidator(): ValidatorFn {

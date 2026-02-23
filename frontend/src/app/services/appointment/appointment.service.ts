@@ -79,7 +79,7 @@ export class AppointmentService {
   }
 
   getDoctorAllPastAppointments(doctorId: number): Observable<AppointmentHistoryDTO[]> {
-    return this.http.get<AppointmentHistoryDTO[]>(`${this.url}/pastByDoctor/${doctorId}`);
+    return this.http.get<AppointmentHistoryDTO[]>(`${this.url}/pastByDoctor/${doctorId}`, { headers: this.getAuthHeaders() });
   }
 
   // Métodos para disponibilidad del doctor

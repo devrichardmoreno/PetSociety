@@ -6,22 +6,29 @@ import { AppointmentService } from '../../../services/appointment/appointment.se
 import { AuthService } from '../../../services/auth/auth.service';
 import { Router } from '@angular/router';
 import { AppointmentHistoryDTO, mapAppointmentDateToDate } from '../../../models/dto/appointment/appointment-history-dto';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 import { DiagnoseOfAppointmentModal } from '../diagnoses/diagnose-of-appointment-modal/diagnose-of-appointment-modal';
+import { DiagnosisFormModal } from '../diagnoses/diagnosis-form-modal/diagnosis-form-modal';
 import { PetEmojiUtil } from '../../../utils/pet-emoji.util';
 import { PetType, PetTypeLabels } from '../../../models/enums/pet-type.enum';
 import { Reason } from '../../../models/enums/reason.enum';
+import { Status } from '../../../models/enums/status.enum';
+import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../utils/error-handler';
+import { DiagnosesService } from '../../../services/diagnoses/diagnoses.service';
 
 
 @Component({
   selector: 'app-appointment-doctor-history',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatDialogModule, MatButtonModule],
   templateUrl: './appointment-doctor-history.html',
   styleUrl: './appointment-doctor-history.css'
 })
 export class AppointmentDoctorHistory implements OnInit, OnDestroy {
   // Exponer enums para uso en template
   Reason = Reason;
+  Status = Status;
 
   appointementArray: AppointmentHistoryDTO[] = [];
   filteredAppointments: AppointmentHistoryDTO[] = [];
@@ -45,18 +52,36 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
   headerHeight: number = 100; // Valor por defecto
   private resizeListener?: () => void;
 
+  // Modal de detalles
+  selectedAppointment: AppointmentHistoryDTO | null = null;
+  showDetailsModal = false;
+  diagnosisData: any = null;
+  loadingDiagnosis = false;
+
+  // Fecha actual para validación
+  currentDate: Date = new Date();
+
   constructor(
     private appointmentService: AppointmentService,
     private authService: AuthService,
     private router: Router,
     private matDialog: MatDialog,
     private ngZone: NgZone,
-    @Inject(PLATFORM_ID) private platformId: Object
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private diagnosesService: DiagnosesService
   ) {}
 
 
 
   ngOnInit(): void {
+    // Actualizar fecha actual cada minuto para validación de tiempo
+    if (isPlatformBrowser(this.platformId)) {
+      this.currentDate = new Date();
+      setInterval(() => {
+        this.currentDate = new Date();
+      }, 60000); // Actualizar cada minuto
+    }
+
     // Calcular altura del header después de que la vista se inicialice
     if (isPlatformBrowser(this.platformId)) {
       setTimeout(() => {
@@ -82,8 +107,18 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
           this.extractUniqueValues();
           this.applyFilters();
       },
-      error: (erro) => {
-        console.error('Error cargando citas pasadas del doctor:', erro);
+      error: (error) => {
+        console.error('Error cargando citas pasadas del doctor:', error);
+        const errorMessage = getFriendlyErrorMessage(error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: errorMessage,
+          background: '#fff',
+          color: '#333',
+          confirmButtonColor: '#45AEDD',
+          iconColor: '#000000'
+        });
       }
     })
   }
@@ -111,13 +146,162 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
     }
   }
 
-  goToDiagnose(diagnoseId: number | null): void{
-    if(diagnoseId === null) return;
+  openAppointmentDetails(appointment: AppointmentHistoryDTO): void {
+    this.selectedAppointment = appointment;
+    this.showDetailsModal = true;
+    this.diagnosisData = null;
+    this.loadingDiagnosis = false;
 
-     this.matDialog.open(DiagnoseOfAppointmentModal,{
+    // Si tiene diagnóstico, cargarlo
+    if (appointment.hasDiagnosis && appointment.diagnosisId) {
+      this.loadingDiagnosis = true;
+      this.diagnosesService.getDiagnoseById(appointment.diagnosisId).subscribe({
+        next: (diagnose) => {
+          this.diagnosisData = diagnose;
+          this.loadingDiagnosis = false;
+        },
+        error: (error) => {
+          console.error('Error cargando diagnóstico:', error);
+          this.loadingDiagnosis = false;
+          const errorMessage = getFriendlyErrorMessage(error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: errorMessage,
+            background: '#fff',
+            color: '#333',
+            confirmButtonColor: '#45AEDD',
+            iconColor: '#000000'
+          });
+        }
+      });
+    }
+  }
+
+  closeDetailsModal(): void {
+    this.showDetailsModal = false;
+    this.selectedAppointment = null;
+    this.diagnosisData = null;
+    this.loadingDiagnosis = false;
+  }
+
+  canCreateDiagnosis(appointment: AppointmentHistoryDTO & { startDate?: Date | null; endDate?: Date | null }): boolean {
+    // Si la cita está cancelada, no se puede crear diagnóstico
+    if (appointment.status === Status.CANCELED) {
+      return false;
+    }
+    
+    // Si ya tiene diagnóstico, no se puede crear otro
+    if (appointment.hasDiagnosis) {
+      return false;
+    }
+    
+    // Necesitamos las fechas de inicio y fin (usar startDate/endDate si están disponibles, sino startTime/endTime)
+    const startDate = appointment.startDate || (appointment.startTime ? new Date(appointment.startTime) : null);
+    const endDate = appointment.endDate || (appointment.endTime ? new Date(appointment.endTime) : null);
+    
+    if (!startDate || !endDate) {
+      return false;
+    }
+    
+    // Convertir las fechas a timestamps para comparación precisa
+    const now = this.currentDate.getTime();
+    const start = startDate.getTime();
+    const end = endDate.getTime();
+    
+    // No se puede crear antes de que comience la cita
+    if (now < start) {
+      return false;
+    }
+    
+    // Para la validación de tiempo después de la cita, dejamos que el backend haga la validación
+    // El frontend solo bloquea casos obviamente fuera de rango (más de 2 horas después)
+    // Esto evita problemas de desincronización de zona horaria
+    const obviouslyTooLate = end + (2 * 60 * 60 * 1000); // Más de 2 horas después
+    if (now > obviouslyTooLate) {
+      return false;
+    }
+    
+    // Si estamos dentro del rango razonable (desde el inicio hasta 2 horas después del fin),
+    // permitimos que el usuario intente crear el diagnóstico y dejamos que el backend valide
+    return true;
+  }
+
+  openCreateDiagnosisModal(appointmentId: number | null | undefined): void {
+    if (!appointmentId || appointmentId === null || appointmentId === undefined) {
+      console.error('appointmentId inválido:', appointmentId);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'No se pudo obtener el ID de la cita.',
+        background: '#fff',
+        color: '#333',
+        confirmButtonColor: '#45AEDD',
+        iconColor: '#000000'
+      });
+      return;
+    }
+
+    console.log('Abriendo modal de diagnóstico para appointmentId:', appointmentId);
+    console.log('Cita seleccionada:', this.selectedAppointment);
+
+    const dialogRef = this.matDialog.open(DiagnosisFormModal, {
+      width: '600px',
+      data: { appointmentId: Number(appointmentId) },
+      panelClass: 'diagnose-dialog-panel'
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        // Recargar las citas para actualizar el estado
+        const userId = this.authService.getUserId();
+        if (userId !== null) {
+          this.appointmentService.getDoctorAllPastAppointments(userId).subscribe({
+            next: (appointments) => {
+              const mapped = appointments.map(a => mapAppointmentDateToDate(a));
+              this.appointementArray = mapped;
+              this.extractUniqueValues();
+              this.applyFilters();
+              
+              // Si el modal de detalles está abierto, actualizar el diagnóstico
+              if (this.selectedAppointment && this.selectedAppointment.appointmentId === appointmentId) {
+                // Recargar el diagnóstico
+                if (this.selectedAppointment.diagnosisId) {
+                  this.loadingDiagnosis = true;
+                  this.diagnosesService.getDiagnoseById(this.selectedAppointment.diagnosisId).subscribe({
+                    next: (diagnose) => {
+                      this.diagnosisData = diagnose;
+                      this.loadingDiagnosis = false;
+                      // Actualizar el selectedAppointment para reflejar que ahora tiene diagnóstico
+                      const updatedAppointment = this.appointementArray.find(a => a.appointmentId === appointmentId);
+                      if (updatedAppointment) {
+                        this.selectedAppointment = updatedAppointment;
+                      }
+                    },
+                    error: (error) => {
+                      console.error('Error cargando diagnóstico:', error);
+                      this.loadingDiagnosis = false;
+                    }
+                  });
+                }
+              }
+            },
+            error: (error) => {
+              console.error('Error recargando citas:', error);
+            }
+          });
+        }
+      }
+    });
+  }
+
+  openDiagnosisModal(diagnosisId: number | null): void {
+    if (diagnosisId === null) return;
+
+    this.matDialog.open(DiagnoseOfAppointmentModal, {
       width: '700px',
-      data: {diagnoseId: diagnoseId}
-     })
+      data: { diagnoseId: diagnosisId }
+    });
   }
 
   getPetEmoji(petType?: PetType | string): string {
@@ -258,6 +442,69 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
 
   getReasonOptions(): (Reason | 'ALL')[] {
     return ['ALL', Reason.CONTROL, Reason.EMERGENCY, Reason.VACCINATION, Reason.NUTRITION];
+  }
+
+  getStatusLabel(status?: Status | string): string {
+    if (!status) return 'Sin estado';
+    switch (status) {
+      case Status.SUCCESSFULLY:
+        return 'Completada';
+      case Status.CANCELED:
+        return 'Cancelada';
+      case Status.TO_BEGIN:
+        return 'Programada';
+      case Status.RESCHEDULED:
+        return 'Reprogramada';
+      default:
+        return status.toString();
+    }
+  }
+
+  getStatusColor(status?: Status | string): string {
+    if (!status) return '#999';
+    switch (status) {
+      case Status.SUCCESSFULLY:
+        return '#4caf50';
+      case Status.CANCELED:
+        return '#f44336';
+      case Status.TO_BEGIN:
+        return '#2196f3';
+      case Status.RESCHEDULED:
+        return '#ff9800';
+      default:
+        return '#999';
+    }
+  }
+
+  getSpecialityLabel(speciality?: string): string {
+    if (!speciality) return 'Sin especialidad';
+    switch (speciality) {
+      case 'GENERAL_MEDICINE':
+        return 'Medicina General';
+      case 'INTERNAL_MEDICINE':
+        return 'Medicina Interna';
+      case 'NUTRITION':
+        return 'Nutrición';
+      default:
+        return speciality;
+    }
+  }
+
+  formatDate(dateString: string | Date): string {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+    return date.toLocaleDateString('es-AR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  }
+
+  formatTime(dateString: string | Date): string {
+    const date = typeof dateString === 'string' ? new Date(dateString) : dateString;
+    return date.toLocaleTimeString('es-AR', {
+      hour: '2-digit',
+      minute: '2-digit'
+    });
   }
 
 }

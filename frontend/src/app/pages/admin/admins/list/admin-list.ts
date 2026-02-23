@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { AdminService } from '../../../../services/admin/admin.service';
 import { Admin } from '../../../../models/entities/admin';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
 
 @Component({
   selector: 'app-admin-list',
@@ -151,10 +152,11 @@ export class AdminListComponent implements OnInit {
       },
       error: (error) => {
         console.error('Error al dar de baja al administrador:', error);
+        const errorMessage = getFriendlyErrorMessage(error);
         Swal.fire({
           icon: 'error',
           title: 'Error',
-          text: 'No se pudo dar de baja al administrador. Por favor, intenta nuevamente.',
+          text: errorMessage,
           background: '#fff',
           color: '#333',
           confirmButtonColor: '#45AEDD',

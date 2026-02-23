@@ -9,6 +9,7 @@ import { Reason } from '../../../../models/enums/reason.enum';
 import { Doctor } from '../../../../models/entities/doctor';
 import { DoctorAvailabilityDTO } from '../../../../models/dto/appointment/doctor-availability-dto';
 import Swal from 'sweetalert2';
+import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
 
 @Component({
   selector: 'app-create-appointment',
@@ -157,30 +158,25 @@ export class CreateAppointment implements OnInit {
             });
           },
           error: (e) => {
-            console.error(e);
             let errorTitle = 'Error al agendar';
-            let errorMessage = 'Ocurrió un problema al intentar crear la cita.';
+            let errorMessage = getFriendlyErrorMessage(e);
             
-            // Verificar si es un error de conflicto de horarios
+            // Verificar si es un error de conflicto de horarios para personalizar el título
             if (e.status === 409 || e.error?.title === 'Duplicated Appointment' || 
-                e.error?.detail?.includes('appointment') || 
-                e.error?.detail?.includes('hour') ||
-                e.message?.includes('appointment') ||
-                e.message?.includes('hour')) {
+                (e.error?.detail && (e.error.detail.includes('appointment') || e.error.detail.includes('hour')))) {
               errorTitle = 'Horario no disponible';
-              const doctorName = formValue.doctor ? `${formValue.doctor.name} ${formValue.doctor.surname}` : 'el doctor seleccionado';
-              const startTime = formValue.startTime ? new Date(formValue.startTime).toLocaleString('es-AR', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-              }) : 'el horario seleccionado';
-              errorMessage = `El doctor ${doctorName} ya tiene una cita programada para ${startTime}. Por favor, elegí otro horario disponible.`;
-            } else if (e.error?.detail) {
-              errorMessage = e.error.detail;
-            } else if (e.message) {
-              errorMessage = e.message;
+              // Si el mensaje genérico no es específico, crear uno personalizado
+              if (!errorMessage.includes('doctor') && !errorMessage.includes('horario')) {
+                const doctorName = formValue.doctor ? `${formValue.doctor.name} ${formValue.doctor.surname}` : 'el doctor seleccionado';
+                const startTime = formValue.startTime ? new Date(formValue.startTime).toLocaleString('es-AR', {
+                  day: '2-digit',
+                  month: '2-digit',
+                  year: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit'
+                }) : 'el horario seleccionado';
+                errorMessage = `El doctor ${doctorName} ya tiene una cita programada para ${startTime}. Por favor, elegí otro horario disponible.`;
+              }
             }
             
             Swal.fire({
@@ -264,25 +260,20 @@ export class CreateAppointment implements OnInit {
             }).then(() => this.router.navigate(['/admin/home']));
           },
           error: (err) => {
-            console.error(err);
             let errorTitle = 'Error en la carga masiva';
-            let errorMessage = 'Ocurrió un problema al intentar crear las citas.';
+            let errorMessage = getFriendlyErrorMessage(err);
             
-            // Verificar si es un error de conflicto de horarios
+            // Verificar si es un error de conflicto de horarios para personalizar el título
             if (err.status === 409 || err.error?.title === 'Duplicated Appointment' || 
-                err.error?.detail?.includes('appointment') || 
-                err.error?.detail?.includes('hour') ||
-                err.message?.includes('appointment') ||
-                err.message?.includes('hour')) {
+                (err.error?.detail && (err.error.detail.includes('appointment') || err.error.detail.includes('hour')))) {
               errorTitle = 'Horarios no disponibles';
-              const doctorName = this.appointmentBulkForm.value.doctor ? 
-                `${this.appointmentBulkForm.value.doctor.name} ${this.appointmentBulkForm.value.doctor.surname}` : 
-                'el doctor seleccionado';
-              errorMessage = `El doctor ${doctorName} ya tiene citas programadas en algunos de los horarios del rango seleccionado. Por favor, elegí un rango de fechas diferente o revisá la disponibilidad del doctor.`;
-            } else if (err.error?.detail) {
-              errorMessage = err.error.detail;
-            } else if (err.message) {
-              errorMessage = err.message;
+              // Si el mensaje genérico no es específico, crear uno personalizado
+              if (!errorMessage.includes('doctor') && !errorMessage.includes('horario')) {
+                const doctorName = this.appointmentBulkForm.value.doctor ? 
+                  `${this.appointmentBulkForm.value.doctor.name} ${this.appointmentBulkForm.value.doctor.surname}` : 
+                  'el doctor seleccionado';
+                errorMessage = `El doctor ${doctorName} ya tiene citas programadas en algunos de los horarios del rango seleccionado. Por favor, elegí un rango de fechas diferente o revisá la disponibilidad del doctor.`;
+              }
             }
             
             Swal.fire({

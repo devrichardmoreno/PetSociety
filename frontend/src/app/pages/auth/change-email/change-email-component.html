@@ -1,0 +1,54 @@
+<section id="change-email-container-all">
+    <div id="logo-background">
+        <a routerLink="/login" class="back-home-link">
+            <span class="back-icon">←</span> Volver al login
+        </a>
+        <img src="/assets/images/logo.svg" alt="">
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <h1>Corregir mi email</h1>
+        <p class="description">Si te equivocaste de email al registrarte, ingresá tu usuario, contraseña y el email correcto. Te enviaremos un nuevo correo de verificación.</p>
+
+        <div class="input-wrapper">
+            <label for="username" class="input-label">Nombre de usuario</label>
+            <input id="username" type="text" class="custom-input" placeholder="Tu nombre de usuario" formControlName="username"
+                [class.error]="form.get('username')?.invalid && form.get('username')?.touched">
+        </div>
+        @if (form.get('username')?.errors && form.get('username')?.touched) {
+            <div class="error-message">
+                <p class="error-msg">El usuario es obligatorio.</p>
+            </div>
+        }
+
+        <div class="input-wrapper">
+            <label for="password" class="input-label">Contraseña</label>
+            <input id="password" type="password" class="custom-input" placeholder="Tu contraseña" formControlName="password"
+                [class.error]="form.get('password')?.invalid && form.get('password')?.touched">
+        </div>
+        @if (form.get('password')?.errors && form.get('password')?.touched) {
+            <div class="error-message">
+                <p class="error-msg">La contraseña es obligatoria.</p>
+            </div>
+        }
+
+        <div class="input-wrapper">
+            <label for="newEmail" class="input-label">Nuevo email (correcto)</label>
+            <input id="newEmail" type="email" class="custom-input" placeholder="ejemplo@correo.com" formControlName="newEmail"
+                [class.error]="form.get('newEmail')?.invalid && form.get('newEmail')?.touched">
+        </div>
+        @if (form.get('newEmail')?.errors && form.get('newEmail')?.touched) {
+            <div class="error-message">
+                <p class="error-msg">{{ form.get('newEmail')?.hasError('required') ? 'El email es obligatorio.' : 'El email debe ser válido.' }}</p>
+            </div>
+        }
+
+        <button class="submit-btn" type="submit" [disabled]="form.invalid || isLoading">
+            @if (isLoading) { Enviando... } @else { Actualizar email y reenviar verificación }
+        </button>
+
+        <p class="back-link">
+            <a routerLink="/login">Volver al login</a>
+        </p>
+    </form>
+</section>

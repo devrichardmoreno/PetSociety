@@ -158,6 +158,16 @@
   margin-top: 0.5rem;
 }
 
+.status-badge-card {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
 /* Contenedor de cards */
 .cards-container {
   display: grid;
@@ -297,5 +307,240 @@
 
   .appointment-card-date {
     font-size: 0.9rem;
+  }
+}
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  padding: 2rem;
+}
+
+.modal-content {
+  background-color: white;
+  border-radius: 12px;
+  max-width: 700px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.modal-header h2 {
+  margin: 0;
+  color: var(--hospital-blue);
+  font-size: 1.5rem;
+}
+
+.btn-close {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: var(--secondary-text);
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s ease;
+}
+
+.btn-close:hover {
+  color: var(--primary-text);
+}
+
+.modal-body {
+  padding: 1.5rem;
+  flex: 1;
+}
+
+.appointment-details-section,
+.diagnosis-section {
+  margin-bottom: 2rem;
+}
+
+.appointment-details-section h3,
+.diagnosis-section h3 {
+  color: var(--hospital-blue);
+  font-size: 1.2rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.detail-row {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-start;
+}
+
+.detail-label {
+  font-weight: 600;
+  color: var(--secondary-text);
+  min-width: 120px;
+}
+
+.detail-value {
+  color: var(--primary-text);
+  flex: 1;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.diagnosis-content,
+.treatment-content {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 0.5rem;
+}
+
+.diagnosis-content p,
+.treatment-content p {
+  margin: 0;
+  color: var(--primary-text);
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.loading-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--secondary-text);
+}
+
+.no-diagnosis-section {
+  margin-top: 1rem;
+}
+
+.no-diagnosis-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--secondary-text);
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+}
+
+.time-info {
+  font-size: 0.9rem;
+  color: var(--secondary-text);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.diagnosis-footer {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 2px solid #f0f0f0;
+}
+
+.btn-view-diagnosis {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--hospital-green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-view-diagnosis:hover {
+  background-color: #6ba832;
+}
+
+.btn-create-diagnosis {
+  width: 100%;
+  padding: 0.75rem;
+  background-color: var(--hospital-blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-create-diagnosis:hover {
+  background-color: #3a9bc4;
+}
+
+.modal-footer {
+  padding: 1.5rem;
+  border-top: 2px solid #f0f0f0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.btn-close-modal {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--hospital-blue);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-close-modal:hover {
+  background-color: #3a9bc4;
+}
+
+/* Responsive para modal */
+@media (max-width: 768px) {
+  .modal-overlay {
+    padding: 1rem;
+  }
+
+  .modal-content {
+    margin: 0;
+    max-height: 95vh;
+  }
+
+  .modal-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .detail-row {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .detail-label {
+    min-width: auto;
   }
 }

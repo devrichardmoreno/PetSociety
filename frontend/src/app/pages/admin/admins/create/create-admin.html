@@ -44,7 +44,7 @@
         <label for="phone" class="input-label">Teléfono</label>
         <input id="phone" type="text" class="custom-input" formControlName="phone" placeholder="Ingrese el teléfono">
       </div>
-      @if (adminForm.get('phone')?.errors && adminForm.get('phone')?.touched) {
+      @if (adminForm.get('phone')?.errors && (adminForm.get('phone')?.touched || adminForm.get('phone')?.dirty)) {
         <div class="error-message">
           @if (adminForm.get('phone')?.hasError('required')) {
             <p class="error-msg">El teléfono es obligatorio.</p>
@@ -52,7 +52,14 @@
             <p class="error-msg">El teléfono solo puede contener números.</p>
           } @else if (adminForm.get('phone')?.hasError('invalidPhoneLength')) {
             <p class="error-msg">El teléfono debe tener entre 9 y 20 dígitos.</p>
+          } @else if (adminForm.get('phone')?.hasError('phoneExists')) {
+            <p class="error-msg">Este teléfono ya está registrado. Por favor, usá otro.</p>
           }
+        </div>
+      }
+      @if (adminForm.get('phone')?.pending) {
+        <div class="error-message">
+          <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
         </div>
       }
 
@@ -60,7 +67,7 @@
         <label for="dni" class="input-label">DNI</label>
         <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI">
       </div>
-      @if (adminForm.get('dni')?.errors && adminForm.get('dni')?.touched) {
+      @if (adminForm.get('dni')?.errors && (adminForm.get('dni')?.touched || adminForm.get('dni')?.dirty)) {
         <div class="error-message">
           @if (adminForm.get('dni')?.hasError('required')) {
             <p class="error-msg">El DNI es obligatorio.</p>
@@ -68,7 +75,14 @@
             <p class="error-msg">El DNI solo puede contener números.</p>
           } @else if (adminForm.get('dni')?.hasError('invalidDniLength')) {
             <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
+          } @else if (adminForm.get('dni')?.hasError('dniExists')) {
+            <p class="error-msg">Este DNI ya está registrado. Por favor, verificá los datos ingresados.</p>
           }
+        </div>
+      }
+      @if (adminForm.get('dni')?.pending) {
+        <div class="error-message">
+          <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
         </div>
       }
 
@@ -76,14 +90,20 @@
         <label for="email" class="input-label">Email</label>
         <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email">
       </div>
-      @if (adminForm.get('email')?.touched && adminForm.get('email')?.hasError('required')) {
+      @if (adminForm.get('email')?.errors && (adminForm.get('email')?.touched || adminForm.get('email')?.dirty)) {
         <div class="error-message">
-          <p class="error-msg">El email es obligatorio.</p>
+          @if (adminForm.get('email')?.hasError('required')) {
+            <p class="error-msg">El email es obligatorio.</p>
+          } @else if (adminForm.get('email')?.hasError('email')) {
+            <p class="error-msg">Debe ingresar un email válido.</p>
+          } @else if (adminForm.get('email')?.hasError('emailExists')) {
+            <p class="error-msg">Este email ya está registrado. Por favor, usá otro email.</p>
+          }
         </div>
       }
-      @if (adminForm.get('email')?.hasError('email')) {
+      @if (adminForm.get('email')?.pending) {
         <div class="error-message">
-          <p class="error-msg">Debe ingresar un email válido.</p>
+          <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
         </div>
       }
 
