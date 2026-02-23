@@ -22,7 +22,8 @@
     <canvas #barChart [hidden]="chartType !== 'bar'"></canvas>
     <canvas #lineChart [hidden]="chartType !== 'line'"></canvas>
   </div>
-}@else {
+} 
+@else {
   <div>
     <div id="numbers-container">
         <div id="card-information-1">
@@ -62,5 +63,6 @@
             <p class="no-appointment-message">No hay citas programadas a futuro</p>
         }
     </div>
+  </div>
   </div>
 }
