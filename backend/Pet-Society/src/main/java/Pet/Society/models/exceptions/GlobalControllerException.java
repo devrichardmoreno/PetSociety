@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -34,6 +35,19 @@ public class GlobalControllerException {
     @ExceptionHandler(NoPetsException.class)
     public ProblemDetail HandlerNoPetsException(NoPetsException ex, HttpServletRequest request) {
         return createProblemDetail(HttpStatus.CONFLICT, "No Pets Exception", "The client doesn't have pets", request);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ProblemDetail handleAccessDeniedException(
+            AccessDeniedException ex,
+            HttpServletRequest request) {
+
+        return createProblemDetail(
+                HttpStatus.FORBIDDEN,
+                "Forbidden",
+                "You don't have permission to access this resource",
+                request
+        );
     }
 
     @ExceptionHandler(UserNotFoundException.class)

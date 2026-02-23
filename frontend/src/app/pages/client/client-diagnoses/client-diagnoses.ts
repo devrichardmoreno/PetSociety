@@ -188,7 +188,7 @@ export class ClientDiagnosesComponent implements OnInit {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `diagnosis-${diagnoseId}.pdf`;
+        a.download = `diagnóstico-${diagnoseId}.pdf`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
