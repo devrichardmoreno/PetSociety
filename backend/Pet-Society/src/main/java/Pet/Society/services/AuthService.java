@@ -162,13 +162,14 @@ public class AuthService {
         CredentialEntity credential = userDetailsService.findByUsername(username)
             .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado."));
         
-        // Marcar el email como verificado
+        // Marcar el email como verificado (actualización directa para evitar problemas con herencia JPA)
         UserEntity user = credential.getUser();
-        if (user != null) {
-            user.setEmailVerified(true);
-            userRepository.save(user);
-        } else {
+        if (user == null) {
             throw new UserNotFoundException("No se encontró el usuario asociado a estas credenciales.");
+        }
+        int updated = userRepository.setEmailVerifiedTrue(user.getId());
+        if (updated == 0) {
+            throw new UserNotFoundException("No se pudo actualizar la verificación del usuario.");
         }
     }
 
