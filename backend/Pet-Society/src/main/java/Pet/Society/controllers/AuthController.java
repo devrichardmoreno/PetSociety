@@ -1,5 +1,6 @@
 package Pet.Society.controllers;
 
+import Pet.Society.models.dto.auth.ChangeEmailUnverifiedDTO;
 import Pet.Society.models.dto.auth.ForgotPasswordDTO;
 import Pet.Society.models.dto.auth.ForgotPasswordResponseDTO;
 import Pet.Society.models.dto.auth.ResetPasswordDTO;
@@ -181,6 +182,83 @@ public class AuthController {
         authService.resetPassword(request);
         Map<String, String> response = new HashMap<>();
         response.put("message", "Contraseña restablecida exitosamente. Ya podés iniciar sesión con tu nueva contraseña.");
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Verificar email",
+            description = "Verifica el email del usuario usando el token de verificación enviado por email.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Email verificado exitosamente",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Token inválido o expirado",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
+    @GetMapping("/verify-email")
+    public ResponseEntity<Map<String, String>> verifyEmail(@RequestParam String token) {
+        authService.verifyEmail(token);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Email verificado exitosamente. Ya podés usar todas las funcionalidades de Pet Society.");
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Reenviar email de verificación",
+            description = "Reenvía el email de verificación para un usuario que no lo recibió.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Email de verificación reenviado exitosamente",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Usuario no encontrado",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
+    @PostMapping("/resend-verification-email")
+    public ResponseEntity<Map<String, String>> resendVerificationEmail(@RequestParam String username) {
+        authService.resendVerificationEmail(username);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Se reenvió el email de verificación. Revisá tu bandeja de entrada (y la carpeta de spam si no lo ves).");
+        return ResponseEntity.ok(response);
+    }
+
+    @Operation(
+            summary = "Cambiar email (cuenta no verificada)",
+            description = "Si te equivocaste de email al registrarte y aún no verificaste, podés corregir tu email ingresando usuario, contraseña y el nuevo email.",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Email actualizado y correo de verificación enviado al nuevo email",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Datos inválidos o email ya en uso",
+                            content = @Content(mediaType = "application/json")
+                    ),
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Usuario o contraseña incorrectos",
+                            content = @Content(mediaType = "application/json")
+                    )
+            }
+    )
+    @PostMapping("/change-email-unverified")
+    public ResponseEntity<Map<String, String>> changeEmailUnverified(@Valid @RequestBody ChangeEmailUnverifiedDTO request) {
+        authService.changeEmailForUnverifiedUser(request);
+        Map<String, String> response = new HashMap<>();
+        response.put("message", "Email actualizado. Revisá tu bandeja de entrada (y la carpeta de spam) en " + request.getNewEmail() + " para verificar tu cuenta.");
         return ResponseEntity.ok(response);
     }
 

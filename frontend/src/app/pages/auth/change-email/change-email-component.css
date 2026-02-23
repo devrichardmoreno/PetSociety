@@ -1,4 +1,4 @@
-#reset-password-container-all {
+#change-email-container-all {
     display: flex;
     min-height: 100vh;
     width: 100%;
@@ -52,9 +52,7 @@ form {
     transform: translateX(-3px);
 }
 
-.back-icon {
-    font-size: 1.6rem;
-}
+.back-icon { font-size: 1.6rem; }
 
 h1 {
     font-size: 2.5rem;
@@ -70,11 +68,7 @@ h1 {
     text-align: center;
 }
 
-.input-wrapper {
-    width: 100%;
-    margin-bottom: 1.5rem;
-}
-
+.input-wrapper { width: 100%; margin-bottom: 1.5rem; }
 .input-label {
     display: block;
     margin-bottom: 0.5rem;
@@ -98,21 +92,10 @@ h1 {
     border-color: #45aedd;
 }
 
-.custom-input.error {
-    border-color: #dc3545;
-}
+.custom-input.error { border-color: #dc3545; }
 
-.error-message {
-    width: 100%;
-    margin-top: -1rem;
-    margin-bottom: 1rem;
-}
-
-.error-msg {
-    color: #dc3545;
-    font-size: 0.9rem;
-    margin: 0;
-}
+.error-message { width: 100%; margin-top: -1rem; margin-bottom: 1rem; }
+.error-msg { color: #dc3545; font-size: 0.9rem; margin: 0; }
 
 .submit-btn {
     width: 100%;
@@ -139,74 +122,14 @@ h1 {
     transform: none;
 }
 
-.back-link {
-    margin-top: 2rem;
-    text-align: center;
-    color: #666;
-    font-size: 0.95rem;
-}
-
-.back-link a {
-    color: #45aedd;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.back-link a:hover {
-    text-decoration: underline;
-}
-
-.password-requirements {
-    width: 100%;
-    max-width: 400px;
-    margin-top: 0.5rem;
-    margin-bottom: 0.5rem;
-}
-
-.requirement-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.85rem;
-    margin-bottom: 0.4rem;
-    transition: color 0.2s ease;
-}
-
-.requirement-item.valid {
-    color: #28a745;
-}
-
-.requirement-item.invalid {
-    color: #dc3545;
-}
-
-.requirement-icon {
-    font-weight: bold;
-    font-size: 1rem;
-    min-width: 1.2rem;
-    text-align: center;
-}
+.back-link { margin-top: 2rem; text-align: center; color: #666; font-size: 0.95rem; }
+.back-link a { color: #45aedd; text-decoration: none; font-weight: 600; }
+.back-link a:hover { text-decoration: underline; }
 
 @media (max-width: 768px) {
-    #reset-password-container-all {
-        flex-direction: column;
-    }
-
-    #logo-background {
-        flex: 0 0 auto;
-        padding: 2rem 1rem;
-        min-height: 200px;
-    }
-
-    #logo-background img {
-        max-width: 200px;
-    }
-
-    form {
-        padding: 2rem 1.5rem;
-    }
-
-    h1 {
-        font-size: 2rem;
-    }
+    #change-email-container-all { flex-direction: column; }
+    #logo-background { flex: 0 0 auto; padding: 2rem 1rem; min-height: 200px; }
+    #logo-background img { max-width: 200px; }
+    form { padding: 2rem 1.5rem; }
+    h1 { font-size: 2rem; }
 }

@@ -14,3 +14,20 @@ spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 # Configuracion de seguridad
 
 jwt.secret=clave-super-secreta-segura-desde-config
+
+# Configuración de Email (Gmail)
+# IMPORTANTE: Para usar Gmail necesitás crear una "Contraseña de aplicación":
+# 1. Ve a tu cuenta de Google: https://myaccount.google.com/
+# 2. Seguridad > Verificación en 2 pasos (debe estar activada)
+# 3. Contraseñas de aplicaciones > Seleccionar aplicación > Otra > Nombre personalizado
+# 4. Copiar la contraseña generada y usarla aquí (NO tu contraseña normal de Gmail)
+spring.mail.host=smtp.gmail.com
+spring.mail.port=587
+spring.mail.username=mimail@gmail.com
+spring.mail.password=token de 16 digitos
+spring.mail.properties.mail.smtp.auth=true
+spring.mail.properties.mail.smtp.starttls.enable=true
+spring.mail.properties.mail.smtp.starttls.required=true
+spring.mail.properties.mail.smtp.connectiontimeout=5000
+spring.mail.properties.mail.smtp.timeout=5000
+spring.mail.properties.mail.smtp.writetimeout=5000

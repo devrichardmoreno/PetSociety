@@ -4,13 +4,17 @@
   align-items: center;
   background: linear-gradient(135deg, #e1f5fe, #f8f9fa);
   min-height: 100vh;
-  padding: 3rem 1rem;
+  padding-top: 120px !important;
+  padding-bottom: 3rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
 .admin-list-container h2 {
   font-size: 2rem;
   color: #6c757d;
+  margin-top: 0 !important;
   margin-bottom: 1.5rem;
   font-weight: 700;
   text-align: center;
@@ -136,7 +140,7 @@
 
 @media (max-width: 768px) {
   .admin-list-container {
-    padding: 2rem 1rem;
+    padding: 80px 1rem 2rem 1rem;
   }
 
   .admin-card {

@@ -74,6 +74,20 @@ export function getFriendlyErrorMessage(error: ApiError): string {
 }
 
 /**
+ * Indica si el error corresponde a "email no verificado" (403)
+ */
+export function isEmailNotVerifiedError(error: ApiError): boolean {
+  if (!error || error.status !== 403) return false;
+  const errorData = error.error;
+  if (errorData && typeof errorData === 'object') {
+    const title = (errorData.title || '').toLowerCase();
+    const detail = (errorData.detail || '').toLowerCase();
+    return title.includes('email not verified') || (detail.includes('email') && detail.includes('verific'));
+  }
+  return false;
+}
+
+/**
  * Traduce mensajes de error técnicos a mensajes amigables
  */
 function translateErrorMessage(detail: string, status?: number): string {
@@ -147,8 +161,14 @@ function translateErrorMessage(detail: string, status?: number): string {
     return 'Usuario o contraseña incorrectos.';
   }
 
-  // Errores de permisos (403)
-  if (status === 403 || detailLower.includes('forbidden') || detailLower.includes('access denied')) {
+  // Errores de permisos (403) - Email no verificado: mostrar mensaje del backend
+  if (status === 403) {
+    if (detailLower.includes('email') && detailLower.includes('verific')) {
+      return detail || 'Tu email no ha sido verificado. Verificá tu bandeja de entrada o corregí tu email si te equivocaste.';
+    }
+    return 'No tenés permisos para realizar esta acción.';
+  }
+  if (detailLower.includes('forbidden') || detailLower.includes('access denied')) {
     return 'No tenés permisos para realizar esta acción.';
   }
 

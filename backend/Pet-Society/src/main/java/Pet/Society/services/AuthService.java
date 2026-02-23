@@ -1,5 +1,6 @@
 package Pet.Society.services;
 
+import Pet.Society.models.dto.auth.ChangeEmailUnverifiedDTO;
 import Pet.Society.models.dto.auth.ForgotPasswordDTO;
 import Pet.Society.models.dto.auth.ForgotPasswordResponseDTO;
 import Pet.Society.models.dto.auth.ResetPasswordDTO;
@@ -7,6 +8,8 @@ import Pet.Society.models.dto.login.LoginDTO;
 import Pet.Society.models.dto.login.LoginResponseDTO;
 import Pet.Society.models.entities.CredentialEntity;
 import Pet.Society.models.entities.UserEntity;
+import Pet.Society.models.exceptions.EmailNotVerifiedException;
+import Pet.Society.models.exceptions.UserAttributeException;
 import Pet.Society.models.exceptions.UserNotFoundException;
 import Pet.Society.repositories.CredentialRepository;
 import Pet.Society.repositories.UserRepository;
@@ -61,6 +64,12 @@ public class AuthService {
         UserDetails userDetails = userDetailsService.loadUserByUsername(request.getUsername());
         CredentialEntity credential = userDetailsService.findByUsername(request.getUsername())
                 .orElseThrow(() -> new UserNotFoundException("User not found with username: " + request.getUsername()));
+
+        // Verificar que el email esté verificado
+        UserEntity user = credential.getUser();
+        if (user != null && (user.getEmailVerified() == null || !user.getEmailVerified())) {
+            throw new EmailNotVerifiedException("Tu email no ha sido verificado. Por favor, verificá tu email antes de iniciar sesión. Revisá tu bandeja de entrada (y la carpeta de spam si no lo ves).");
+        }
 
         String token = jwtService.generateToken(userDetails);
 
@@ -134,5 +143,92 @@ public class AuthService {
         // Actualizar la contraseña
         credential.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userDetailsService.save(credential);
+    }
+
+    /**
+     * Verifica el email del usuario usando el token de verificación
+     */
+    @Transactional
+    public void verifyEmail(String token) {
+        // Validar que el token sea válido para verificación de email
+        if (!jwtService.isEmailVerificationTokenValid(token)) {
+            throw new BadCredentialsException("Token inválido o expirado. Por favor, solicitá un nuevo email de verificación.");
+        }
+        
+        // Extraer el username del token
+        String username = jwtService.extractUsername(token);
+        
+        // Buscar las credenciales
+        CredentialEntity credential = userDetailsService.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado."));
+        
+        // Marcar el email como verificado
+        UserEntity user = credential.getUser();
+        if (user != null) {
+            user.setEmailVerified(true);
+            userRepository.save(user);
+        } else {
+            throw new UserNotFoundException("No se encontró el usuario asociado a estas credenciales.");
+        }
+    }
+
+    /**
+     * Reenvía el email de verificación para un usuario
+     */
+    public void resendVerificationEmail(String username) {
+        // Buscar las credenciales
+        CredentialEntity credential = userDetailsService.findByUsername(username)
+            .orElseThrow(() -> new UserNotFoundException("Usuario no encontrado."));
+        
+        UserEntity user = credential.getUser();
+        if (user == null) {
+            throw new UserNotFoundException("No se encontró el usuario asociado a estas credenciales.");
+        }
+        
+        // Si ya está verificado, no hacer nada
+        if (user.getEmailVerified() != null && user.getEmailVerified()) {
+            throw new RuntimeException("El email ya está verificado.");
+        }
+        
+        // Generar nuevo token y enviar email
+        String verificationToken = jwtService.generateEmailVerificationToken(username);
+        String userName = user.getName() + " " + user.getSurname();
+        emailService.sendEmailVerification(user.getEmail(), verificationToken, userName);
+    }
+
+    /**
+     * Permite cambiar el email a un usuario que aún no verificó su cuenta (ej. se equivocó al registrarse).
+     * Debe indicar username, contraseña y el nuevo email.
+     */
+    @Transactional
+    public void changeEmailForUnverifiedUser(ChangeEmailUnverifiedDTO request) {
+        CredentialEntity credential = userDetailsService.findByUsername(request.getUsername())
+            .orElseThrow(() -> new BadCredentialsException("Usuario o contraseña incorrectos."));
+
+        if (!passwordEncoder.matches(request.getPassword(), credential.getPassword())) {
+            throw new BadCredentialsException("Usuario o contraseña incorrectos.");
+        }
+
+        UserEntity user = credential.getUser();
+        if (user == null) {
+            throw new UserNotFoundException("No se encontró el usuario asociado a estas credenciales.");
+        }
+
+        if (user.getEmailVerified() != null && user.getEmailVerified()) {
+            throw new UserAttributeException("Tu email ya está verificado. Si necesitás cambiar tu email, contactá a soporte.");
+        }
+
+        // Que el nuevo email no esté en uso por otra cuenta (otro usuario con distinto id)
+        Optional<UserEntity> existingWithEmail = userRepository.findByEmail(request.getNewEmail());
+        if (existingWithEmail.isPresent() && existingWithEmail.get().getId() != user.getId()) {
+            throw new UserAttributeException("Ese email ya está en uso por otra cuenta.");
+        }
+
+        user.setEmail(request.getNewEmail());
+        userRepository.save(user);
+
+        String verificationToken = jwtService.generateEmailVerificationToken(request.getUsername());
+        String userName = user.getName() + " " + user.getSurname();
+        emailService.sendEmailVerification(request.getNewEmail(), verificationToken, userName);
     }
 }

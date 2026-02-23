@@ -43,6 +43,8 @@ public class UserEntity {
     @NotNull
     @ColumnDefault("true")
     private Boolean subscribed = true;
+    @ColumnDefault("false")
+    private Boolean emailVerified = false;
 
 
 

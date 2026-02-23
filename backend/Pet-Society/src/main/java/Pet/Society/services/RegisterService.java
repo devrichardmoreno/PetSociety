@@ -27,12 +27,18 @@ public class RegisterService  {
 
     private final DoctorService doctorService;
 
-    public RegisterService(ClientService clientService, CredentialService credentialService, UserService userService, PasswordEncoder passwordEncoder, DoctorService doctorService) {
+    private final EmailService emailService;
+
+    private final JwtService jwtService;
+
+    public RegisterService(ClientService clientService, CredentialService credentialService, UserService userService, PasswordEncoder passwordEncoder, DoctorService doctorService, EmailService emailService, JwtService jwtService) {
         this.clientService = clientService;
         this.credentialService = credentialService;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
         this.doctorService = doctorService;
+        this.emailService = emailService;
+        this.jwtService = jwtService;
     }
 
     @Transactional
@@ -63,6 +69,17 @@ public class RegisterService  {
         }
 
         credentialService.save(credentialEntity);
+        
+        // Enviar email de verificación
+        try {
+            String verificationToken = jwtService.generateEmailVerificationToken(registerDTO.getUsername());
+            String userName = registerDTO.getName() + " " + registerDTO.getSurname();
+            emailService.sendEmailVerification(registerDTO.getEmail(), verificationToken, userName);
+        } catch (Exception e) {
+            // Si falla el envío del email, hacer rollback de la transacción
+            throw new RuntimeException("No se pudo enviar el email de verificación. Por favor, verifica que el email sea válido: " + e.getMessage(), e);
+        }
+        
         return clientDTO;
     }
 
@@ -88,6 +105,17 @@ public class RegisterService  {
         credentialEntity.setUser(clientService.saveWithFoundation(clientDTO, registerDTO.getFoundation()));
 
         credentialService.save(credentialEntity);
+        
+        // Enviar email de verificación
+        try {
+            String verificationToken = jwtService.generateEmailVerificationToken(registerDTO.getUsername());
+            String userName = registerDTO.getName() + " " + registerDTO.getSurname();
+            emailService.sendEmailVerification(registerDTO.getEmail(), verificationToken, userName);
+        } catch (Exception e) {
+            // Si falla el envío del email, hacer rollback de la transacción
+            throw new RuntimeException("No se pudo enviar el email de verificación. Por favor, verifica que el email sea válido: " + e.getMessage(), e);
+        }
+        
         return clientDTO;
     }
 
@@ -112,6 +140,16 @@ public class RegisterService  {
         credentialEntity.setUser(userService.save(userEntity));
 
         credentialService.save(credentialEntity);
+        
+        // Enviar email de verificación
+        try {
+            String verificationToken = jwtService.generateEmailVerificationToken(registerDTO.getUsername());
+            String userName = registerDTO.getName() + " " + registerDTO.getSurname();
+            emailService.sendEmailVerification(registerDTO.getEmail(), verificationToken, userName);
+        } catch (Exception e) {
+            // Si falla el envío del email, hacer rollback de la transacción
+            throw new RuntimeException("No se pudo enviar el email de verificación. Por favor, verifica que el email sea válido: " + e.getMessage(), e);
+        }
     }
 
     @Transactional(rollbackOn = UserAttributeException.class)
@@ -143,6 +181,16 @@ public class RegisterService  {
         credentialEntity.setUser(doctorEntity);
 
         credentialService.save(credentialEntity);
+        
+        // Enviar email de verificación
+        try {
+            String verificationToken = jwtService.generateEmailVerificationToken(registerDTO.getUsername());
+            String userName = registerDTO.getName() + " " + registerDTO.getSurname();
+            emailService.sendEmailVerification(registerDTO.getEmail(), verificationToken, userName);
+        } catch (Exception e) {
+            // Si falla el envío del email, hacer rollback de la transacción
+            throw new RuntimeException("No se pudo enviar el email de verificación. Por favor, verifica que el email sea válido: " + e.getMessage(), e);
+        }
     }
 
 

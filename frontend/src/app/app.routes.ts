@@ -27,6 +27,8 @@ import { PetFormComponent } from './pages/admin/clients/pet-form/pet-form';
 import { ClientPetsListComponent } from './pages/admin/clients/pets-list/client-pets-list';
 import { ForgotPasswordComponent } from './pages/auth/forgot-password/forgot-password-component';
 import { ResetPasswordComponent } from './pages/auth/reset-password/reset-password-component';
+import { VerifyEmailComponent } from './pages/auth/verify-email/verify-email-component';
+import { ChangeEmailComponent } from './pages/auth/change-email/change-email-component';
 
 export const routes: Routes = [
     // Rutas del ADMIN (protegidas con AuthGuard + RoleGuard)
@@ -150,6 +152,8 @@ export const routes: Routes = [
     { path: 'register/new/client', component: RegisterComponent, data: { headerType: 'none' } },
     { path: 'forgot-password', component: ForgotPasswordComponent, data: { headerType: 'none' } },
     { path: 'reset-password', component: ResetPasswordComponent, data: { headerType: 'none' } },
+    { path: 'verify-email', component: VerifyEmailComponent, data: { headerType: 'none' } },
+    { path: 'change-email', component: ChangeEmailComponent, data: { headerType: 'none' } },
     
     // Rutas del CLIENT (protegidas con AuthGuard + RoleGuard)
     { 

@@ -152,5 +152,13 @@ public class GlobalControllerException {
         return createProblemDetail(HttpStatus.UNAUTHORIZED, "Authentication Failed", "Invalid username or password", request);
     }
 
+    @ExceptionHandler(EmailNotVerifiedException.class)
+    public ProblemDetail handlerEmailNotVerifiedException(EmailNotVerifiedException ex, HttpServletRequest request) {
+        String detail = ex.getMessage() != null && !ex.getMessage().isEmpty()
+            ? ex.getMessage()
+            : "Tu email no ha sido verificado. Por favor, verificá tu email antes de iniciar sesión.";
+        return createProblemDetail(HttpStatus.FORBIDDEN, "Email Not Verified", detail, request);
+    }
+
 
 }

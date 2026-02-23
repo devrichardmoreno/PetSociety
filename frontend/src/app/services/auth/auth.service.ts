@@ -217,5 +217,25 @@ export class AuthService {
       newPassword 
     });
   }
+
+  /**
+   * Verifica el email usando el token de verificación
+   */
+  verifyEmail(token: string): Observable<{ message: string }> {
+    return this.http.get<{ message: string }>(`${this.API_URL}/verify-email`, {
+      params: { token }
+    });
+  }
+
+  /**
+   * Cambiar email para cuenta aún no verificada (ej. se equivocó al registrarse)
+   */
+  changeEmailUnverified(username: string, password: string, newEmail: string): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${this.API_URL}/change-email-unverified`, {
+      username,
+      password,
+      newEmail
+    });
+  }
 }
 

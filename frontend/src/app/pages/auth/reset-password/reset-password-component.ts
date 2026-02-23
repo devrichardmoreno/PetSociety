@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule, ActivatedRoute } from '@angular/router';
 import { AuthService } from '../../../services/auth/auth.service';
@@ -33,7 +33,7 @@ export class ResetPasswordComponent implements OnInit {
 
     this.resetPasswordForm = this.fb.group({
       token: [this.token, [Validators.required]],
-      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      newPassword: ['', [Validators.required, Validators.minLength(8), Validators.maxLength(50), this.passwordValidator]],
       confirmPassword: ['', [Validators.required]]
     }, { validators: this.passwordMatchValidator });
 
@@ -41,6 +41,45 @@ export class ResetPasswordComponent implements OnInit {
     if (this.token) {
       this.resetPasswordForm.patchValue({ token: this.token });
     }
+  }
+
+  // Validador personalizado para contraseña
+  passwordValidator(control: AbstractControl): ValidationErrors | null {
+    const value = control.value;
+    
+    if (!value) {
+      return null; // Dejamos que Validators.required maneje el caso vacío
+    }
+
+    const hasLetter = /[a-zA-Z]/.test(value);
+    const hasNumber = /[0-9]/.test(value);
+
+    if (!hasLetter || !hasNumber) {
+      return { passwordStrength: true };
+    }
+
+    return null;
+  }
+
+  // Métodos para verificar cada validación individualmente
+  hasMinLength(): boolean {
+    const password = this.resetPasswordForm.get('newPassword')?.value || '';
+    return password.length >= 8;
+  }
+
+  hasLetter(): boolean {
+    const password = this.resetPasswordForm.get('newPassword')?.value || '';
+    return /[a-zA-Z]/.test(password);
+  }
+
+  hasNumber(): boolean {
+    const password = this.resetPasswordForm.get('newPassword')?.value || '';
+    return /[0-9]/.test(password);
+  }
+
+  hasMaxLength(): boolean {
+    const password = this.resetPasswordForm.get('newPassword')?.value || '';
+    return password.length <= 50;
   }
 
   passwordMatchValidator(form: FormGroup) {
