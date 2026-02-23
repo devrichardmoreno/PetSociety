@@ -14,22 +14,24 @@ import Pet.Society.models.interfaces.Mapper;
 import Pet.Society.repositories.AppointmentRepository;
 import Pet.Society.repositories.ClientRepository;
 import Pet.Society.repositories.PetRepository;
-import com.mysql.cj.xdevapi.Client;
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.http.client.ClientHttpRequestFactorySettings;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class ClientService implements Mapper <ClientDTO, ClientEntity> {
+
+    private static final ZoneId ARGENTINA_ZONE = ZoneId.of("America/Argentina/Buenos_Aires");
 
     private final ClientRepository clientRepository;
     private final PetRepository petRepository;
@@ -40,6 +42,10 @@ public class ClientService implements Mapper <ClientDTO, ClientEntity> {
         this.clientRepository = clientRepository;
         this.petRepository = petRepository;
         this.appointmentRepository = appointmentRepository;
+    }
+
+    private LocalDateTime getCurrentDateTimeArgentina() {
+        return ZonedDateTime.now(ARGENTINA_ZONE).toLocalDateTime();
     }
 
     public ClientEntity save(ClientDTO clientDTO) {
@@ -91,7 +97,7 @@ public class ClientService implements Mapper <ClientDTO, ClientEntity> {
         ClientEntity clientToUnsubscribe = existingClient.get();
         
         // Obtener todas las citas futuras del cliente (a través de sus mascotas)
-        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime now = getCurrentDateTimeArgentina();
         List<AppointmentEntity> futureAppointments = appointmentRepository.findAllByPetClientId(id)
                 .stream()
                 .filter(appointment -> {
@@ -115,30 +121,36 @@ public class ClientService implements Mapper <ClientDTO, ClientEntity> {
             appointment.setStatus(Status.CANCELED);
             appointmentRepository.save(appointment);
             
-            // Crear una nueva cita disponible con los mismos datos pero sin mascota
-            AppointmentEntity newAvailableAppointment = AppointmentEntity.builder()
-                    .startDate(startDate)
-                    .endDate(endDate)
-                    .reason(reason)
-                    .status(Status.AVAILABLE)
-                    .doctor(doctor)
-                    .pet(null) // Sin mascota asignada
-                    .approved(false)
-                    .build();
+            // Calcular las horas hasta la cita
+            long hoursUntilAppointment = Duration.between(now, startDate).toHours();
             
-            // Verificar que no haya solapamiento antes de crear la nueva cita
-            // (evitar duplicados si ya existe una cita disponible en ese horario)
-            boolean hasOverlap = appointmentRepository.findAppointmentByStartDateAndEndDate(startDate, endDate)
-                    .stream()
-                    .anyMatch(existing -> 
-                        existing.getDoctor().getId() == doctor.getId() &&
-                        existing.getStatus() == Status.AVAILABLE &&
-                        existing.getId() != appointment.getId()
-                    );
-            
-            if (!hasOverlap) {
-                appointmentRepository.save(newAvailableAppointment);
+            // Solo crear una nueva cita disponible si se cancela con más de 24 horas de anticipación
+            if (hoursUntilAppointment >= 24) {
+                AppointmentEntity newAvailableAppointment = AppointmentEntity.builder()
+                        .startDate(startDate)
+                        .endDate(endDate)
+                        .reason(reason)
+                        .status(Status.AVAILABLE)
+                        .doctor(doctor)
+                        .pet(null) // Sin mascota asignada
+                        .approved(false)
+                        .build();
+                
+                // Verificar que no haya solapamiento antes de crear la nueva cita
+                // (evitar duplicados si ya existe una cita disponible en ese horario)
+                boolean hasOverlap = appointmentRepository.findAppointmentByStartDateAndEndDate(startDate, endDate)
+                        .stream()
+                        .anyMatch(existing -> 
+                            existing.getDoctor().getId() == doctor.getId() &&
+                            existing.getStatus() == Status.AVAILABLE &&
+                            existing.getId() != appointment.getId()
+                        );
+                
+                if (!hasOverlap) {
+                    appointmentRepository.save(newAvailableAppointment);
+                }
             }
+            // Si hay menos de 24 horas, solo se cancela la cita sin crear una nueva disponible
         }
         
         // Finalmente, marcar al cliente como dado de baja

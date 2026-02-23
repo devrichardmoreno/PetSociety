@@ -82,6 +82,7 @@ public class DiagnosesController {
                     )
             }
     )
+    @PreAuthorize("@ownershipValidator.canAccessDiagnosis(#id)")
     @GetMapping("/findById/{id}")
     public ResponseEntity<DiagnosesDTOResponse> getDiagnosisById(@PathVariable Long id) {
         DiagnosesDTOResponse diagnosis = diagnosesService.findById(id);

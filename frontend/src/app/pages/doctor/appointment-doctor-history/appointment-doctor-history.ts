@@ -186,6 +186,11 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
   }
 
   canCreateDiagnosis(appointment: AppointmentHistoryDTO & { startDate?: Date | null; endDate?: Date | null }): boolean {
+    // Si la cita está cancelada, no se puede crear diagnóstico
+    if (appointment.status === Status.CANCELED) {
+      return false;
+    }
+    
     // Si ya tiene diagnóstico, no se puede crear otro
     if (appointment.hasDiagnosis) {
       return false;

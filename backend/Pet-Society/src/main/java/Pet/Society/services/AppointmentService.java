@@ -411,6 +411,9 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     }
 
     public List<AppointmentHistoryDTO> getAllAppointmentsHistoryByClientId(long clientId) {
+        // Primero marcar como completadas las citas que ya pasaron el tiempo límite
+        markExpiredAppointmentsAsCompleted();
+        
         Optional<ClientDTO> client = Optional.ofNullable(this.clientService.findById(clientId));
         if (client.isEmpty()) {
             throw new AppointmentDoesntExistException("Client does not exist");
@@ -456,6 +459,9 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     }
 
     public List<AppointmentHistoryDTO> getAllPastAppointmentsByDoctorId(long doctorId){
+        // Primero marcar como completadas las citas que ya pasaron el tiempo límite
+        markExpiredAppointmentsAsCompleted();
+        
         Optional <DoctorEntity> doctor = Optional.ofNullable(this.doctorService.findById1(doctorId));
 
         if (doctor.isEmpty()){
@@ -527,6 +533,9 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     }
 
     public Page<AppointmentScheduleDTO> getScheduleAppointmentsDoctorForToday(long id, Pageable pageable) {
+        // Primero marcar como completadas las citas que ya pasaron el tiempo límite
+        markExpiredAppointmentsAsCompleted();
+        
         if (!doctorService.doctorExistById(id)) {
             throw new AppointmentDoesntExistException("Doctor does not exist");
         }
@@ -613,9 +622,56 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         }
     }
 
+    /**
+     * Marca automáticamente como completadas las citas que ya pasaron el tiempo límite para emitir diagnóstico
+     * Una cita se marca como completada si:
+     * - Tiene cliente asignado (pet != null)
+     * - Está en estado TO_BEGIN (programada)
+     * - Ya pasó 1 hora después de su hora de finalización
+     * - No tiene diagnóstico
+     * Esto evita que las citas queden en estado "programadas" indefinidamente
+     */
+    @Transactional
+    public void markExpiredAppointmentsAsCompleted() {
+        try {
+            LocalDateTime now = getCurrentDateTimeArgentina();
+            // Buscar citas programadas con cliente asignado
+            List<AppointmentEntity> scheduledAppointments = this.appointmentRepository.findAll().stream()
+                    .filter(appointment -> 
+                        appointment.getStatus() != null && 
+                        appointment.getStatus().equals(Status.TO_BEGIN) &&
+                        appointment.getPet() != null // Solo citas con cliente asignado
+                    )
+                    .collect(Collectors.toList());
+            
+            // Filtrar las que ya pasó 1 hora después de su hora de finalización y no tienen diagnóstico
+            List<AppointmentEntity> expiredAppointments = scheduledAppointments.stream()
+                    .filter(appointment -> 
+                        appointment.getEndDate() != null &&
+                        appointment.getEndDate().plusHours(1).isBefore(now) && // Ya pasó 1 hora después de la finalización
+                        appointment.getDiagnoses() == null // No tienen diagnóstico
+                    )
+                    .collect(Collectors.toList());
+            
+            // Marcar como completadas
+            if (!expiredAppointments.isEmpty()) {
+                for (AppointmentEntity appointment : expiredAppointments) {
+                    appointment.setStatus(Status.SUCCESSFULLY);
+                    this.appointmentRepository.save(appointment);
+                }
+            }
+        } catch (Exception e) {
+            // Si hay algún error, simplemente no marcar las citas para no romper el flujo
+            System.err.println("Error al marcar citas expiradas como completadas: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public List<AppointmentResponseDTO> getAvailableAppointments() {
         // Primero cancelar citas disponibles que ya pasaron
         cancelExpiredAvailableAppointments();
+        // Marcar como completadas las citas programadas que ya pasaron el tiempo límite
+        markExpiredAppointmentsAsCompleted();
         
         // Luego obtener solo las citas disponibles futuras (que aún no comenzaron)
         LocalDateTime now = getCurrentDateTimeArgentina();
@@ -718,6 +774,8 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     public List<AvailableAppointmentDTO> getAvailableAppointmentsByReason(Reason reason) {
         // Primero cancelar citas disponibles que ya pasaron
         cancelExpiredAvailableAppointments();
+        // Marcar como completadas las citas programadas que ya pasaron el tiempo límite
+        markExpiredAppointmentsAsCompleted();
         
         LocalDateTime now = getCurrentDateTimeArgentina();
         List<AppointmentEntity> appointments = this.appointmentRepository
@@ -744,6 +802,8 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
     public List<AvailableAppointmentDTO> getAvailableAppointmentsByReasonAndDate(Reason reason, LocalDate date) {
         // Primero cancelar citas disponibles que ya pasaron
         cancelExpiredAvailableAppointments();
+        // Marcar como completadas las citas programadas que ya pasaron el tiempo límite
+        markExpiredAppointmentsAsCompleted();
         
         LocalDateTime startOfDay = date.atStartOfDay();
         LocalDateTime endOfDay = date.atTime(23, 59, 59);
@@ -778,6 +838,8 @@ public class AppointmentService implements Mapper<AppointmentDTO,AppointmentEnti
         try {
             // Primero cancelar citas disponibles que ya pasaron (solo una vez)
             cancelExpiredAvailableAppointments();
+            // Marcar como completadas las citas programadas que ya pasaron el tiempo límite
+            markExpiredAppointmentsAsCompleted();
         } catch (Exception e) {
             // Si falla la cancelación, continuar de todas formas
             System.err.println("Advertencia: No se pudieron cancelar citas expiradas: " + e.getMessage());

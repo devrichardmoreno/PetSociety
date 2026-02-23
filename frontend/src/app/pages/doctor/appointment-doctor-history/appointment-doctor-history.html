@@ -66,6 +66,11 @@
                         <div class="appointment-card-body">
                             <p><strong>Motivo:</strong> {{ getReasonLabel(appointment.reason) }}</p>
                             <p><strong>Cliente:</strong> {{ appointment.clientName || 'No especificado' }}</p>
+                            <p><strong>Estado:</strong> 
+                                <span class="status-badge-card" [style.background-color]="getStatusColor(appointment.status)">
+                                    {{ getStatusLabel(appointment.status) }}
+                                </span>
+                            </p>
                             @if (appointment.hasDiagnosis) {
                                 <p class="has-diagnosis">✓ Tiene diagnóstico</p>
                             }
@@ -167,7 +172,9 @@
             } @else {
               <div class="no-diagnosis-message">
                 <p>Esta cita no tiene diagnóstico registrado.</p>
-                @if (selectedAppointment.hasDiagnosis) {
+                @if (selectedAppointment.status === Status.CANCELED) {
+                  <p class="time-info">No se puede crear un diagnóstico para una cita cancelada.</p>
+                } @else if (selectedAppointment.hasDiagnosis) {
                   <p class="time-info">Esta cita ya tiene un diagnóstico registrado.</p>
                 } @else {
                   <p class="time-info">Ya no es posible crear un diagnóstico para esta cita (el tiempo permitido ha expirado o la cita aún no ha comenzado).</p>

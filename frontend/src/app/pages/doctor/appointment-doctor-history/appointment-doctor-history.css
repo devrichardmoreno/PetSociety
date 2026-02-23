@@ -158,6 +158,16 @@
   margin-top: 0.5rem;
 }
 
+.status-badge-card {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-left: 0.5rem;
+}
+
 /* Contenedor de cards */
 .cards-container {
   display: grid;

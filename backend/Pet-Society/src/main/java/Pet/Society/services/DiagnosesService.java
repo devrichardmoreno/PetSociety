@@ -11,7 +11,9 @@ import Pet.Society.repositories.AppointmentRepository;
 import Pet.Society.repositories.DiagnosesRepository;
 import Pet.Society.repositories.DoctorRepository;
 import Pet.Society.repositories.PetRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,8 +29,10 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
 
     private final DiagnosesRepository diagnosesRepository;
     private final AppointmentRepository appointmentRepository;
+    
+    @PersistenceContext
+    private EntityManager entityManager;
 
-    @Autowired
     public DiagnosesService(DiagnosesRepository diagnosesRepository,
                             PetRepository petRepository,
                             DoctorRepository doctorRepository,
@@ -48,6 +52,7 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
     }
 
 
+    @Transactional
     public DiagnosesDTOResponse save(DiagnosesDTO dto) {
 
         AppointmentEntity appointment = appointmentRepository.findById(dto.getAppointmentId())
@@ -62,35 +67,67 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
         LocalDateTime now = getCurrentDateTimeArgentina();
         LocalDateTime appointmentStartTime = appointment.getStartDate();
         LocalDateTime appointmentEndTime = appointment.getEndDate();
-        LocalDateTime maxAllowedTime = appointmentEndTime.plusHours(1);
+        
+        // Validar que las fechas de la cita no sean nulas
+        if (appointmentStartTime == null || appointmentEndTime == null) {
+            throw new BeforeAppointmentException("La cita no tiene fechas válidas.");
+        }
+        
+        // Calcular el tiempo máximo permitido: 1 hora después de la finalización
+        // Agregamos 5 minutos de margen de tolerancia para evitar problemas de precisión y desincronización
+        // entre cliente y servidor, y posibles diferencias de zona horaria
+        // Esto asegura que el usuario tenga suficiente tiempo incluso si hay pequeñas diferencias de tiempo
+        LocalDateTime maxAllowedTime = appointmentEndTime.plusHours(1).plusMinutes(5);
 
         // No se puede crear antes de que comience la cita
         if (now.isBefore(appointmentStartTime)) {
             throw new BeforeAppointmentException("No se puede crear un diagnóstico antes de que comience la cita.");
         }
 
-        // Se puede crear hasta 1 hora después de que termine la cita (inclusive)
-        // Usamos isAfter con exclusión estricta, por lo que si now es igual a maxAllowedTime, aún se permite
+        // Se puede crear hasta 1 hora después de que termine la cita (con 5 minutos de margen de tolerancia)
+        // Esto evita problemas de precisión de segundos y posibles desincronizaciones de zona horaria
+        // entre el cliente y el servidor. El margen de 5 minutos debería ser suficiente para cubrir
+        // cualquier diferencia de tiempo entre sistemas
         if (now.isAfter(maxAllowedTime)) {
             throw new BeforeAppointmentException("No se puede crear un diagnóstico después de 1 hora de haber terminado la cita.");
         }
 
+        // Crear el diagnóstico con todas las relaciones ya cargadas
         DiagnosesEntity diagnosis = DiagnosesEntity.builder()
                 .diagnose(dto.getDiagnose())
                 .treatment(dto.getTreatment())
                 .doctor(appointment.getDoctor())
                 .pet(appointment.getPet())
                 .appointment(appointment)
-                .date(LocalDateTime.now())
+                .date(getCurrentDateTimeArgentina()) // Usar la hora de Argentina en lugar de LocalDateTime.now()
                 .build();
 
+        // Guardar primero el diagnóstico
+        DiagnosesEntity savedDiagnosis = this.diagnosesRepository.save(diagnosis);
+        
+        // Actualizar el appointment usando queries nativos que eviten todas las validaciones
+        // Esto es necesario porque la cita puede haber pasado (estamos dentro de la hora extra permitida)
+        // Los queries nativos actualizan directamente en la BD sin validar Bean Validation
+        
+        // Actualizar el status y la relación con diagnoses en una sola operación usando query nativo
+        // El status se almacena como ordinal (0=CANCELED, 1=RESCHEDULED, 2=SUCCESSFULLY, 3=TO_BEGIN, 4=AVAILABLE)
+        entityManager.createNativeQuery(
+            "UPDATE appointments SET status = :status, diagnoses_id = :diagnosesId WHERE id = :appointmentId"
+        )
+        .setParameter("status", Status.SUCCESSFULLY.ordinal())
+        .setParameter("diagnosesId", savedDiagnosis.getId())
+        .setParameter("appointmentId", appointment.getId())
+        .executeUpdate();
+        
+        // Flush para asegurar que los cambios se persistan antes de recargar
+        this.diagnosesRepository.flush();
+        entityManager.flush();
+        
+        // Recargar el diagnóstico con todas sus relaciones usando JOIN FETCH para evitar problemas de lazy loading
+        DiagnosesEntity diagnosisWithRelations = this.diagnosesRepository.findByIdWithRelations(savedDiagnosis.getId())
+                .orElseThrow(() -> new DiagnosesNotFoundException("Diagnosis not found after save"));
 
-
-        appointment.setStatus(Status.SUCCESSFULLY);
-        appointment.setDiagnoses(diagnosis);
-        this.diagnosesRepository.save(diagnosis);
-
-        return toDTO(diagnosis);
+        return toDTO(diagnosisWithRelations);
     }
 
     public DiagnosesDTOResponse findById(Long id) {
@@ -143,6 +180,21 @@ public class DiagnosesService implements Mapper<DiagnosesDTOResponse, DiagnosesE
 
     @Override
     public DiagnosesDTOResponse toDTO(DiagnosesEntity entity) {
+        if (entity == null) {
+            throw new IllegalArgumentException("DiagnosesEntity cannot be null");
+        }
+        
+        // Validar que las relaciones necesarias estén presentes
+        if (entity.getDoctor() == null) {
+            throw new RuntimeException("Diagnosis entity must have a doctor");
+        }
+        if (entity.getPet() == null) {
+            throw new RuntimeException("Diagnosis entity must have a pet");
+        }
+        if (entity.getAppointment() == null) {
+            throw new RuntimeException("Diagnosis entity must have an appointment");
+        }
+        
         return DiagnosesDTOResponse.builder()
                 .diagnose(entity.getDiagnose())
                 .treatment(entity.getTreatment())

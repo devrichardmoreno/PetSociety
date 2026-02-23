@@ -83,8 +83,8 @@ public class SecurityConfig {
                         .requestMatchers("/diagnoses/create").hasRole("DOCTOR")
                         .requestMatchers("/diagnoses/getByPetId/**").hasAnyRole("CLIENT","ADMIN","DOCTOR")
                         .requestMatchers("/diagnoses/lastDiagnoses/**").hasAnyRole("CLIENT","ADMIN","DOCTOR")
-                        .requestMatchers("/diagnoses/findById/**",
-                                    "/diagnoses/getLastDiagnoses/**",
+                        .requestMatchers("/diagnoses/findById/**").hasAnyRole("CLIENT","ADMIN","DOCTOR")
+                        .requestMatchers("/diagnoses/getLastDiagnoses/**",
                                     "/diagnoses/getAll",
                                     "/diagnoses/getByDoctorId/**").hasAnyRole("ADMIN","DOCTOR")
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() //For use correctly the OPENAPI
