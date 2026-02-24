@@ -96,21 +96,7 @@
 
             <div class="info-item">
               <label class="info-label">Email</label>
-              @if (isEditMode) {
-                <input type="email" class="info-input" formControlName="email" placeholder="Ingrese el email">
-                @if (adminForm.get('email')?.touched && adminForm.get('email')?.hasError('required')) {
-                  <div class="error-message">
-                    <p class="error-msg">El email es obligatorio.</p>
-                  </div>
-                }
-                @if (adminForm.get('email')?.hasError('email')) {
-                  <div class="error-message">
-                    <p class="error-msg">Debe ingresar un email válido.</p>
-                  </div>
-                }
-              } @else {
                 <p class="info-value">{{ currentAdmin.email }}</p>
-              }
             </div>
           </div>
 

@@ -57,6 +57,41 @@
             <p class="error-msg">La contraseña es obligatoria.</p>
           </div>
         }
+
+        <div class="input-wrapper">
+        <label for="dni" class="input-label">DNI</label>
+        <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI">
+      </div>
+      @if (clientForm.get('dni')?.errors && (clientForm.get('dni')?.touched || clientForm.get('dni')?.dirty)) {
+        <div class="error-message">
+          @if (clientForm.get('dni')?.hasError('required')) {
+            <p class="error-msg">El DNI es obligatorio.</p>
+          } @else if (clientForm.get('dni')?.hasError('invalidDni')) {
+            <p class="error-msg">El DNI solo puede contener números.</p>
+          } @else if (clientForm.get('dni')?.hasError('invalidDniLength')) {
+            <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
+          } @else if (!isEditMode && clientForm.get('dni')?.hasError('dniExists')) {
+            <p class="error-msg">Este DNI ya está registrado. Por favor, verificá los datos ingresados.</p>
+          }
+        </div>
+      }
+
+      <div class="input-wrapper">
+        <label for="email" class="input-label">Email</label>
+        <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email">
+      </div>
+      @if (clientForm.get('email')?.errors && (clientForm.get('email')?.touched || clientForm.get('email')?.dirty)) {
+        <div class="error-message">
+          @if (clientForm.get('email')?.hasError('required')) {
+            <p class="error-msg">El email es obligatorio.</p>
+          } @else if (clientForm.get('email')?.hasError('email')) {
+            <p class="error-msg">Debe ingresar un email válido.</p>
+          } @else if (!isEditMode && clientForm.get('email')?.hasError('emailExists')) {
+            <p class="error-msg">Este email ya está registrado. Por favor, usá otro email.</p>
+          }
+        </div>
+      }
+      
       }
 
       <div class="input-wrapper">
@@ -114,44 +149,14 @@
         </div>
       }
 
-      <div class="input-wrapper">
-        <label for="dni" class="input-label">DNI</label>
-        <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI">
-      </div>
-      @if (clientForm.get('dni')?.errors && (clientForm.get('dni')?.touched || clientForm.get('dni')?.dirty)) {
-        <div class="error-message">
-          @if (clientForm.get('dni')?.hasError('required')) {
-            <p class="error-msg">El DNI es obligatorio.</p>
-          } @else if (clientForm.get('dni')?.hasError('invalidDni')) {
-            <p class="error-msg">El DNI solo puede contener números.</p>
-          } @else if (clientForm.get('dni')?.hasError('invalidDniLength')) {
-            <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
-          } @else if (!isEditMode && clientForm.get('dni')?.hasError('dniExists')) {
-            <p class="error-msg">Este DNI ya está registrado. Por favor, verificá los datos ingresados.</p>
-          }
-        </div>
-      }
+      
       @if (!isEditMode && clientForm.get('dni')?.pending) {
         <div class="error-message">
           <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
         </div>
       }
 
-      <div class="input-wrapper">
-        <label for="email" class="input-label">Email</label>
-        <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email">
-      </div>
-      @if (clientForm.get('email')?.errors && (clientForm.get('email')?.touched || clientForm.get('email')?.dirty)) {
-        <div class="error-message">
-          @if (clientForm.get('email')?.hasError('required')) {
-            <p class="error-msg">El email es obligatorio.</p>
-          } @else if (clientForm.get('email')?.hasError('email')) {
-            <p class="error-msg">Debe ingresar un email válido.</p>
-          } @else if (!isEditMode && clientForm.get('email')?.hasError('emailExists')) {
-            <p class="error-msg">Este email ya está registrado. Por favor, usá otro email.</p>
-          }
-        </div>
-      }
+      
       @if (!isEditMode && clientForm.get('email')?.pending) {
         <div class="error-message">
           <p class="error-msg" style="color: #666;">Verificando disponibilidad...</p>
