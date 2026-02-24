@@ -12,6 +12,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.time.format.DateTimeFormatter;
 
 @Service
 public class DiagnosesPdfGeneratorService implements PdfGenerator<DiagnosesDTOResponse> {
@@ -49,8 +50,10 @@ public class DiagnosesPdfGeneratorService implements PdfGenerator<DiagnosesDTORe
         infoTable.addCell(new Cell().add(new Paragraph("Tratamiento")));
         infoTable.addCell(new Cell().add(new Paragraph(dto.getTreatment())));
 
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+
         infoTable.addCell(new Cell().add(new Paragraph("Fecha")));
-        infoTable.addCell(new Cell().add(new Paragraph(dto.getDate().toString())));
+        infoTable.addCell(new Cell().add(new Paragraph(dto.getDate().format(formatter))));
 
         document.add(infoTable);
         document.add(new Paragraph("\n"));
