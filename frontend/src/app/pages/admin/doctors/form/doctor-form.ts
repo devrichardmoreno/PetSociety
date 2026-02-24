@@ -26,6 +26,7 @@ export class DoctorFormComponent implements OnInit {
   specialities = Object.values(Speciality);
   isEditMode: boolean = false;
   doctorId: number | null = null;
+  isLoading: boolean = false;
 
   private apiUrl = 'http://localhost:8080/register/new/doctor';
 
@@ -178,6 +179,8 @@ export class DoctorFormComponent implements OnInit {
       return;
     }
 
+    this.isLoading = true;
+
     if (this.isEditMode) {
       // Mostrar pop-up de confirmación con los datos del doctor
       const formData = this.doctorForm.value;
@@ -241,6 +244,7 @@ export class DoctorFormComponent implements OnInit {
                 });
               },
               error: (error) => {
+                this.isLoading = false;
                 const errorMessage = getFriendlyErrorMessage(error);
 
                 Swal.fire({
@@ -272,6 +276,7 @@ export class DoctorFormComponent implements OnInit {
       this.http.post(this.apiUrl, newDoctor, { responseType: 'text' })
         .subscribe({
           next: () => {
+            this.isLoading = false;
             Swal.fire({
               icon: 'success',
               title: '✅ Doctor registrado con éxito',
@@ -284,6 +289,7 @@ export class DoctorFormComponent implements OnInit {
             this.doctorForm.reset();
           },
           error: (error) => {
+            this.isLoading = false;
             const errorMessage = getFriendlyErrorMessage(error);
 
             Swal.fire({

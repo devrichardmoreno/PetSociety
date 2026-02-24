@@ -25,6 +25,7 @@ export class ClientFormComponent implements OnInit {
   clientForm!: FormGroup;
   isEditMode: boolean = false;
   clientId?: number;
+  isLoading: boolean = false;
   private apiUrl = 'http://localhost:8080/register/new/client/admin';
 
   constructor(
@@ -152,6 +153,7 @@ export class ClientFormComponent implements OnInit {
   }
 
   onSubmit(): void {
+    this.isLoading = true;
     if (this.clientForm.invalid) {
       Swal.fire({
         icon: 'warning',
@@ -163,6 +165,7 @@ export class ClientFormComponent implements OnInit {
         iconColor: '#000000'
       });
       this.clientForm.markAllAsTouched();
+      this.isLoading = false;
       return;
     }
 
@@ -204,7 +207,7 @@ export class ClientFormComponent implements OnInit {
         },
         error: (error) => {
           const errorMessage = getFriendlyErrorMessage(error);
-
+          this.isLoading = false;
           Swal.fire({
             icon: 'error',
             title: 'Error al actualizar el cliente',
@@ -233,10 +236,11 @@ export class ClientFormComponent implements OnInit {
               iconColor: '#7AC143'
             });
             this.clientForm.reset();
+            this.isLoading = false;
           },
           error: (error) => {
             const errorMessage = getFriendlyErrorMessage(error);
-
+            this.isLoading = false;
             Swal.fire({
               icon: 'error',
               title: 'Error al registrar el cliente',

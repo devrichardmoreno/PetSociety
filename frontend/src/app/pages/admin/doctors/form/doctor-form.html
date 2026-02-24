@@ -173,8 +173,13 @@
         </div>
       }
 
-      <button class="register-btn" type="submit" [disabled]="doctorForm.invalid">
-        {{ isEditMode ? 'Guardar Cambios' : 'Registrar Doctor' }}
+      <button class="register-btn" type="submit" [disabled]="doctorForm.invalid || isLoading">
+        @if (isLoading) {
+                Guardando...
+            } @else {
+                {{ isEditMode ? 'Guardar Cambios' : 'Registrar Doctor' }}
+            }
+        
       </button>
     </form>
   </div>

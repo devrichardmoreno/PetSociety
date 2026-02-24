@@ -167,8 +167,13 @@
         </div>
       }
 
-      <button class="register-btn" type="submit" [disabled]="clientForm.invalid">
-        {{ isEditMode ? 'Guardar Cambios' : 'Registrar Cliente' }}
+      <button class="register-btn" type="submit" [disabled]="clientForm.invalid || isLoading">
+        @if (isLoading) {
+                Guardando...
+            } @else {
+                {{ isEditMode ? 'Guardar Cambios' : 'Registrar Cliente' }}
+            }
+        
       </button>
     </form>
   </div>
