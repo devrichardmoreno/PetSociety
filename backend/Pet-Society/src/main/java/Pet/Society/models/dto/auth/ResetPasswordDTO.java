@@ -14,6 +14,6 @@ public class ResetPasswordDTO {
     private String token;
     
     @NotBlank(message = "La nueva contraseña es obligatoria")
-    @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres")
+    @Size(min = 8, max = 50, message = "La contraseña debe tener entre 8 y 50 caracteres")
     private String newPassword;
 }

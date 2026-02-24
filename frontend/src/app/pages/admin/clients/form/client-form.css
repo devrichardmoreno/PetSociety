@@ -165,6 +165,12 @@ h1 {
   margin-top: 0.5rem;
 }
 
+.hint-readonly {
+  color: #666;
+  font-size: 0.8rem;
+  margin-top: 0.25rem;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
   .client-wrapper {

@@ -2,9 +2,10 @@ package Pet.Society.models.entities;
 
 import Pet.Society.models.enums.PetType;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -23,8 +24,10 @@ public class PetEntity {
     private long id;
     @NotNull(message = "El nombre no puede ser nulo")
     @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
+    @Pattern(regexp = "^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\\s-]+$", message = "El nombre solo puede contener letras, espacios, ñ y tildes")
     private String name;
-    @Positive(message = "La edad no puede ser nula")
+    @Min(value = 1, message = "La edad debe ser al menos 1")
+    @Max(value = 30, message = "La edad no puede superar 30 años")
     private int age;
     @ColumnDefault("1")
     private boolean active = true;

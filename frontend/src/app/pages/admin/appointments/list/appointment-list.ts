@@ -39,21 +39,29 @@ export class AppointmentListComponent implements OnInit {
 
   constructor(private appointmentService: AppointmentService, private router: Router) {}
 
+  /** Estados que el usuario puede ver y filtrar; RESCHEDULED no se muestra. */
+  private static readonly FILTER_STATUSES: Status[] = [
+    Status.CANCELED,
+    Status.SUCCESSFULLY,
+    Status.TO_BEGIN,
+    Status.AVAILABLE
+  ];
+
   ngOnInit(): void {
     this.loadAppointments();
     this.reasons = Object.values(Reason) as Reason[];
-    this.statuses = Object.values(Status) as Status[];
+    this.statuses = [...AppointmentListComponent.FILTER_STATUSES];
   }
 
-  getStatusLabel(status: Status): string {
-    const labels: { [key in Status]: string } = {
+  getStatusLabel(status: Status | string): string {
+    const labels: Record<string, string> = {
       [Status.CANCELED]: 'Cancelada',
-      [Status.RESCHEDULED]: 'Reprogramada',
       [Status.SUCCESSFULLY]: 'Completada',
       [Status.TO_BEGIN]: 'Por comenzar',
-      [Status.AVAILABLE]: 'Disponible'
+      [Status.AVAILABLE]: 'Disponible',
+      RESCHEDULED: 'Reprogramada' // valor legacy del backend, no se ofrece en filtro
     };
-    return labels[status] || status;
+    return labels[status as string] ?? (typeof status === 'string' ? status : '');
   }
 
   getReasonLabel(reason: Reason): string {

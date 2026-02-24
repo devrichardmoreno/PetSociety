@@ -95,6 +95,87 @@ export function phoneExistsValidator(checkPhoneFn: (phone: string) => Observable
 }
 
 /**
+ * Validador asíncrono: DNI ya existe en otro usuario (excluye un valor, ej. el DNI actual del usuario al editar)
+ */
+export function dniExistsExceptValidator(
+  checkDniFn: (dni: string) => Observable<boolean>,
+  getExcludeDni: () => string
+): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (!control.value || control.value.toString().trim() === '') {
+      return of(null);
+    }
+    const dni = control.value.toString().trim();
+    const exclude = (getExcludeDni() || '').trim();
+    if (exclude && dni === exclude) {
+      return of(null);
+    }
+    return timer(500).pipe(
+      switchMap(() =>
+        checkDniFn(dni).pipe(
+          map(exists => exists ? { dniExists: true } : null),
+          catchError(() => of(null))
+        )
+      )
+    );
+  };
+}
+
+/**
+ * Validador asíncrono: teléfono ya existe en otro usuario (excluye un valor)
+ */
+export function phoneExistsExceptValidator(
+  checkPhoneFn: (phone: string) => Observable<boolean>,
+  getExcludePhone: () => string
+): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (!control.value || control.value.toString().trim() === '') {
+      return of(null);
+    }
+    const phone = control.value.toString().trim();
+    const exclude = (getExcludePhone() || '').trim();
+    if (exclude && phone === exclude) {
+      return of(null);
+    }
+    return timer(500).pipe(
+      switchMap(() =>
+        checkPhoneFn(phone).pipe(
+          map(exists => exists ? { phoneExists: true } : null),
+          catchError(() => of(null))
+        )
+      )
+    );
+  };
+}
+
+/**
+ * Validador asíncrono: email ya existe en otro usuario (excluye un valor)
+ */
+export function emailExistsExceptValidator(
+  checkEmailFn: (email: string) => Observable<boolean>,
+  getExcludeEmail: () => string
+): AsyncValidatorFn {
+  return (control: AbstractControl): Observable<ValidationErrors | null> => {
+    if (!control.value || control.value.trim() === '') {
+      return of(null);
+    }
+    const email = control.value.trim();
+    const exclude = (getExcludeEmail() || '').trim();
+    if (exclude && email === exclude) {
+      return of(null);
+    }
+    return timer(500).pipe(
+      switchMap(() =>
+        checkEmailFn(email).pipe(
+          map(exists => exists ? { emailExists: true } : null),
+          catchError(() => of(null))
+        )
+      )
+    );
+  };
+}
+
+/**
  * Validador para nombres y apellidos: solo letras, espacios, ñ y tildes
  */
 export function nameValidator(): ValidatorFn {

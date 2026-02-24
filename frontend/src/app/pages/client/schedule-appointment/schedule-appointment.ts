@@ -38,8 +38,10 @@ export class ScheduleAppointmentComponent implements OnInit {
   selectedDate: Date | null = null;
   availableDays: string[] = []; // Fechas en formato YYYY-MM-DD
 
-  // Paso 3: Horarios
+  // Paso 3: Horarios (paginados, 9 por página)
+  readonly SLOTS_PER_PAGE = 9;
   availableAppointments: AvailableAppointmentDTO[] = [];
+  currentSlotsPage = 0;
   selectedAppointment: AvailableAppointmentDTO | null = null;
 
   // Paso 4: Confirmación
@@ -154,6 +156,7 @@ export class ScheduleAppointmentComponent implements OnInit {
     this.appointmentService.getAvailableAppointmentsByReasonAndDate(this.selectedReason, dateString).subscribe({
       next: (appointments) => {
         this.availableAppointments = appointments;
+        this.currentSlotsPage = 0;
         this.isLoading = false;
         
         if (appointments.length === 0) {
@@ -181,6 +184,32 @@ export class ScheduleAppointmentComponent implements OnInit {
         });
       }
     });
+  }
+
+  /** Horarios de la página actual (9 por página) */
+  get paginatedSlots(): AvailableAppointmentDTO[] {
+    const start = this.currentSlotsPage * this.SLOTS_PER_PAGE;
+    return this.availableAppointments.slice(start, start + this.SLOTS_PER_PAGE);
+  }
+
+  get totalSlotsPages(): number {
+    return Math.ceil(this.availableAppointments.length / this.SLOTS_PER_PAGE) || 1;
+  }
+
+  get hasPreviousSlotsPage(): boolean {
+    return this.currentSlotsPage > 0;
+  }
+
+  get hasNextSlotsPage(): boolean {
+    return this.currentSlotsPage < this.totalSlotsPages - 1;
+  }
+
+  previousSlotsPage(): void {
+    if (this.hasPreviousSlotsPage) this.currentSlotsPage--;
+  }
+
+  nextSlotsPage(): void {
+    if (this.hasNextSlotsPage) this.currentSlotsPage++;
   }
 
   selectAppointment(appointment: AvailableAppointmentDTO): void {
@@ -268,6 +297,7 @@ export class ScheduleAppointmentComponent implements OnInit {
       if (this.currentStep === 2) {
         this.selectedDate = null;
         this.availableAppointments = [];
+        this.currentSlotsPage = 0;
         this.selectedAppointment = null;
       } else if (this.currentStep === 3) {
         this.selectedAppointment = null;

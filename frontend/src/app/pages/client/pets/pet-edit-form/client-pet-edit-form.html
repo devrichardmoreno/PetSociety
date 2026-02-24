@@ -2,9 +2,17 @@
   <form [formGroup]="editPetForm" class="edit-form">
     <div class="form-field">
       <label for="pet-edit-nombre">Nombre:</label>
-      <input type="text" id="pet-edit-nombre" formControlName="nombre" class="form-input">
-      @if (editPetForm.get('nombre')?.invalid && editPetForm.get('nombre')?.touched) {
-        <small class="error-message">El nombre debe tener entre 2 y 50 caracteres</small>
+      <input type="text" id="pet-edit-nombre" formControlName="nombre" class="form-input" maxlength="50">
+      @if (editPetForm.get('nombre')?.errors && (editPetForm.get('nombre')?.touched || editPetForm.get('nombre')?.dirty)) {
+        <small class="error-message">
+          @if (editPetForm.get('nombre')?.hasError('required')) {
+            El nombre es obligatorio.
+          } @else if (editPetForm.get('nombre')?.hasError('invalidName')) {
+            El nombre solo puede contener letras, espacios, ñ y tildes.
+          } @else {
+            El nombre debe tener entre 2 y 50 caracteres.
+          }
+        </small>
       }
     </div>
 

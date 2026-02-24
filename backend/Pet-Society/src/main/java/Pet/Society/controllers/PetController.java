@@ -84,7 +84,7 @@ public class PetController {
     )
     @PatchMapping("/update/{id}")
     @PreAuthorize("@ownershipValidator.canAccessPet(#id)")
-    public ResponseEntity<PetDTO> updatePet(@PathVariable Long id, @RequestBody PetDTO dto) {
+    public ResponseEntity<PetDTO> updatePet(@PathVariable Long id, @Valid @RequestBody PetDTO dto) {
         return ResponseEntity.ok(petService.updatePet(id, dto));
     }
 

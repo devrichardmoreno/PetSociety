@@ -186,14 +186,12 @@ export class ClientAppointmentsComponent implements OnInit {
         return '#dc3545'; // Rojo
       case Status.TO_BEGIN:
         return '#45AEDD'; // Azul
-      case Status.RESCHEDULED:
-        return '#ffc107'; // Amarillo
       default:
         return '#6c757d'; // Gris
     }
   }
 
-  getStatusLabel(status: Status): string {
+  getStatusLabel(status: Status | string): string {
     switch (status) {
       case Status.SUCCESSFULLY:
         return 'Completada';
@@ -201,10 +199,10 @@ export class ClientAppointmentsComponent implements OnInit {
         return 'Cancelada';
       case Status.TO_BEGIN:
         return 'Programada';
-      case Status.RESCHEDULED:
+      case 'RESCHEDULED':
         return 'Reprogramada';
       default:
-        return status;
+        return typeof status === 'string' ? status : '';
     }
   }
 
@@ -324,7 +322,7 @@ export class ClientAppointmentsComponent implements OnInit {
   }
 
   getStatusOptions(): (Status | 'ALL')[] {
-    return ['ALL', Status.SUCCESSFULLY, Status.CANCELED, Status.TO_BEGIN, Status.RESCHEDULED];
+    return ['ALL', Status.SUCCESSFULLY, Status.CANCELED, Status.TO_BEGIN];
   }
 
   getReasonOptions(): (Reason | 'ALL')[] {

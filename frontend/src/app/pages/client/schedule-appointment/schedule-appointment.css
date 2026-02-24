@@ -336,6 +336,43 @@
   color: #666;
 }
 
+.slots-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e8e8e8;
+}
+
+.slots-pagination .pagination-btn {
+  padding: 0.5rem 1rem;
+  border: 2px solid #45AEDD;
+  border-radius: 8px;
+  background: #fff;
+  color: #45AEDD;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.slots-pagination .pagination-btn:hover:not(:disabled) {
+  background: #45AEDD;
+  color: #fff;
+}
+
+.slots-pagination .pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.slots-pagination .pagination-info {
+  font-size: 0.95rem;
+  color: #666;
+  font-weight: 500;
+}
+
 /* Paso 4: Confirmación */
 .confirmation-card {
   max-width: 500px;

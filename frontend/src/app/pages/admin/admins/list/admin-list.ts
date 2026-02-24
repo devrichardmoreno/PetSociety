@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AdminService } from '../../../../services/admin/admin.service';
+import { AuthService } from '../../../../services/auth/auth.service';
 import { Admin } from '../../../../models/entities/admin';
 import Swal from 'sweetalert2';
 import { getFriendlyErrorMessage } from '../../../../utils/error-handler';
@@ -24,6 +25,7 @@ export class AdminListComponent implements OnInit {
 
   constructor(
     private adminService: AdminService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -136,8 +138,25 @@ export class AdminListComponent implements OnInit {
   }
 
   private performUnsubscribe(adminId: number): void {
+    const isSelf = this.authService.getUserId() === adminId;
+
     this.adminService.unsubscribeAdmin(adminId).subscribe({
       next: () => {
+        if (isSelf) {
+          Swal.fire({
+            icon: 'success',
+            title: 'Cuenta dada de baja',
+            text: 'Tu cuenta de administrador ha sido dada de baja. Serás redirigido al inicio de sesión.',
+            background: '#fff',
+            color: '#333',
+            confirmButtonColor: '#45AEDD',
+            iconColor: '#000000'
+          }).then(() => {
+            this.authService.logout();
+            this.router.navigate(['/login']);
+          });
+          return;
+        }
         Swal.fire({
           icon: 'success',
           title: 'Administrador dado de baja',
@@ -147,7 +166,6 @@ export class AdminListComponent implements OnInit {
           confirmButtonColor: '#45AEDD',
           iconColor: '#000000'
         });
-        // Recargar la lista de administradores
         this.loadAdmins();
       },
       error: (error) => {
