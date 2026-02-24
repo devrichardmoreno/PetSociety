@@ -20,7 +20,7 @@ import { ClientPetsList } from '../pets/pets-list/client-pets-list';
 import { ClientPetAddForm } from '../pets/pet-add-form/client-pet-add-form';
 import { ClientPetEditForm } from '../pets/pet-edit-form/client-pet-edit-form';
 import { ScheduleAppointmentComponent } from '../schedule-appointment/schedule-appointment';
-import { nameValidator } from '../../../utils/form-validators';
+
 
 @Component({
   selector: 'app-client-home-page',
