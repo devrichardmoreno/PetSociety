@@ -334,5 +334,38 @@ export class ClientAppointmentsComponent implements OnInit {
   getPetEmoji(petType: PetType): string {
     return PetEmojiUtil.getEmoji(petType);
   }
+
+   downloadDiagnosisPdf(diagnoseId: number | null | undefined): void {
+      if (!diagnoseId || diagnoseId <= 0) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'ID del diagnóstico inválido o no disponible',
+          confirmButtonColor: '#45AEDD'
+        });
+        return;
+      }
+
+      this.diagnosesService.downloadDiagnosisPdf(diagnoseId).subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `diagnóstico-${diagnoseId}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          window.URL.revokeObjectURL(url);
+          document.body.removeChild(a);
+        },
+        error: (error) => {
+          console.error('Error al descargar PDF:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo descargar el PDF del diagnóstico'
+          });
+        }
+      });
+    }
 }
 

@@ -384,6 +384,23 @@
   justify-content: flex-end;
 }
 
+.btn-download-pdf {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--hospital-green);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+}
+
+.btn-download-pdf:hover {
+  background-color: #6ba832;
+  transform: translateY(-1px);
+}
+
 .btn-close-modal {
   padding: 0.75rem 1.5rem;
   background-color: var(--hospital-blue);
@@ -398,6 +415,7 @@
 .btn-close-modal:hover {
   background-color: #3a9bc4;
 }
+
 
 /* Responsive */
 @media (max-width: 768px) {
