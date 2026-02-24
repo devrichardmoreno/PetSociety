@@ -28,10 +28,19 @@
 
 #main-title {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 10px;
   font-size: 2.5em; /* Título más grande */
   margin-top: 20px;
   color: var(--hospital-blue, #45aedd);
+  padding: 0 20px;
+}
+
+#monthly-indicator {
+  text-align: center;
+  margin-bottom: 30px;
+  font-size: 1.1em;
+  color: var(--secondary-text, #7F8C8D);
+  font-style: italic;
   padding: 0 20px;
 }
 
@@ -127,6 +136,10 @@
   #main-title {
     font-size: 2em;
   }
+
+  #monthly-indicator {
+    font-size: 1em;
+  }
 }
 
 @media (max-width: 768px) {
@@ -151,11 +164,21 @@
 
   #main-title {
     font-size: 1.5em;
-    margin-bottom: 30px;
+    margin-bottom: 10px;
+  }
+
+  #monthly-indicator {
+    font-size: 0.95em;
+    margin-bottom: 20px;
   }
 
   #card-information-5 p {
     font-size: 0.9em;
+  }
+
+  .chart-container canvas {
+    width: 100% !important;
+    height: 450px !important;
   }
 }
 
@@ -167,6 +190,15 @@
 
   #main-title {
     font-size: 1.3em;
+  }
+
+  #monthly-indicator {
+    font-size: 0.9em;
+  }
+
+  .chart-container canvas {
+    width: 100% !important;
+    height: 400px !important;
   }
 }
 
@@ -196,4 +228,13 @@
   max-width: 1400px;
   margin: 0 auto; /* Centra el contenedor */
   padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.chart-container canvas {
+  width: 800px !important;
+  height: 500px !important;
+  max-width: 100%;
 }

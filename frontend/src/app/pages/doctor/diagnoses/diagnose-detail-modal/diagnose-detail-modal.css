@@ -1,20 +1,80 @@
 .diagnose-detail-container {
-  padding: 1.5rem;
-  max-width: 700px;
+  padding: 1.2rem;
+  max-width: 550px;
   width: 100%;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Estilos para la barra de scroll */
+.diagnose-detail-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.diagnose-detail-container::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.diagnose-detail-container::-webkit-scrollbar-thumb {
+  background: var(--hospital-blue, #45aedd);
+  border-radius: 4px;
+}
+
+.diagnose-detail-container::-webkit-scrollbar-thumb:hover {
+  background: #3a9bc7;
+}
+
+.modal-header-wrapper {
+  position: relative;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid var(--hospital-green);
+  margin-bottom: 1.2rem;
 }
 
 .modal-title {
   color: var(--hospital-blue);
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: 700;
-  margin: 0 0 1.5rem 0;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid var(--hospital-green);
+  margin: 0;
+  padding-right: 2.5rem;
+}
+
+.close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: var(--secondary-text, #7F8C8D);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #333;
+  transform: scale(1.1);
+}
+
+.close-button:active {
+  transform: scale(0.95);
 }
 
 .detail-section {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
 }
 
 .detail-section:last-of-type {
@@ -25,7 +85,7 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  padding: 0.75rem 0;
+  padding: 0.6rem 0;
   border-bottom: 1px solid #e8e8e8;
   gap: 1rem;
 }
@@ -56,18 +116,18 @@
 
 .section-title {
   color: var(--hospital-blue);
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 700;
-  margin: 0 0 0.75rem 0;
+  margin: 0 0 0.6rem 0;
 }
 
 .detail-content {
   background-color: var(--light-bg);
-  padding: 1rem;
+  padding: 0.8rem;
   border-radius: 8px;
   border-left: 4px solid var(--hospital-green);
   color: #333;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   line-height: 1.6;
   white-space: pre-wrap;
   word-wrap: break-word;
@@ -76,8 +136,8 @@
 .modal-actions {
   display: flex;
   justify-content: flex-end;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  margin-top: 1.2rem;
+  padding-top: 1.2rem;
   border-top: 1px solid #e8e8e8;
 }
 
@@ -101,6 +161,13 @@
 @media (max-width: 768px) {
   .diagnose-detail-container {
     padding: 1rem;
+    max-height: calc(100vh - 150px);
+  }
+
+  .close-button {
+    font-size: 1.8rem;
+    width: 28px;
+    height: 28px;
   }
 
   .detail-row {

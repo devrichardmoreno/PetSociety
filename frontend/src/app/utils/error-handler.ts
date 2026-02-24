@@ -134,9 +134,14 @@ function translateErrorMessage(detail: string, status?: number): string {
   }
 
   // Errores de validación (400)
+
+  if (status === 401 || detailLower.includes('authentication') || detailLower.includes('unauthorized')) {
+    return 'Usuario o contraseña incorrectos.';
+  }
+
   if (status === 400 || detailLower.includes('invalid') || detailLower.includes('validation')) {
     if (detailLower.includes('name')) {
-      return 'El nombre ingresado no es válido.';
+      return 'El nombre ingresado no es valido.';
     }
     if (detailLower.includes('surname')) {
       return 'El apellido ingresado no es válido.';
@@ -157,9 +162,7 @@ function translateErrorMessage(detail: string, status?: number): string {
   }
 
   // Errores de autenticación (401)
-  if (status === 401 || detailLower.includes('authentication') || detailLower.includes('unauthorized')) {
-    return 'Usuario o contraseña incorrectos.';
-  }
+ 
 
   // Errores de permisos (403) - Email no verificado: mostrar mensaje del backend
   if (status === 403) {

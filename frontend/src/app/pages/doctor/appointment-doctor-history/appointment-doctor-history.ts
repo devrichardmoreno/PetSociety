@@ -299,7 +299,7 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
     if (diagnosisId === null) return;
 
     this.matDialog.open(DiagnoseOfAppointmentModal, {
-      width: '700px',
+      width: '550px',
       data: { diagnoseId: diagnosisId }
     });
   }

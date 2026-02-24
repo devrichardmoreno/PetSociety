@@ -76,6 +76,36 @@ createBarChart() {
           this.petsTreated.valueOf()  || 0,
         ]
       }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            font: {
+              size: 16
+            }
+          }
+        }
+      },
+      scales: {
+        y: {
+          beginAtZero: true,
+          ticks: {
+            font: {
+              size: 14
+            }
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 14
+            }
+          }
+        }
+      }
     }
   });
 }
@@ -127,20 +157,36 @@ createLineChart() {
           label: 'Exitosas',
           data: [0, treated],
           tension: 0.4
-        },
-        {
-          label: 'Pagadas',
-          data: [0, paid],
-          tension: 0.4
         }
       ]
     },
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            font: {
+              size: 16
+            }
+          }
+        }
+      },
       scales: {
         y: {
           beginAtZero: true,
           ticks: {
-            precision: 0
+            precision: 0,
+            font: {
+              size: 14
+            }
+          }
+        },
+        x: {
+          ticks: {
+            font: {
+              size: 14
+            }
           }
         }
       }

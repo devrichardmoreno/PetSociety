@@ -228,7 +228,7 @@ loadPrevAppointmentsPage() {
 
   openDiagnoseDetailModal(diagnose: DiagnoseDto & { date: Date; appointmentStartDate?: Date | null; appointmentEndDate?: Date | null }) {
     this.dialog.open(DiagnoseDetailModal, {
-      width: '700px',
+      width: '550px',
       data: { diagnose },
       panelClass: 'diagnose-detail-dialog-panel'
     });

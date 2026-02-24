@@ -1,4 +1,7 @@
-<h2 mat-dialog-title class="modal-title">Detalles del Diagnóstico</h2>
+<div class="modal-header-wrapper">
+  <h2 mat-dialog-title class="modal-title">Detalles del Diagnóstico</h2>
+  <button class="close-button" (click)="close()" aria-label="Cerrar">×</button>
+</div>
 
 <mat-dialog-content class="modal-content">
   @if (loading) {

@@ -1,43 +1,102 @@
 /* === Diálogo de detalles del diagnóstico === */
 
+.modal-header-wrapper {
+  position: relative;
+  padding: 1.2rem 1.5rem 0.8rem;
+  border-bottom: 2px solid var(--hospital-green);
+  margin-bottom: 1.2rem;
+}
+
 .modal-title {
   color: var(--hospital-blue);
-  font-size: 1.8rem;
+  font-size: 1.5rem;
   font-weight: 700;
-  padding: 1.5rem 2rem 1rem;
-  border-bottom: 2px solid var(--hospital-green);
-  margin-bottom: 1.5rem;
+  margin: 0;
+  padding-right: 2.5rem;
+}
+
+.close-button {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 2rem;
+  color: var(--secondary-text, #7F8C8D);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.close-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: #333;
+  transform: scale(1.1);
+}
+
+.close-button:active {
+  transform: scale(0.95);
 }
 
 .modal-content {
-  padding: 0 2rem 1.5rem;
+  padding: 0 1.5rem 1.5rem;
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
-  min-width: 500px;
+  gap: 1.2rem;
+  min-width: auto;
+  max-width: 550px;
+  max-height: calc(100vh - 200px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Estilos para la barra de scroll */
+.modal-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb {
+  background: var(--hospital-blue, #45aedd);
+  border-radius: 4px;
+}
+
+.modal-content::-webkit-scrollbar-thumb:hover {
+  background: #3a9bc7;
 }
 
 .detail-section {
   background-color: var(--light-bg);
-  border-radius: 10px;
-  padding: 1.2rem 1.5rem;
+  border-radius: 8px;
+  padding: 1rem 1.2rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid #e0e0e0;
 }
 
 .section-title {
   color: var(--hospital-blue);
-  font-size: 1.2rem;
+  font-size: 1.1rem;
   font-weight: 700;
-  margin: 0 0 0.8rem 0;
-  padding-bottom: 0.5rem;
+  margin: 0 0 0.6rem 0;
+  padding-bottom: 0.4rem;
   border-bottom: 1px solid rgba(69, 174, 221, 0.2);
 }
 
 .detail-item {
   display: flex;
   justify-content: space-between;
-  padding: 0.6rem 0;
+  padding: 0.5rem 0;
   border-bottom: 1px dashed #e8e8e8;
 }
 
@@ -84,7 +143,7 @@
 }
 
 mat-dialog-actions {
-  padding: 1rem 2rem 1.5rem;
+  padding: 0.8rem 1.5rem 1.2rem;
   border-top: 1px solid #e0e0e0;
   margin: 0;
 }
@@ -112,15 +171,28 @@ mat-dialog-actions {
 
 /* Responsive */
 @media (max-width: 600px) {
+  .modal-header-wrapper {
+    padding: 1rem 1.5rem 0.8rem;
+  }
+
   .modal-title {
     font-size: 1.5rem;
-    padding: 1rem 1.5rem 0.8rem;
+    padding-right: 2rem;
+  }
+
+  .close-button {
+    top: 0.8rem;
+    right: 1.5rem;
+    font-size: 1.8rem;
+    width: 28px;
+    height: 28px;
   }
 
   .modal-content {
     padding: 0 1.5rem 1rem;
     gap: 1rem;
     min-width: auto;
+    max-height: calc(100vh - 150px);
   }
 
   .detail-section {
