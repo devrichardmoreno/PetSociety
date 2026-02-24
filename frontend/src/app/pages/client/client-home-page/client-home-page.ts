@@ -19,6 +19,7 @@ import { ClientPetsList } from '../pets/pets-list/client-pets-list';
 import { ClientPetAddForm } from '../pets/pet-add-form/client-pet-add-form';
 import { ClientPetEditForm } from '../pets/pet-edit-form/client-pet-edit-form';
 import { ScheduleAppointmentComponent } from '../schedule-appointment/schedule-appointment';
+import { nameValidator } from '../../../utils/form-validators';
 
 @Component({
   selector: 'app-client-home-page',
@@ -77,7 +78,7 @@ export class ClientHomePage implements OnInit, OnDestroy {
     private petService: PetService,
     private appointmentService: AppointmentService,
     private fb: FormBuilder,
-    private router: Router,
+    private router: Router, 
     private ngZone: NgZone,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {}
@@ -125,8 +126,8 @@ export class ClientHomePage implements OnInit, OnDestroy {
   initializeForms(): void {
     // Formulario de edición de datos personales
     this.editForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
       dni: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
       telefono: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       email: ['', [Validators.required, Validators.email]]
