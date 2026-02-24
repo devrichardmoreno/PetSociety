@@ -196,14 +196,15 @@ createLineChart() {
   
 
  getAllAppointmentsForToday(): void {
-  this.appointmentService.getAvailableAppointments().subscribe({
+  this.appointmentService.getAllAppointments().subscribe({
     next: (data) => {
       const today = new Date();
 
+      // Citas "por comenzar" (TO_BEGIN) del día de la fecha
       const appointmentsToday = data.filter(a => {
         const appointmentDate = new Date(a.startTime);
         return (
-          a.status === Status.AVAILABLE &&
+          a.status === Status.TO_BEGIN &&
           appointmentDate.getDate() === today.getDate() &&
           appointmentDate.getMonth() === today.getMonth() &&
           appointmentDate.getFullYear() === today.getFullYear()
