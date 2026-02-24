@@ -8,6 +8,7 @@ import { PetService } from '../../../services/pet/pet.service';
 import { AppointmentService } from '../../../services/appointment/appointment.service';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { nameValidator, phoneValidator, phoneExistsExceptValidator } from '../../../utils/form-validators';
 import Swal from 'sweetalert2';
 import { Pet } from '../../../models/entities/pet';
 import { UserData } from '../../../models/entities/user-data';
@@ -123,26 +124,31 @@ export class ClientHomePage implements OnInit, OnDestroy {
   }
 
   initializeForms(): void {
-    // Formulario de edición de datos personales
+    // Formulario de edición de datos personales. DNI y email son inmodificables (solo se muestran).
+    const getExcludePhone = () => this.userData.telefono ?? '';
     this.editForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      dni: ['', [Validators.required, Validators.pattern('^[0-9]{7,8}$')]],
-      telefono: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
-      email: ['', [Validators.required, Validators.email]]
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      apellido: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
+      dni: [''], // Inmutable: se rellena al abrir edición, no se valida
+      telefono: [
+        '',
+        [Validators.required, phoneValidator()],
+        [phoneExistsExceptValidator((phone: string) => this.authService.checkPhoneExists(phone), getExcludePhone)]
+      ],
+      email: [''] // Inmutable: se rellena al abrir edición, no se valida
     });
 
-    // Formulario de nueva mascota
+    // Formulario de nueva mascota (nombre: letras, ñ, espacios y tildes)
     this.addPetForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
       edad: ['', [Validators.required, Validators.min(1), Validators.max(30)]],
       tipoAnimal: ['', [Validators.required]],
       tipoAnimalOtro: ['']
     });
 
-    // Formulario de edición de mascota
+    // Formulario de edición de mascota (misma validación de nombre)
     this.editPetForm = this.fb.group({
-      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
+      nombre: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), nameValidator()]],
       edad: ['', [Validators.required, Validators.min(1), Validators.max(30)]],
       tipoAnimal: ['', [Validators.required]],
       tipoAnimalOtro: ['']

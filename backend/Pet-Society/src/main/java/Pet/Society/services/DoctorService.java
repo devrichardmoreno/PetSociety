@@ -95,9 +95,8 @@ public class DoctorService implements Mapper<DoctorDTO, DoctorEntity> {
     public DoctorEntity takeAttributes(DoctorEntity doctorToModify, DoctorEntity existingDoctor) {
         if(doctorToModify.getName() != null) existingDoctor.setName(doctorToModify.getName());
         if(doctorToModify.getSurname() != null) existingDoctor.setSurname(doctorToModify.getSurname());
-        if(doctorToModify.getEmail() != null) existingDoctor.setEmail(doctorToModify.getEmail());
+        // DNI y email inmodificables: no se actualizan desde el DTO
         if(doctorToModify.getPhone() != null) existingDoctor.setPhone(doctorToModify.getPhone());
-        if(doctorToModify.getDni() != null) existingDoctor.setDni(doctorToModify.getDni());
         if(doctorToModify.getSpeciality() != null) existingDoctor.setSpeciality(doctorToModify.getSpeciality());
 
         return existingDoctor;

@@ -117,15 +117,15 @@ export class AppointmentDetail implements OnInit {
     }
   }
 
-  getStatusLabel(status: Status): string {
-    const labels: { [key in Status]: string } = {
+  getStatusLabel(status: Status | string): string {
+    const labels: Record<string, string> = {
       [Status.CANCELED]: 'Cancelada',
-      [Status.RESCHEDULED]: 'Reprogramada',
       [Status.SUCCESSFULLY]: 'Completada',
       [Status.TO_BEGIN]: 'Por comenzar',
-      [Status.AVAILABLE]: 'Disponible'
+      [Status.AVAILABLE]: 'Disponible',
+      RESCHEDULED: 'Reprogramada'
     };
-    return labels[status] || status;
+    return labels[status as string] ?? (typeof status === 'string' ? status : '');
   }
 
   getReasonLabel(reason: Reason): string {

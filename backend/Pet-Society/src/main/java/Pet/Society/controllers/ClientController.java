@@ -67,7 +67,7 @@ public class ClientController {
     )
     @PreAuthorize("@ownershipValidator.canAccessClient(#id)")
     @PatchMapping("/update/{id}")
-    public ResponseEntity<ClientDTO> update(@RequestBody ClientDTO client, @PathVariable long id) {
+    public ResponseEntity<ClientDTO> update(@Valid @RequestBody ClientDTO client, @PathVariable long id) {
             this.clientService.update(client,id);
             return ResponseEntity.ok(client);
     }

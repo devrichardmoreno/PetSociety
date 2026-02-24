@@ -78,7 +78,8 @@ export class AdminProfileComponent implements OnInit {
     this.isEditMode = !this.isEditMode;
     if (this.isEditMode) {
       this.adminForm.enable();
-      this.adminForm.get('dni')?.disable(); // DNI siempre deshabilitado
+      this.adminForm.get('dni')?.disable(); // DNI inmodificable
+      this.adminForm.get('email')?.disable(); // Email inmodificable
     } else {
       this.adminForm.disable();
       // Restaurar valores originales
@@ -120,8 +121,9 @@ export class AdminProfileComponent implements OnInit {
     const formValue = { ...this.adminForm.value };
     formValue.name = capitalizeName(formValue.name);
     formValue.surname = capitalizeName(formValue.surname);
-    // Incluir el DNI que está deshabilitado en el formulario
+    // DNI y email inmodificables: usar siempre los valores actuales
     formValue.dni = this.currentAdmin.dni;
+    formValue.email = this.currentAdmin.email;
     // Incluir subscribed si existe
     if (this.currentAdmin.subscribed !== undefined) {
       formValue.subscribed = this.currentAdmin.subscribed;

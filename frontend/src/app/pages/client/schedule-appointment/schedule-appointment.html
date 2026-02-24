@@ -111,7 +111,7 @@
           </div>
         } @else {
           <div class="appointments-list">
-            @for (appointment of availableAppointments; track appointment.appointmentId) {
+            @for (appointment of paginatedSlots; track appointment.appointmentId) {
               <button
                 class="appointment-card"
                 [class.selected]="selectedAppointment?.appointmentId === appointment.appointmentId"
@@ -124,6 +124,17 @@
               </button>
             }
           </div>
+          @if (totalSlotsPages > 1) {
+            <div class="slots-pagination">
+              <button type="button" class="pagination-btn" [disabled]="!hasPreviousSlotsPage" (click)="previousSlotsPage()">
+                ‹ Anterior
+              </button>
+              <span class="pagination-info">Página {{ currentSlotsPage + 1 }} de {{ totalSlotsPages }}</span>
+              <button type="button" class="pagination-btn" [disabled]="!hasNextSlotsPage" (click)="nextSlotsPage()">
+                Siguiente ›
+              </button>
+            </div>
+          }
         }
       </div>
     }

@@ -116,9 +116,12 @@
 
       <div class="input-wrapper">
         <label for="dni" class="input-label">DNI</label>
-        <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI">
+        <input id="dni" type="text" class="custom-input" formControlName="dni" placeholder="Ingrese el DNI" [readonly]="isEditMode" [attr.tabindex]="isEditMode ? -1 : null">
+        @if (isEditMode) {
+          <p class="hint-readonly">No modificable</p>
+        }
       </div>
-      @if (doctorForm.get('dni')?.errors && (doctorForm.get('dni')?.touched || doctorForm.get('dni')?.dirty)) {
+      @if (!isEditMode && doctorForm.get('dni')?.errors && (doctorForm.get('dni')?.touched || doctorForm.get('dni')?.dirty)) {
         <div class="error-message">
           @if (doctorForm.get('dni')?.hasError('required')) {
             <p class="error-msg">El DNI es obligatorio.</p>
@@ -126,7 +129,7 @@
             <p class="error-msg">El DNI solo puede contener números.</p>
           } @else if (doctorForm.get('dni')?.hasError('invalidDniLength')) {
             <p class="error-msg">El DNI debe tener 7 u 8 dígitos.</p>
-          } @else if (!isEditMode && doctorForm.get('dni')?.hasError('dniExists')) {
+          } @else if (doctorForm.get('dni')?.hasError('dniExists')) {
             <p class="error-msg">Este DNI ya está registrado. Por favor, verificá los datos ingresados.</p>
           }
         </div>
@@ -139,15 +142,18 @@
 
       <div class="input-wrapper">
         <label for="email" class="input-label">Email</label>
-        <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email">
+        <input id="email" type="email" class="custom-input" formControlName="email" placeholder="Ingrese el email" [readonly]="isEditMode" [attr.tabindex]="isEditMode ? -1 : null">
+        @if (isEditMode) {
+          <p class="hint-readonly">No modificable</p>
+        }
       </div>
-      @if (doctorForm.get('email')?.errors && (doctorForm.get('email')?.touched || doctorForm.get('email')?.dirty)) {
+      @if (!isEditMode && doctorForm.get('email')?.errors && (doctorForm.get('email')?.touched || doctorForm.get('email')?.dirty)) {
         <div class="error-message">
           @if (doctorForm.get('email')?.hasError('required')) {
             <p class="error-msg">El email es obligatorio.</p>
           } @else if (doctorForm.get('email')?.hasError('email')) {
             <p class="error-msg">Debe ingresar un email válido.</p>
-          } @else if (!isEditMode && doctorForm.get('email')?.hasError('emailExists')) {
+          } @else if (doctorForm.get('email')?.hasError('emailExists')) {
             <p class="error-msg">Este email ya está registrado. Por favor, usá otro email.</p>
           }
         </div>

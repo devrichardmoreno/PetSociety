@@ -2,42 +2,67 @@
   <form [formGroup]="editForm" class="edit-form">
     <div class="form-field">
       <label for="nombre">Nombre:</label>
-      <input type="text" id="nombre" formControlName="nombre" class="form-input">
-      @if (editForm.get('nombre')?.invalid && editForm.get('nombre')?.touched) {
-        <small class="error-message">El nombre debe tener entre 2 y 50 caracteres</small>
+      <input type="text" id="nombre" formControlName="nombre" class="form-input" maxlength="50">
+      @if (editForm.get('nombre')?.errors && (editForm.get('nombre')?.touched || editForm.get('nombre')?.dirty)) {
+        <small class="error-message">
+          @if (editForm.get('nombre')?.hasError('required')) {
+            El nombre es obligatorio.
+          } @else if (editForm.get('nombre')?.hasError('invalidName')) {
+            El nombre solo puede contener letras, espacios, ñ y tildes.
+          } @else {
+            El nombre debe tener entre 2 y 50 caracteres.
+          }
+        </small>
       }
     </div>
 
     <div class="form-field">
       <label for="apellido">Apellido:</label>
-      <input type="text" id="apellido" formControlName="apellido" class="form-input">
-      @if (editForm.get('apellido')?.invalid && editForm.get('apellido')?.touched) {
-        <small class="error-message">El apellido debe tener entre 2 y 50 caracteres</small>
+      <input type="text" id="apellido" formControlName="apellido" class="form-input" maxlength="50">
+      @if (editForm.get('apellido')?.errors && (editForm.get('apellido')?.touched || editForm.get('apellido')?.dirty)) {
+        <small class="error-message">
+          @if (editForm.get('apellido')?.hasError('required')) {
+            El apellido es obligatorio.
+          } @else if (editForm.get('apellido')?.hasError('invalidName')) {
+            El apellido solo puede contener letras, espacios, ñ y tildes.
+          } @else {
+            El apellido debe tener entre 2 y 50 caracteres.
+          }
+        </small>
       }
     </div>
 
-    <div class="form-field">
+    <div class="form-field form-field-readonly">
       <label for="dni">DNI:</label>
-      <input type="text" id="dni" formControlName="dni" class="form-input" maxlength="8">
-      @if (editForm.get('dni')?.invalid && editForm.get('dni')?.touched) {
-        <small class="error-message">El DNI debe tener 7 u 8 dígitos</small>
-      }
+      <input type="text" id="dni" formControlName="dni" class="form-input" readonly tabindex="-1">
+      <small class="hint-readonly">No modificable</small>
     </div>
 
     <div class="form-field">
       <label for="telefono">Teléfono:</label>
-      <input type="text" id="telefono" formControlName="telefono" class="form-input" maxlength="10">
-      @if (editForm.get('telefono')?.invalid && editForm.get('telefono')?.touched) {
-        <small class="error-message">El teléfono debe tener 10 dígitos</small>
+      <input type="text" id="telefono" formControlName="telefono" class="form-input" maxlength="20" inputmode="numeric">
+      @if (editForm.get('telefono')?.errors && (editForm.get('telefono')?.touched || editForm.get('telefono')?.dirty)) {
+        <small class="error-message">
+          @if (editForm.get('telefono')?.hasError('required')) {
+            El teléfono es obligatorio.
+          } @else if (editForm.get('telefono')?.hasError('invalidPhone')) {
+            El teléfono solo puede contener números.
+          } @else if (editForm.get('telefono')?.hasError('invalidPhoneLength')) {
+            El teléfono debe tener entre 9 y 20 dígitos.
+          } @else if (editForm.get('telefono')?.hasError('phoneExists')) {
+            Este teléfono ya está registrado. Por favor, usá otro.
+          }
+        </small>
+      }
+      @if (editForm.get('telefono')?.pending) {
+        <small class="error-message" style="color: #666;">Verificando disponibilidad...</small>
       }
     </div>
 
-    <div class="form-field">
+    <div class="form-field form-field-readonly">
       <label for="email">Email:</label>
-      <input type="email" id="email" formControlName="email" class="form-input">
-      @if (editForm.get('email')?.invalid && editForm.get('email')?.touched) {
-        <small class="error-message">Ingresa un email válido</small>
-      }
+      <input type="email" id="email" formControlName="email" class="form-input" readonly tabindex="-1">
+      <small class="hint-readonly">No modificable</small>
     </div>
 
     <div class="form-actions">

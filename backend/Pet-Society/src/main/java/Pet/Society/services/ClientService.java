@@ -175,9 +175,11 @@ public class ClientService implements Mapper <ClientDTO, ClientEntity> {
     public ClientDTO takeAttributes(ClientEntity origin, ClientEntity destination) {
         if(origin.getName() == null){origin.setName(destination.getName());}
         if(origin.getSurname() == null){origin.setSurname(destination.getSurname());}
-        if(origin.getEmail() == null){origin.setEmail(destination.getEmail());}
-        if(origin.getDni() == null){origin.setDni(destination.getDni());}
+        origin.setEmail(destination.getEmail());   // DNI y email inmodificables
+        origin.setDni(destination.getDni());
         if(origin.getPhone()==null){origin.setPhone(destination.getPhone());}
+        if(origin.getSubscribed() == null){origin.setSubscribed(destination.getSubscribed());}
+        if(origin.getEmailVerified() == null){origin.setEmailVerified(destination.getEmailVerified());}
 
         return toDTO(destination);
     }

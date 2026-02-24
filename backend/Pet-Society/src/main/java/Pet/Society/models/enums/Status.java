@@ -5,5 +5,5 @@ public enum Status {
     RESCHEDULED /*La cita fue reprogramada*/,
     SUCCESSFULLY /*La cita fue completada satisfactoriamente*/,
     TO_BEGIN /*La cita está programada y lista para ser realizada*/,
-    AVAILABLE /*La cita está disponible para reservara*/
+    AVAILABLE /*La cita está disponible para reservar*/
 }

@@ -453,10 +453,10 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
         return 'Cancelada';
       case Status.TO_BEGIN:
         return 'Programada';
-      case Status.RESCHEDULED:
+      case 'RESCHEDULED':
         return 'Reprogramada';
       default:
-        return status.toString();
+        return String(status);
     }
   }
 
@@ -469,8 +469,8 @@ export class AppointmentDoctorHistory implements OnInit, OnDestroy {
         return '#f44336';
       case Status.TO_BEGIN:
         return '#2196f3';
-      case Status.RESCHEDULED:
-        return '#ff9800';
+      case 'RESCHEDULED':
+        return '#999';
       default:
         return '#999';
     }
